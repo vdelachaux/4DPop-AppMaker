@@ -1,0 +1,1 @@
+EDIT ITEM:C870(*;"info.plist.values")

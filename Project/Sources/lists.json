@@ -1,0 +1,38 @@
+﻿{
+	"Infoplistkey": {
+		"lineHeight": 18,
+		"editable": false,
+		"items": [
+			{
+				"text": "CFBundleGetInfoString",
+				"ref": 1,
+				"editable": true
+			},
+			{
+				"text": "CFBundleShortVersionString",
+				"ref": 2,
+				"editable": true
+			},
+			{
+				"text": "CFBundleLongVersionString",
+				"ref": 3,
+				"editable": true
+			},
+			{
+				"text": "NSHumanReadableCopyright",
+				"ref": 4,
+				"editable": true
+			},
+			{
+				"text": "CFBundleVersion",
+				"ref": 5,
+				"editable": true
+			},
+			{
+				"text": "CFBundleName",
+				"ref": 6,
+				"editable": true
+			}
+		]
+	}
+}

@@ -1,0 +1,81 @@
+﻿{
+	"destination": "detailScreen",
+	"windowTitle": ":xliff:4dpopAppmaker",
+	"windowSizingX": "fixed",
+	"windowSizingY": "fixed",
+	"width": 400,
+	"height": 120,
+	"markerBody": 120,
+	"markerBreak": 120,
+	"markerFooter": 120,
+	"events": [
+		"onLoad",
+		"onCloseBox",
+		"onTimer"
+	],
+	"method": "method.4dm",
+	"pageFormat": {
+		"paperName": "A4",
+		"paperWidth": "595pt",
+		"paperHeight": "842pt"
+	},
+	"pages": [
+		{
+			"objects": {
+				"_Background": {
+					"type": "rectangle",
+					"top": 0,
+					"left": 0,
+					"width": 400,
+					"height": 120,
+					"sizingX": "grow",
+					"sizingY": "grow",
+					"fill": "automatic",
+					"stroke": "transparent"
+				}
+			}
+		},
+		{
+			"objects": {
+				"Image42": {
+					"type": "picture",
+					"top": 18,
+					"left": 18,
+					"width": 86,
+					"height": 84,
+					"pictureFormat": "scaled",
+					"picture": "/RESOURCES/Images/build.png"
+				},
+				"progress": {
+					"type": "progress",
+					"top": 74,
+					"left": 114,
+					"width": 272,
+					"height": 24,
+					"dataSource": "Storage:C1525.progress.barber",
+					"fontFamily": "Lucida Grande",
+					"fontSize": 13
+				},
+				"Variable2": {
+					"type": "input",
+					"top": 18,
+					"left": 114,
+					"width": 272,
+					"height": 49,
+					"dataSource": "Storage:C1525.progress.title",
+					"fill": "transparent",
+					"borderStyle": "none",
+					"enterable": false,
+					"contextMenu": "none",
+					"focusable": false,
+					"fontWeight": "normal",
+					"fontTheme": "normal"
+				}
+			}
+		}
+	],
+	"$4d": {
+		"version": "1",
+		"kind": "form"
+	}
+}

@@ -1,0 +1,1 @@
+Storage:C1525.preferences.set("reveal@path";Choose:C955(Form:C1466.reveal.path;"./";""))

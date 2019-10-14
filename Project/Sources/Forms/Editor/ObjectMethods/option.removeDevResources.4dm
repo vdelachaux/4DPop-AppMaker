@@ -1,0 +1,1 @@
+Storage:C1525.preferences.set("options@removeDevResources";Choose:C955(Form:C1466.options.removeDevResources;"true";"false"))

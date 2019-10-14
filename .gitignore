@@ -1,0 +1,27 @@
+# Ignore invisible files/folders except .gitignore
+.*
+!.gitignore
+
+# Ignore data files
+Data/
+
+# Ignore derived data except the Documentation
+DerivedData/
+#!DerivedData/Documentation/
+
+# Ignore user preferences
+userPreferences.*
+Preferences/4DPop
+#Preferences/
+!4DPop AppMaker.xml
+#Settings/
+!buildApp.4DSettings
+
+# Ignore Trash
+Project/Trash/
+Settings/Pref.json
+Settings/backup.4DSettings
+Settings/test.xml
+Preferences/4DPop Explorer.json
+Preferences/4DPop XLIFF.settings
+Preferences/4DPop XLIFF.xml

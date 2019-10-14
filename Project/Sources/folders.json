@@ -1,0 +1,96 @@
+﻿{
+	"_o_": {
+		"methods": [
+			"_o_APP_MAKER_GET_PROJECTS",
+			"_o_APP_MAKER_Get_target_path",
+			"_o_AppMaker_DELETE_FOLDER",
+			"_o_AppMaker_Get_infoPlistKey",
+			"_o_AppMaker_Get_target_name",
+			"_o_AppMaker_INIT",
+			"_o_AppMaker_OPEN_TARGET_FOLDER",
+			"_o_AppMaker_SET_BARBER",
+			"_o_AppMaker_SET_infoPlistKey",
+			"_o_AppMaker_SET_MESSAGE",
+			"_o_doc_File",
+			"_o_doc_Folder",
+			"_o_env_GET_infoPListPath",
+			"_o_param_GET_ARRAY",
+			"_o_param_GET_ATTRIBUTES",
+			"_o_param_Get_value",
+			"_o_param_SET_ARRAY",
+			"_o_param_SET_ATTRIBUTES",
+			"_o_param_SET_VALUE",
+			"_o_preferencesOpen"
+		]
+	},
+	"00_dev": {
+		"methods": [
+			"00_test",
+			"Compiler_dev",
+			"testAfter",
+			"testBefore"
+		]
+	},
+	"Component": {
+		"groups": [
+			"Forms",
+			"Private",
+			"Public"
+		],
+		"methods": [
+			"Compiler_component"
+		]
+	},
+	"Forms": {
+		"forms": [
+			"Barber",
+			"Editor"
+		]
+	},
+	"Private": {
+		"methods": [
+			"APP_MAKER_Go_to_page",
+			"APP_MAKER_HANDLER",
+			"APP_MAKER_Load_page",
+			"AppMaker_RunProject",
+			"AUTO_BUILD",
+			"buildApp_DELETE_RESOURCES",
+			"BuildApp_SET_ARRAY",
+			"buildApp_SET_ELEMENT",
+			"COPY",
+			"DELETE",
+			"DELETE_MAC_CONTENT",
+			"key_mark",
+			"key_UPDATE"
+		]
+	},
+	"Public": {
+		"methods": [
+			"AppMaker_PARAMETERS",
+			"AppMaker_RUN"
+		]
+	},
+	"Tools": {
+		"methods": [
+			"Compiler_tools",
+			"doc_DELETE",
+			"doc_EMPTY_FOLDER",
+			"doc_getCommonPath",
+			"doc_getVolumeName",
+			"doc_Is_Relative_Path",
+			"doc_OBJET_LOCATION",
+			"EXPORT_PROJECT",
+			"git",
+			"noERROR",
+			"Obj_CENTER",
+			"PHP_zip_archive_to",
+			"wait",
+			"xml_Clean_up",
+			"xml_noError",
+			"xml_Reference",
+			"xml_Save_file",
+			"XML_TO_LIST"
+		]
+	},
+	"trash": {}
+}
