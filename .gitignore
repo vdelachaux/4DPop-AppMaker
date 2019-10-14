@@ -11,17 +11,12 @@ DerivedData/
 
 # Ignore user preferences
 userPreferences.*
-Preferences/4DPop
-#Preferences/
+
+Preferences/
 !4DPop AppMaker.xml
-#Settings/
+
+Settings/
 !buildApp.4DSettings
 
 # Ignore Trash
 Project/Trash/
-Settings/Pref.json
-Settings/backup.4DSettings
-Settings/test.xml
-Preferences/4DPop Explorer.json
-Preferences/4DPop XLIFF.settings
-Preferences/4DPop XLIFF.xml
