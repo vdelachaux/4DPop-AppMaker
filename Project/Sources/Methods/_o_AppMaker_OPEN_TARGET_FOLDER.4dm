@@ -36,4 +36,4 @@ APP_MAKER_HANDLER ("_init")
 SHOW ON DISK:C922(_o_APP_MAKER_Get_target_path (8);*)
 
   // ----------------------------------------------------
-  // End
+  // End 

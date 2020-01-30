@@ -495,7 +495,7 @@ Else
 							  //$o.success:=ob_testPath(This.reference;$Txt_path)
 							  //If ($o.success)
 							  //$o.value:=ob_getByPath
-							  // End if
+							  // End  if
 							
 							  //…………………………………………………………………………………………………………………………
 						Else 
@@ -605,4 +605,4 @@ End if
 $0:=$o
 
   // ----------------------------------------------------
-  // End
+  // End 
