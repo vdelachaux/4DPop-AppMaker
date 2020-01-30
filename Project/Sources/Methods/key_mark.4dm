@@ -71,4 +71,4 @@ End if
 SET LIST ITEM ICON:C950(Form:C1466.buildApp;$Lon_reference;$Pic_buffer)
 
   // ----------------------------------------------------
-  // End 
+  // End  
