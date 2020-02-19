@@ -1,4 +1,4 @@
-//%attributes = {"invisible":true}
+//%attributes = {"invisible":true,"shared":true}
   // ----------------------------------------------------
   // Method :  env_Get_infoPlistKey
   // Created 25/09/07 by Vincent de Lachaux
