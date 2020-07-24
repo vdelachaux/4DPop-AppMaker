@@ -17,13 +17,12 @@
       </CS>
     </SourcesFiles>
     <BuildApplicationName>4DPop AppMaker</BuildApplicationName>
-    <BuildMacDestFolder>::Build:</BuildMacDestFolder>
-    <BuildWinDestFolder>..\\Build\</BuildWinDestFolder>
+    <BuildMacDestFolder>:Build:</BuildMacDestFolder>
     <CS>
       <BuildServerApplication>False</BuildServerApplication>
       <BuildCSUpgradeable>False</BuildCSUpgradeable>
       <CurrentVers>1</CurrentVers>
-      <HardLink/>
+      <HardLink></HardLink>
       <LastDataPathLookup>ByAppName</LastDataPathLookup>
     </CS>
     <ArrayExcludedPluginName>
@@ -45,7 +44,7 @@
     </RuntimeVL>
     <SignApplication>
       <MacSignature>False</MacSignature>
-      <MacCertificate/>
+      <MacCertificate></MacCertificate>
     </SignApplication>
   </BuildApp>
 </Preferences4D>

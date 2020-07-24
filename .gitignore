@@ -21,3 +21,5 @@ Settings/
 # Ignore Trash
 Project/Trash/
 Resources/php.ini
+Components/
+!Build/Components
