@@ -1,6 +1,10 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-   <!--       Translation file.This file is distributed under the same license as the product package.-->
-<xliff version="1.0">
+<?xml version="1.0" encoding="utf-8"?>
+
+   <!--       
+Translation file.
+This file is distributed under the same license as the product package.-->
+
+<xliff version="1.0">
    <file datatype="x-STR#" original="undefined" source-language="en" target-language="fr">
       <header>
          <prop-group name="Xliff-Editor.4dbase">
@@ -268,8 +272,14 @@ Si les clés RangeVersMax et RangeVersMin ne sont pas utilisées, ce numéro est
 Si ces clés sont utilisées, l'application Serveur lira ce numéro afin de déterminer si le Client appartient à l'intervalle défini et est donc autorisé à se connecter.</target>
             </trans-unit>
             <trans-unit id="102" resname="/Preferences4D/BuildApp/CS/BuildV13ClientUpgrades">
-               <source>If this key is set to true, legacy update packages must be generated to allow v13 client to upgrade automatically.When using the Build Application command:- if the key is not specified if the developer chooses to build client updates, then legacy update packages are automatically generated- if the key is specified it will govern whether legacy update packages shall be generated</source>
-               <target>If this key is set to true, legacy update packages must be generated to allow v13 client to upgrade automatically.When using the Build Application command:- if the key is not specified if the developer chooses to build client updates, then legacy update packages are automatically generated- if the key is specified it will govern whether legacy update packages shall be generated</target>
+               <source>If this key is set to true, legacy update packages must be generated to allow v13 client to upgrade automatically.
+When using the Build Application command:
+- if the key is not specified if the developer chooses to build client updates, then legacy update packages are automatically generated
+- if the key is specified it will govern whether legacy update packages shall be generated</source>
+               <target>If this key is set to true, legacy update packages must be generated to allow v13 client to upgrade automatically.
+When using the Build Application command:
+- if the key is not specified if the developer chooses to build client updates, then legacy update packages are automatically generated
+- if the key is specified it will govern whether legacy update packages shall be generated</target>
             </trans-unit>
          </group>
          <group resname="SourcesFiles_RuntimeVL">

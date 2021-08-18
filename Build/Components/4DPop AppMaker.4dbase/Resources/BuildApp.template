@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Preferences4D>
   <BuildApp>
     <BuildCompiled>False</BuildCompiled>
@@ -23,7 +23,7 @@
       <BuildServerApplication>True</BuildServerApplication>
       <BuildCSUpgradeable>False</BuildCSUpgradeable>
       <CurrentVers>1</CurrentVers>
-      <HardLink></HardLink>
+      <HardLink/>
     </CS>
     <ArrayExcludedPluginName>
       <ItemsCount>0</ItemsCount>
@@ -40,5 +40,4 @@
       </ArrayLicenseMac>
     </Licenses>
   </BuildApp>
-
 </Preferences4D>

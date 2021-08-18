@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Preferences4D>
   <BuildApp>
     <BuildCompiled>False</BuildCompiled>
@@ -32,7 +32,27 @@
       <ItemsCount>0</ItemsCount>
     </ArrayExcludedPluginID>
     <ArrayExcludedComponentName>
-      <ItemsCount>0</ItemsCount>
+      <ItemsCount>20</ItemsCount>
+      <Item1>4DPop AppMaker</Item1>
+      <Item2>4DPop Image Buddy</Item2>
+      <Item3>4D SVG</Item3>
+      <Item4>4DPop Constants Editor</Item4>
+      <Item5>4DPop Rulers</Item5>
+      <Item6>4D Progress</Item6>
+      <Item7>4D ViewPro</Item7>
+      <Item8>4DPop KeepIt</Item8>
+      <Item9>4DPop ColorChart</Item9>
+      <Item10>4DPop Macros</Item10>
+      <Item11>4DPop Commands</Item11>
+      <Item12>4D WritePro Interface</Item12>
+      <Item13>4D Mobile App Server</Item13>
+      <Item14>4DPop Pasteboard</Item14>
+      <Item15>4DPop Window</Item15>
+      <Item16>4D Widgets</Item16>
+      <Item17>4DPop XLIFF</Item17>
+      <Item18>4DPop sqlSchemas</Item18>
+      <Item19>4DPop</Item19>
+      <Item20>4DPop Bookmarks</Item20>
     </ArrayExcludedComponentName>
     <Licenses>
       <ArrayLicenseMac>
@@ -45,6 +65,7 @@
     <SignApplication>
       <MacSignature>False</MacSignature>
       <MacCertificate></MacCertificate>
-    </SignApplication>
+      <AdHocSign>True</AdHocSign></SignApplication>
   </BuildApp>
+
 </Preferences4D>

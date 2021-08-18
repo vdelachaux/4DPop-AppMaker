@@ -1,4 +1,4 @@
-//%attributes = {}
+//%attributes = {"invisible":true}
   // ----------------------------------------------------
   // Project method : pref
   // ID[CE99103490E44A58BE11172AF9A10DD6]
