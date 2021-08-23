@@ -1,11 +1,14 @@
-If (Is compiled mode:C492)
+//%attributes = {}
+If (Not:C34(Is compiled mode:C492))
 	
-	SET ASSERT ENABLED:C1131(False:C215)
+	ARRAY TEXT:C222($componentsArray; 0)
+	COMPONENT LIST:C1001($componentsArray)
 	
-Else 
-	
-	SET ASSERT ENABLED:C1131(False:C215)
-	
+	If (Find in array:C230($componentsArray; "4DPop QuickOpen")>0)
+		
+		// Installing quickOpen
+		EXECUTE METHOD:C1007("quickOpenInit"; *; Formula:C1597(MODIFIERS); Formula:C1597(KEYCODE))
+		ON EVENT CALL:C190("quickOpenEventHandler"; "$quickOpenListener")
+		
+	End if 
 End if 
-
-  //AUTO_BUILD 
