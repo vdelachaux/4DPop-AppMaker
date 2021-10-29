@@ -30,8 +30,18 @@ Case of
 	: ($Lon_databaseEvent=On after host database startup:K74:4)
 		
 		//The On Startup database method of the host database just finished running
-		//AUTO_BUILD
-		EXECUTE METHOD:C1007("AUTO_BUILD")
+		
+		If (Not:C34(Is compiled mode:C492(*)))
+			
+			ARRAY TEXT:C222($componentsArray; 0)
+			COMPONENT LIST:C1001($componentsArray)
+			
+			If (Find in array:C230($componentsArray; "4DPop QuickOpen")>0)
+				
+				quickOpenActions
+				
+			End if 
+		End if 
 		
 		//______________________________________________________
 	: ($Lon_databaseEvent=On before host database exit:K74:5)

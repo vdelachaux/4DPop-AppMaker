@@ -105,7 +105,7 @@ Case of
 			Use (Storage:C1525.progress)
 				
 				Storage:C1525.progress.barber:=-2
-				Storage:C1525.progress.title:=Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $t)
+				Storage:C1525.progress.title:="🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $t)
 				
 			End use 
 			
@@ -138,7 +138,7 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=-2
-					Storage:C1525.progress.title:=Get localized string:C991("Preparations")+"…"
+					Storage:C1525.progress.title:="🚧 "+Get localized string:C991("Preparations")+"…"
 					
 				End use 
 				
@@ -208,6 +208,11 @@ Case of
 			End if 
 		End if 
 		
+		
+		var $build : cs:C1710.build
+		
+		$build:=cs:C1710.build.new("vdl@mac.com"; "Vincent de Lachaux (DYRKW64QA9)"; "ad963670-a233-4090-a45f-ceca3bd61c9b")
+		
 		// Launch the application generation process
 		If ($Boo_OK)\
 			 & ($Txt_entryPoint#"@noBuild@")
@@ -219,32 +224,27 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=-2
-					Storage:C1525.progress.title:=Get localized string:C991("CompilationAndGeneration")
+					Storage:C1525.progress.title:="⚙️ "+Get localized string:C991("CompilationAndGeneration")
 					
 				End use 
 				
-				$o:=File:C1566($Obj_environment.buildApp; fk platform path:K87:2)
+				//$o:=File($Obj_environment.buildApp; fk platform path)
+				//If ($o.exists)
+				//If (Is Windows)  // Turn around  ACI0071484
+				//DELETE_MAC_CONTENT($Obj_environment.databaseFolder)
+				//End if 
+				//MESSAGES OFF
+				//$t:=Storage.environment.buildApp
+				//BUILD APPLICATION($t)
+				//$Boo_OK:=Bool(OK)
+				//MESSAGES ON
+				//Else 
+				//$Boo_OK:=False
+				//End if 
 				
-				If ($o.exists)
-					
-					If (Is Windows:C1573)  // Turn around  ACI0071484
-						
-						DELETE_MAC_CONTENT($Obj_environment.databaseFolder)
-						
-					End if 
-					
-					MESSAGES OFF:C175
-					$t:=Storage:C1525.environment.buildApp
-					BUILD APPLICATION:C871($t)
-					$Boo_OK:=Bool:C1537(OK)
-					
-					MESSAGES ON:C181
-					
-				Else 
-					
-					$Boo_OK:=False:C215
-					
-				End if 
+				$build.buildApp()
+				$Boo_OK:=$build.success
+				
 			Until (wait($Lon_Start; 2000; $Lon_process; 5))
 		End if 
 		
@@ -353,7 +353,7 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=-2
-					Storage:C1525.progress.title:=Get localized string:C991("Preparation")
+					Storage:C1525.progress.title:="🚧 "+Get localized string:C991("Preparation")
 					
 				End use 
 				
@@ -406,7 +406,7 @@ Case of
 						Use (Storage:C1525.progress)
 							
 							Storage:C1525.progress.barber:=-2
-							Storage:C1525.progress.title:=Get localized string:C991("exportProject")
+							Storage:C1525.progress.title:="🚚 "+Get localized string:C991("exportProject")
 							
 						End use 
 						
@@ -427,7 +427,7 @@ Case of
 						Use (Storage:C1525.progress)
 							
 							Storage:C1525.progress.barber:=-2
-							Storage:C1525.progress.title:=Get localized string:C991("compression")
+							Storage:C1525.progress.title:="🗜 "+Get localized string:C991("compression")
 							
 						End use 
 						
@@ -463,7 +463,7 @@ Case of
 						Use (Storage:C1525.progress)
 							
 							Storage:C1525.progress.barber:=-2
-							Storage:C1525.progress.title:=Get localized string:C991("deleteMacOsSpecificFiles")
+							Storage:C1525.progress.title:="🧽 "+Get localized string:C991("deleteMacOsSpecificFiles")
 							
 						End use 
 						
@@ -507,7 +507,7 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=-2
-					Storage:C1525.progress.title:=".Deleting unnecessary resources"
+					Storage:C1525.progress.title:="🗜 Deleting unnecessary resources"
 					
 				End use 
 				
@@ -575,10 +575,9 @@ Case of
 				
 				Use (Storage:C1525.progress)
 					
-					Storage:C1525.progress.barber:=-2
 					Storage:C1525.progress.barber:=0
 					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
-					Storage:C1525.progress.title:=Get localized string:C991("preparationOfCopy")
+					Storage:C1525.progress.title:="⚙️ "+Get localized string:C991("preparationOfCopy")
 					
 				End use 
 				
@@ -619,10 +618,9 @@ Case of
 				
 				Use (Storage:C1525.progress)
 					
-					Storage:C1525.progress.barber:=-2
 					Storage:C1525.progress.barber:=0
 					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
-					Storage:C1525.progress.title:=Get localized string:C991("preparingForRemoval")
+					Storage:C1525.progress.title:="🚧 "+Get localized string:C991("preparingForRemoval")
 					
 				End use 
 				
@@ -675,14 +673,6 @@ Case of
 			End if 
 		End if 
 		
-		If ($Txt_entryPoint="_autoBuild")
-			
-			//#MARK_TODO
-			
-		End if 
-		
-		BARBER("barber.close")
-		
 		// Host database method to run at the end
 		If ($Boo_OK)
 			
@@ -694,6 +684,61 @@ Case of
 				
 			End if 
 		End if 
+		
+		If ($Boo_OK) & (Is macOS:C1572)
+			
+			Use (Storage:C1525.progress)
+				
+				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+				Storage:C1525.progress.title:="🍏 Notarization process"
+				
+			End use 
+			
+			$build.removeSignature()
+			
+			If ($build.success)
+				
+				$build.sign()
+				
+				If ($build.success)
+					
+					$build.dmg()
+					
+					If ($build.success)
+						
+						$build.notarize()
+						
+						If ($build.success)
+							
+							Use (Storage:C1525.progress)
+								
+								Storage:C1525.progress.barber:=-2
+								Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+								Storage:C1525.progress.title:="⏳ Waiting for Apple's response"
+								
+							End use 
+							
+							$build.waitForNotarizeResult()
+							
+							If ($build.success)
+								
+								$build.staple()
+								
+							End if 
+						End if 
+					End if 
+				End if 
+			End if 
+		End if 
+		
+		If ($Txt_entryPoint="_autoBuild")
+			
+			//#MARK_TODO
+			
+		End if 
+		
+		BARBER("barber.close")
 		
 		// p4 tool
 		If ($Boo_OK)

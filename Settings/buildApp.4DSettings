@@ -24,6 +24,8 @@
       <CurrentVers>1</CurrentVers>
       <HardLink></HardLink>
       <LastDataPathLookup>ByAppName</LastDataPathLookup>
+      <MacCompiledDatabaseToWinIncludeIt>False</MacCompiledDatabaseToWinIncludeIt>
+      <MacCompiledDatabaseToWin></MacCompiledDatabaseToWin>
     </CS>
     <ArrayExcludedPluginName>
       <ItemsCount>0</ItemsCount>
@@ -67,5 +69,6 @@
       <MacCertificate></MacCertificate>
       <AdHocSign>True</AdHocSign></SignApplication>
   </BuildApp>
+
 
 </Preferences4D>

@@ -1,66 +1,103 @@
 //%attributes = {"invisible":true}
-  //C_BOOLEAN($b)
-  //C_DATE($d)
-  //C_TEXT($t)
-  //C_OBJECT($o)
-  //C_COLLECTION($c)
+//C_BOOLEAN($b)
+//C_DATE($d)
+//C_TEXT($t)
+//C_OBJECT($o)
+//C_COLLECTION($c)
 C_TEXT:C284($t)
 C_OBJECT:C1216($o)
 
-  //$o:=application 
-  //$o:=pref
+//$o:=application 
+//$o:=pref
 
-  //$o:=pref ("myPreferences")
-  //$o:=pref ("root;Settings")
+//$o:=pref ("myPreferences")
+//$o:=pref ("root;Settings")
 
-  //$o:=pref ("pref;Prefs;database")
-  //$o:=pref ("pref;Preferences;user")
-  //$o:=pref ("pref;Settings;4D")
+//$o:=pref ("pref;Prefs;database")
+//$o:=pref ("pref;Preferences;user")
+//$o:=pref ("pref;Settings;4D")
 
-  //$o:=pref ("test;Settings;user;.xml")
-  //ASSERT($o.get("delete")=Null)
+//$o:=pref ("test;Settings;user;.xml")
+//ASSERT($o.get("delete")=Null)
 
-  //  // Open a file
-  //$o:=pref (Folder(fk database folder;*).folder("Preferences").file("4DPop AppMaker.xml").path)
+//  // Open a file
+//$o:=pref (Folder(fk database folder;*).folder("Preferences").file("4DPop AppMaker.xml").path)
 
-  //$b:=$o.get("options@remove4DSVGHelp";Is boolean)
-  //$c:=$o.get("delete")
-  //$c:=$o.get("options")
+//$b:=$o.get("options@remove4DSVGHelp";Is boolean)
+//$c:=$o.get("delete")
+//$c:=$o.get("options")
 
-  //  // Close
-  //$o.close()
+//  // Close
+//$o.close()
 
-  //$o:=pref (Folder(fk database folder;*).folder("Preferences").file("test.xml").path)
-  //$o.set("test/test@bool";False)
-  //$o.set("test/test@date";Current date)
-  //$o.save(True)
+//$o:=pref (Folder(fk database folder;*).folder("Preferences").file("test.xml").path)
+//$o.set("test/test@bool";False)
+//$o.set("test/test@date";Current date)
+//$o.save(True)
 
-  //$d:=$o.get("test/test@date";Is date)
-  //$t:=$o.get("test/test@bool")
-  //$b:=$o.get("test/test@bool";Is boolean)
+//$d:=$o.get("test/test@date";Is date)
+//$t:=$o.get("test/test@bool")
+//$b:=$o.get("test/test@bool";Is boolean)
 
-  //$o.close()
+//$o.close()
 
-  //$c:=Folder(fk database folder).files(fk recursive)
-  //$cc:=$c.query("fullName = .@ OR parent.name = @tempo")
+//$c:=Folder(fk database folder).files(fk recursive)
+//$cc:=$c.query("fullName = .@ OR parent.name = @tempo")
 
-  // Create a default file from template
-  //$o:=File("/RESOURCES/BuildApp.xml")
-  //$t:=$o.getText()
-  //$t:=Replace string($t;"{BuildApplicationName}";Storage.database.structure.name)
-  //$o:=File(Build application configuration file;*)
-  //$o.create()
-  //$o.setText($t)
+// Create a default file from template
+//$o:=File("/RESOURCES/BuildApp.xml")
+//$t:=$o.getText()
+//$t:=Replace string($t;"{BuildApplicationName}";Storage.database.structure.name)
+//$o:=File(Build application configuration file;*)
+//$o.create()
+//$o.setText($t)
 
-$o:=pref 
-$o.close()
+//$o:=pref
+//$o.close()
 
-$o:=pref ("4DPop AppMaker.xml;database;xml;appMaker")
-$o.close()
+//$o:=pref("4DPop AppMaker.xml;database;xml;appMaker")
+//$o.close()
 
-$o:=pref ("test;database;xml")
-$o.close()
+//$o:=pref("test;database;xml")
+//$o.close()
 
+var $build : cs:C1710.build
+
+$build:=cs:C1710.build.new("vdl@mac.com"; "Vincent de Lachaux (DYRKW64QA9)"; "ad963670-a233-4090-a45f-ceca3bd61c9b")
+
+$build.buildApp()
+
+If ($build.success)
+	
+	$build.removeSignature()
+	
+	If ($build.success)
+		
+		$build.sign()
+		
+		If ($build.success)
+			
+			//$build.zip()
+			$build.dmg()
+			
+			If ($build.success)
+				
+				$build.notarize()
+				
+				If ($build.success)
+					
+					$build.waitForNotarizeResult()
+					
+					If ($build.success)
+						
+						$build.staple()
+						
+					End if 
+				End if 
+			End if 
+		End if 
+	End if 
+End if 
 
 
 

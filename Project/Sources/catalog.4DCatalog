@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE base SYSTEM "http://www.4d.com/dtd/2007/base.dtd" >
 <base name="4DPop AppMaker" uuid="93DAC30FBA9B4B289E05B05A5BEF91BF" collation_locale="fr">
 	<schema name="DEFAULT_SCHEMA"/>
-	<base_extra package_name="4DPop AppMaker" structure_file_name="4DPop AppMaker" data_file_path=":4DPop AppMaker.4DD" __stringCompHash="icu:63.1.0" __keywordBuildingHash="icu:63.1.0">
+	<base_extra package_name="4DPop AppMaker" structure_file_name="4DPop AppMaker" data_file_path=":4DPop AppMaker.4DD" __stringCompHash="icu:68.1.0" __keywordBuildingHash="icu:68.1.0">
 		<temp_folder folder_selector="system"/>
 		<journal_file journal_file_enabled="false"/>
 	</base_extra>

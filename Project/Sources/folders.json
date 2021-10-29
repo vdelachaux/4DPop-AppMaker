@@ -32,8 +32,15 @@
 			"testBefore"
 		]
 	},
+	"Classes": {
+		"classes": [
+			"build",
+			"lep"
+		]
+	},
 	"Component": {
 		"groups": [
+			"Classes",
 			"Forms",
 			"Private",
 			"Public"
@@ -62,7 +69,8 @@
 			"DELETE",
 			"DELETE_MAC_CONTENT",
 			"key_mark",
-			"key_UPDATE"
+			"key_UPDATE",
+			"quickOpenActions"
 		]
 	},
 	"Public": {
