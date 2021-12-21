@@ -126,7 +126,7 @@ Else
 					ON ERR CALL:C155("xml_noError")  // ============================================================= [
 					
 					$Dom_element:=DOM Find XML element:C864(This:C1470.reference; $Txt_XPATH)
-					$o.success:=($Dom_element#("0"*16))
+					$o.success:=($Dom_element#("0"*32))
 					
 					If ($o.success)
 						
@@ -164,7 +164,7 @@ Else
 								
 								$t:=DOM Find XML element:C864(This:C1470.reference; $Txt_XPATH+"/array")
 								
-								If ($t#("0"*16))
+								If ($t#("0"*32))
 									
 									$o.value:=New collection:C1472
 									
@@ -223,13 +223,13 @@ Else
 					
 					$Dom_element:=DOM Find XML element:C864(This:C1470.reference; $Txt_XPATH)
 					
-					If ($Dom_element=("0"*16))
+					If ($Dom_element=("0"*32))
 						
 						$Dom_element:=DOM Create XML element:C865(This:C1470.reference; $Txt_XPATH)
 						
 					End if 
 					
-					$o.success:=($Dom_element#("0"*16))
+					$o.success:=($Dom_element#("0"*32))
 					
 					If ($o.success)
 						

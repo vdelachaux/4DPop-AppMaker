@@ -63,7 +63,7 @@ C_OBJECT:C1216($o)
 
 var $build : cs:C1710.build
 
-$build:=cs:C1710.build.new("vdl@mac.com"; "Vincent de Lachaux (DYRKW64QA9)"; "ad963670-a233-4090-a45f-ceca3bd61c9b")
+$build:=cs:C1710.build.new()
 
 $build.buildApp()
 

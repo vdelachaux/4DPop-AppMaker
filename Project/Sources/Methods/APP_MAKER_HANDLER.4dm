@@ -208,10 +208,8 @@ Case of
 			End if 
 		End if 
 		
-		
 		var $build : cs:C1710.build
-		
-		$build:=cs:C1710.build.new("vdl@mac.com"; "Vincent de Lachaux (DYRKW64QA9)"; "ad963670-a233-4090-a45f-ceca3bd61c9b")
+		$build:=cs:C1710.build.new()
 		
 		// Launch the application generation process
 		If ($Boo_OK)\
@@ -685,49 +683,74 @@ Case of
 			End if 
 		End if 
 		
+		// * NOTARIZATION *
 		If ($Boo_OK) & (Is macOS:C1572)
 			
-			Use (Storage:C1525.progress)
-				
-				Storage:C1525.progress.barber:=-2
-				Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
-				Storage:C1525.progress.title:="🍏 Notarization process"
-				
-			End use 
+			XML DECODE:C1091(String:C10($ƒ.get("options@notarize").value); $Boo_execute)
 			
-			$build.removeSignature()
-			
-			If ($build.success)
+			If ($Boo_execute)
 				
-				$build.sign()
+				Use (Storage:C1525.progress)
+					
+					Storage:C1525.progress.barber:=-2
+					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+					Storage:C1525.progress.title:="🍏 Notarization process"
+					
+				End use 
+				
+				$build.removeSignature()
 				
 				If ($build.success)
 					
-					$build.dmg()
+					$build.sign()
 					
 					If ($build.success)
 						
-						$build.notarize()
+						$build.dmg()
+						//$build.zip()
 						
 						If ($build.success)
 							
-							Use (Storage:C1525.progress)
-								
-								Storage:C1525.progress.barber:=-2
-								Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
-								Storage:C1525.progress.title:="⏳ Waiting for Apple's response"
-								
-							End use 
-							
-							$build.waitForNotarizeResult()
+							$build.notarize()
 							
 							If ($build.success)
 								
-								$build.staple()
+								Use (Storage:C1525.progress)
+									
+									Storage:C1525.progress.barber:=-2
+									Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+									Storage:C1525.progress.title:="⏳ Waiting for Apple's response"
+									
+								End use 
 								
+								$build.waitForNotarizeResult()
+								
+								If ($build.success)
+									
+									$build.staple()
+									
+									If ($build.success)
+										
+										$t:=$build.ckeckWithGatekeeper()
+										
+										If ($build.success)
+											
+											DISPLAY NOTIFICATION:C910($Obj_database.structure.name; "Successfully notarized for : "+$t)
+											
+											$build.archive.delete()
+											
+										End if 
+									End if 
+								End if 
 							End if 
 						End if 
 					End if 
+				End if 
+				
+				If (Not:C34($build.success))
+					
+					ALERT:C41($build.lastError)
+					
 				End if 
 			End if 
 		End if 

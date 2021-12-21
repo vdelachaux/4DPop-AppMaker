@@ -1,7 +1,7 @@
 Class extends lep
 
 //=== === === === === === === === === === === === === === === === === === === === === === ===
-Class constructor($appleID : Text; $certificate : Text; $publicID : Text; $settings : 4D:C1709.File)
+Class constructor($settings : 4D:C1709.File)
 	
 	Super:C1705()
 	
@@ -13,13 +13,22 @@ Class constructor($appleID : Text; $certificate : Text; $publicID : Text; $setti
 	
 	This:C1470.password:="@keychain:altool"
 	
-	This:C1470.appleID:=$appleID
-	This:C1470.certificate:=$certificate
-	This:C1470.publicID:=$publicID
+	var $file : 4D:C1709.File
+	$file:=Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).file("Preferences/notarise.json")
+	
+	If ($file.exists)
+		
+		var $o : Object
+		$o:=JSON Parse:C1218($file.getText())
+		This:C1470.appleID:=$o.appleID
+		This:C1470.certificate:=$o.certificate
+		This:C1470.publicID:=$o.publicID
+		
+	End if 
 	
 	This:C1470.requestUID:=Null:C1517
 	
-	If (Count parameters:C259>=4)
+	If (Count parameters:C259>=1)
 		
 		This:C1470.configurationFile:=$settings
 		
@@ -114,19 +123,75 @@ Function removeSignature()
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function sign()
 	
-	var $sign : Text
-	$sign:=This:C1470.quoted("Developer ID Application: "+This:C1470.certificate)
+	If (This:C1470.certificate#Null:C1517)
+		
+		var $sign : Text
+		$sign:=This:C1470.quoted("Developer ID Application: "+This:C1470.certificate)
+		
+		// ⚠️ RESULT IS ON ERROR STREAM
+		This:C1470.resultInErrorStream:=True:C214
+		This:C1470.launch("codesign --verbose --deep --timestamp --force --sign "+$sign+" "+This:C1470.quoted(This:C1470.lib4d.path))
+		This:C1470.resultInErrorStream:=False:C215
+		
+	Else 
+		
+		This:C1470._pushError("No certificate provided")
+		
+	End if 
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function verifySignature($target : Object)->$success : Boolean
+	
+	If (Count parameters:C259>=1)
+		
+		This:C1470.launch("codesign --verify --verbose --deep --strict  "+This:C1470.quoted($target.path))
+		
+	Else 
+		
+		This:C1470.launch("codesign --verify --verbose --deep --strict  "+This:C1470.quoted(This:C1470.lib4d.path))
+		
+	End if 
+	
+	If (This:C1470.success)
+		
+/*
+lib4d-arm64.dylib: valid on disk
+lib4d-arm64.dylib: satisfies its Designated Requirement
+*/
+		
+	End if 
+	
+	// === === === === === === === === === === === === === === === === === === === === === === ===
+Function ckeckWithGatekeeper()->$result : Text
 	
 	// ⚠️ RESULT IS ON ERROR STREAM
 	This:C1470.resultInErrorStream:=True:C214
-	This:C1470.launch("codesign --verbose --deep --timestamp --force --sign "+$sign+" "+This:C1470.quoted(This:C1470.lib4d.path))
+	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted(This:C1470.lib4d.path))
 	This:C1470.resultInErrorStream:=False:C215
+	
+	If (This:C1470.success)
+		
+/*
+lib4d-arm64.dylib: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Vincent de Lachaux (DYRKW64QA9)
+*/
+		
+		ARRAY LONGINT:C221($len; 0)
+		ARRAY LONGINT:C221($pos; 0)
+		If (Match regex:C1019("(?mi-s): accepted\\nsource=Notarized Developer ID\\norigin=Developer ID Application: ([^$]*)$"; This:C1470.outputStream; 1; $pos; $len))
+			
+			$result:=Substring:C12(This:C1470.outputStream; $pos{1}; $len{1})
+			
+		End if 
+	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function zip()
 	
 	This:C1470.archive:=This:C1470.buildTarget.parent.file(This:C1470.buildTarget.name+".zip")
 	This:C1470.archive.delete()
+	
 	This:C1470.launch("/usr/bin/ditto -c -k --keepParent "+This:C1470.quoted(This:C1470.buildTarget.path)+" "+This:C1470.quoted(This:C1470.archive.path))
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -203,6 +268,12 @@ Function staple()
 	
 	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted(This:C1470.archive.path))
 	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
+	
+	If (Not:C34(This:C1470.success))
+		
+		This:C1470._pushError(This:C1470.outputStream)
+		
+	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function compile($options : Object)->$error : Object
@@ -284,6 +355,9 @@ Function _getBuildTarget()->$target : 4D:C1709.File
 		This:C1470._pushError("Unable to locate the build result")
 		
 	End if 
+	
+	
+	
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function CommitAndPush($message : Text)->$error : Object

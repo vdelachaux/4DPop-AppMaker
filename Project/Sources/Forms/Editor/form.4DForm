@@ -1096,7 +1096,7 @@
 				},
 				"option.launch": {
 					"type": "checkbox",
-					"top": 365,
+					"top": 389,
 					"left": 158,
 					"width": 214,
 					"height": 18,
@@ -1115,7 +1115,7 @@
 				},
 				"option.exportStructure": {
 					"type": "checkbox",
-					"top": 396,
+					"top": 414,
 					"left": 158,
 					"width": 176,
 					"height": 18,
@@ -1130,12 +1130,13 @@
 					"memorizeValue": false,
 					"focusable": false,
 					"dataSourceTypeHint": "boolean",
-					"dataSource": "Form:C1466.options.exportStructure"
+					"dataSource": "Form:C1466.options.exportStructure",
+					"visibility": "hidden"
 				},
 				"option.gitRepository": {
 					"type": "checkbox",
-					"top": 426,
-					"left": 189,
+					"top": 440,
+					"left": 180,
 					"width": 174,
 					"height": 16,
 					"text": ":xliff:gitRepository",
@@ -1149,7 +1150,27 @@
 					"memorizeValue": false,
 					"focusable": false,
 					"dataSourceTypeHint": "boolean",
-					"dataSource": "Form:C1466.options.gitRepository"
+					"dataSource": "Form:C1466.options.gitRepository",
+					"visibility": "hidden"
+				},
+				"option.notarize": {
+					"type": "checkbox",
+					"top": 366,
+					"left": 158,
+					"width": 176,
+					"height": 18,
+					"text": "Notarize",
+					"method": "ObjectMethods/option.notarize.4dm",
+					"events": [
+						"onClick",
+						"onMouseEnter",
+						"onMouseLeave"
+					],
+					"threeState": false,
+					"memorizeValue": false,
+					"focusable": false,
+					"dataSourceTypeHint": "boolean",
+					"dataSource": "Form:C1466.options.notarize"
 				}
 			},
 			"entryOrder": [
@@ -1161,7 +1182,8 @@
 				"option.removeDevResources",
 				"option.launch",
 				"option.exportStructure",
-				"option.gitRepository"
+				"option.gitRepository",
+				"option.notarize"
 			]
 		},
 		{
@@ -1410,5 +1432,13 @@
 	"$4d": {
 		"version": "1",
 		"kind": "form"
+	},
+	"geometryStamp": 21,
+	"editor": {
+		"activeView": "View 1",
+		"defaultView": "View 1",
+		"views": {
+			"View 1": {}
+		}
 	}
 }
