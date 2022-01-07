@@ -706,8 +706,7 @@ Case of
 					
 					If ($build.success)
 						
-						$build.dmg()
-						//$build.zip()
+						$build.dmg()  //$build.zip()
 						
 						If ($build.success)
 							

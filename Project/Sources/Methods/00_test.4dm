@@ -4,10 +4,8 @@
 //C_TEXT($t)
 //C_OBJECT($o)
 //C_COLLECTION($c)
-C_TEXT:C284($t)
-C_OBJECT:C1216($o)
 
-//$o:=application 
+//$o:=application
 //$o:=pref
 
 //$o:=pref ("myPreferences")
@@ -61,44 +59,93 @@ C_OBJECT:C1216($o)
 //$o:=pref("test;database;xml")
 //$o.close()
 
-var $build : cs:C1710.build
-
-$build:=cs:C1710.build.new()
-
-$build.buildApp()
-
-If ($build.success)
-	
-	$build.removeSignature()
-	
-	If ($build.success)
+Case of 
 		
-		$build.sign()
+		//______________________________________________________
+	: (True:C214)
+		
+		var $status : Object
+		var $target : 4D:C1709.Folder
+		var $buildApp : cs:C1710.BuildApp
+		
+		$buildApp:=cs:C1710.BuildApp.new()
+		
+		$status:=$buildApp.build()
+		
+		If ($status.success)
+			
+			If (Bool:C1537($buildApp.settings.BuildComponent))  //component
+				
+				$target:=$buildApp.getPlatformDestinationFolder().folder("Components").folder($buildApp.settings.BuildApplicationName+".4dbase")
+				
+				
+				//continue with SignApp
+				
+				var $credentials : Object
+				$credentials:=New object:C1471
+				$credentials.username:="keisuke.miyako@4d.com"  //apple ID
+				$credentials.password:="@keychain:altool"  //app specific password or keychain label; must be literal to use listProviders()
+				
+				var $signApp : cs:C1710.SignApp
+				$signApp:=cs:C1710.SignApp.new($credentials)
+				
+				var $app : 4D:C1709.Folder
+				$app:=Folder:C1567("Macintosh HD:Applications:BugBase Client.app:"; fk platform path:K87:2)
+				
+				$status:=$signApp.sign($app)
+				
+				$status:=$signApp.archive($app)
+				
+				If ($status.success)
+					$status:=$signApp.notarize($status.file)
+				End if 
+				
+			End if 
+			
+			
+			//If (Bool($buildApp.settings.BuildComponent))  //component
+			
+			//$target:=$buildApp.getPlatformDestinationFolder().folder("Components").folder($buildApp.settings.BuildApplicationName+".4dbase")
+			
+			//End if 
+			
+			
+			
+			
+			
+		Else 
+			
+			$buildApp.openProject("BBEdit")
+			
+		End if 
+		
+		//______________________________________________________
+	: (True:C214)
+		
+		var $identity : Object
+		var $c : Collection
+		var $build : cs:C1710.build
+		
+		$build:=cs:C1710.build.new()
+		
+		$c:=$build.findIdentity()
 		
 		If ($build.success)
 			
-			//$build.zip()
-			$build.dmg()
+			$identity:=$c.query("name == :1"; "Developer ID Application:@").pop()
 			
-			If ($build.success)
-				
-				$build.notarize()
-				
-				If ($build.success)
-					
-					$build.waitForNotarizeResult()
-					
-					If ($build.success)
-						
-						$build.staple()
-						
-					End if 
-				End if 
-			End if 
+		Else 
+			
+			// A "If" statement should never omit "Else"
+			
 		End if 
-	End if 
-End if 
-
-
+		
+		//______________________________________________________
+	: (True:C214)
+		
+		
+		
+		//______________________________________________________
+End case 
 
 

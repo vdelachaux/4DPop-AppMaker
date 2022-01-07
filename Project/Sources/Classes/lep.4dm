@@ -361,20 +361,21 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 				//……………………………………………………………………
 			: (This:C1470.outputType=Is object:K8:27)
 				
-				If (Length:C16($t)>0)
-					
-					This:C1470.success:=(Match regex:C1019("(?ms-i)^(?:\\{.*\\})|(?:^\\[.*\\])$"; $t; 1))
-					
-				End if 
+				This:C1470.success:=(Length:C16($t)>0)
 				
 				If (This:C1470.success)
 					
-					This:C1470.outputStream:=JSON Parse:C1218($t)
+					This:C1470.success:=(Match regex:C1019("(?si-m)^(?:\\{.*\\})|(?:^\\[.*\\])$"; $t; 1))
 					
-				Else 
-					
-					This:C1470.errorStream:=$t
-					
+					If (This:C1470.success)
+						
+						This:C1470.outputStream:=JSON Parse:C1218($t)
+						
+					Else 
+						
+						This:C1470.errorStream:=$t
+						
+					End if 
 				End if 
 				
 				//……………………………………………………………………
@@ -1014,18 +1015,18 @@ Function log()
 			
 		Else 
 			
-			If (Length:C16(This:C1470.outputStream)>0)
+			If (Length:C16(String:C10(This:C1470.outputStream))>0)
 				
 				$log.push("\r\rOUTPUT:")
-				$log.push(This:C1470.outputStream)
+				$log.push(String:C10(This:C1470.outputStream))
 				
 			End if 
 	End case 
 	
-	If (Length:C16(This:C1470.errorStream)>0)
+	If (Length:C16(String:C10(This:C1470.errorStream))>0)
 		
 		$log.push("\r\rERROR:")
-		$log.push(This:C1470.errorStream)
+		$log.push(String:C10(This:C1470.errorStream))
 		
 	End if 
 	

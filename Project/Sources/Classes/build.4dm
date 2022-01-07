@@ -3,8 +3,13 @@ Class extends lep
 //=== === === === === === === === === === === === === === === === === === === === === === ===
 Class constructor($settings : 4D:C1709.File)
 	
+	var $o : Object
+	var $identities : Collection
+	var $file : 4D:C1709.File
+	
 	Super:C1705()
 	
+	This:C1470.package:=Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2)
 	This:C1470._SettingsUsed:=""
 	This:C1470._Source:=""
 	
@@ -13,31 +18,24 @@ Class constructor($settings : 4D:C1709.File)
 	
 	This:C1470.password:="@keychain:altool"
 	
-	var $file : 4D:C1709.File
-	$file:=Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).file("Preferences/notarise.json")
+	$file:=This:C1470.package.file("Preferences/notarise.json")
 	
 	If ($file.exists)
 		
-		var $o : Object
 		$o:=JSON Parse:C1218($file.getText())
-		This:C1470.appleID:=$o.appleID
-		This:C1470.certificate:=$o.certificate
-		This:C1470.publicID:=$o.publicID
+		This:C1470.appleID:=$o.appleID#Null:C1517 ? String:C10($o.appleID) : ""
+		This:C1470.certificate:=$o.certificate#Null:C1517 ? String:C10($o.certificate) : Null:C1517
+		This:C1470.publicID:=$o.publicID#Null:C1517 ? String:C10($o.publicID) : Null:C1517
+		
+	Else 
+		
+		$identities:=This:C1470.findIdentity()
+		This:C1470.identity:=This:C1470.success ? $identities.query("name == :1"; "Developer ID Application:@").pop() : Null:C1517
 		
 	End if 
 	
 	This:C1470.requestUID:=Null:C1517
-	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.configurationFile:=$settings
-		
-	Else 
-		
-		// Use default
-		This:C1470.configurationFile:=File:C1566(Get 4D file:C1418(Build application settings file:K5:60; *); fk platform path:K87:2)
-		
-	End if 
+	This:C1470.configurationFile:=Count parameters:C259>=1 ? $settings : File:C1566(Get 4D file:C1418(Build application settings file:K5:60; *); fk platform path:K87:2)
 	
 	This:C1470.success:=Bool:C1537(This:C1470.configurationFile.exists)
 	
@@ -123,19 +121,33 @@ Function removeSignature()
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function sign()
 	
-	If (This:C1470.certificate#Null:C1517)
-		
-		var $sign : Text
-		$sign:=This:C1470.quoted("Developer ID Application: "+This:C1470.certificate)
+	var $identity : Text
+	
+	Case of 
+			//______________________________________________________
+		: (This:C1470.certificate#Null:C1517)
+			
+			$identity:=This:C1470.quoted("Developer ID Application: "+This:C1470.certificate)
+			
+			//______________________________________________________
+		: (This:C1470.identity#Null:C1517)
+			
+			$identity:=This:C1470.identity.name
+			
+			//______________________________________________________
+		Else 
+			
+			This:C1470._pushError("No certificate provided nor identity found")
+			
+			//______________________________________________________
+	End case 
+	
+	If (Length:C16($identity)>0)
 		
 		// ⚠️ RESULT IS ON ERROR STREAM
 		This:C1470.resultInErrorStream:=True:C214
-		This:C1470.launch("codesign --verbose --deep --timestamp --force --sign "+$sign+" "+This:C1470.quoted(This:C1470.lib4d.path))
+		This:C1470.launch("codesign --verbose --deep --timestamp --force --sign "+$identity+" "+This:C1470.quoted(This:C1470.lib4d.path))
 		This:C1470.resultInErrorStream:=False:C215
-		
-	Else 
-		
-		This:C1470._pushError("No certificate provided")
 		
 	End if 
 	
@@ -208,10 +220,15 @@ Function notarize()
 	This:C1470.requestUID:=Null:C1517
 	
 	var $bundleIdentifer : Text
-	$bundleIdentifer:="com.4dpop.buildApp"
+	$bundleIdentifer:="com."+Replace string:C233(This:C1470.package.name; " "; "_")
 	
 	This:C1470.setOutputType(Is object:K8:27)
-	This:C1470.launch("xcrun altool --notarize-app --output-format json -u "+This:C1470.appleID+" -p "+This:C1470.quoted(This:C1470.password)+" --primary-bundle-id "+$bundleIdentifer+" -f "+This:C1470.quoted(This:C1470.archive.path)+" --asc-public-id "+This:C1470.publicID)
+	This:C1470.launch("xcrun altool --notarize-app --output-format json"\
+		+" -u "+This:C1470.appleID\
+		+" -p "+This:C1470.quoted(This:C1470.password)\
+		+" --primary-bundle-id "+$bundleIdentifer\
+		+" -f "+This:C1470.quoted(This:C1470.archive.path)\
+		+" --asc-public-id "+This:C1470.publicID)
 	This:C1470.setOutputType()
 	
 	If (This:C1470.success)
@@ -219,6 +236,16 @@ Function notarize()
 		This:C1470.requestUID:=This:C1470.outputStream["notarization-upload"].RequestUUID
 		This:C1470.success:=(This:C1470.requestUID#Null:C1517)
 		
+	Else 
+		
+		ARRAY LONGINT:C221($pos; 0)
+		ARRAY LONGINT:C221($len; 0)
+		
+		If (Match regex:C1019("(?msi)Package Summary:\\W*(.*)"; This:C1470.errorStream; 1; $pos; $len))
+			
+			This:C1470._pushError(Substring:C12(This:C1470.errorStream; $pos{1}; $len{1}))
+			
+		End if 
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -289,6 +316,35 @@ Function compile($options : Object)->$error : Object
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
+	/// 
+Function findIdentity()->$identities : Collection
+	
+	var $info : Text
+	var $start : Integer
+	
+	ARRAY LONGINT:C221($pos; 0)
+	ARRAY LONGINT:C221($len; 0)
+	
+	$identities:=New collection:C1472
+	
+	This:C1470.launch("security find-identity -p basic -v")
+	
+	If (This:C1470.success)
+		
+		$start:=1
+		
+		While (Match regex:C1019("(?m)\\s+(\\d+\\))\\s+([:Hex_Digit:]+)\\s+\"([^\"]+)\"$"; This:C1470.outputStream; $start; $pos; $len))
+			
+			$identities.push(New object:C1471(\
+				"id"; Substring:C12($info; $pos{2}; $len{2}); \
+				"name"; Substring:C12(This:C1470.outputStream; $pos{3}; $len{3})))
+			
+			$start:=$pos{3}+$len{3}
+			
+		End while 
+	End if 
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function _getPublicID($password : Text)
 	
 	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.appleID+" -p "+$password)
@@ -355,9 +411,6 @@ Function _getBuildTarget()->$target : 4D:C1709.File
 		This:C1470._pushError("Unable to locate the build result")
 		
 	End if 
-	
-	
-	
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function CommitAndPush($message : Text)->$error : Object
