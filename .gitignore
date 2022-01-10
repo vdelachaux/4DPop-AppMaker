@@ -24,3 +24,4 @@ Resources/php.ini
 Components/
 !Build/Components
 Libraries/lib4d-arm64.dylib
+_gsdata_

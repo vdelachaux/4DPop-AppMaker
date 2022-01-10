@@ -220,7 +220,7 @@ Function notarize()
 	This:C1470.requestUID:=Null:C1517
 	
 	var $bundleIdentifer : Text
-	$bundleIdentifer:="com."+Replace string:C233(This:C1470.package.name; " "; "_")
+	$bundleIdentifer:="com."+Replace string:C233(This:C1470.package.name; " "; "")
 	
 	This:C1470.setOutputType(Is object:K8:27)
 	This:C1470.launch("xcrun altool --notarize-app --output-format json"\

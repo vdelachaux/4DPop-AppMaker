@@ -13,4 +13,3 @@ If (Not:C34(Is compiled mode:C492))
 		
 	End if 
 End if 
-End if 
