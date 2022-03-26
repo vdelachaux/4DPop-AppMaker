@@ -69,7 +69,7 @@ Function getPlatformDestinationFolder()->$folder : 4D:C1709.Folder
 	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function getDefaultSettingsFile()->$settingsFile : 4D:C1709.File
+Function getDefaultSettingsFile() : 4D:C1709.File
 	
 	var $file : 4D:C1709.File
 	
@@ -77,7 +77,7 @@ Function getDefaultSettingsFile()->$settingsFile : 4D:C1709.File
 	
 	If ($file.exists)
 		
-		$settingsFile:=$file
+		return ($file)
 		
 	End if 
 	

@@ -35,6 +35,7 @@
 	"Classes": {
 		"classes": [
 			"build",
+			"hdutil",
 			"lep"
 		]
 	},

@@ -19,7 +19,7 @@ var $Txt_fileName; $Txt_filePath; $Txt_relativeCompiledTarget; $Txt_relativeComp
 var $Txt_structure : Text
 var $batch; $Boo_KO; $builComponent; $buildCompiled; $buildServer; $buildStandalone : Boolean
 var $run; $success : Boolean
-var $Lon_bottom; $Lon_i; $Lon_left; $Lon_process; $Lon_right; $Lon_top : Integer
+var $Lon_bottom; $Lon_i; $Lon_left; $process; $Lon_right; $Lon_top : Integer
 var $start; $Win_hdl : Integer
 var $database; $environment; $ƒ; $o; $Obj_paths : Object
 var $c : Collection
@@ -80,9 +80,9 @@ Case of
 		$database:=database  //Storage.database
 		$environment:=Storage:C1525.environment
 		
-		$Lon_process:=New process:C317("BARBER"; 0; "$"+"BARBER"; "barber.open"; *)
+		$process:=New process:C317("BARBER"; 0; "$"+"BARBER"; "barber.open"; *)
 		
-		$Lon_process:=Current process:C322
+		$process:=Current process:C322
 		
 		$ƒ:=Storage:C1525.preferences
 		
@@ -100,7 +100,7 @@ Case of
 				
 			End use 
 			
-			DELAY PROCESS:C323($Lon_process; 50)
+			DELAY PROCESS:C323($process; 50)
 			
 			EXECUTE METHOD:C1007($t; $success)  // The host database must return true
 			
@@ -114,7 +114,7 @@ Case of
 					
 				End use 
 				
-				DELAY PROCESS:C323($Lon_process; 500)
+				DELAY PROCESS:C323($process; 500)
 				
 			End if 
 		End if 
@@ -202,7 +202,7 @@ Case of
 		$build:=cs:C1710.build.new()
 		
 		// MARK:Launch the application generation process
-		If ($success)\
+		If ($build.success)\
 			 & ($action#"@noBuild@")
 			
 			Repeat 
@@ -216,24 +216,14 @@ Case of
 					
 				End use 
 				
-				//$o:=File($Obj_environment.buildApp; fk platform path)
-				//If ($o.exists)
-				//If (Is Windows)  // Turn around  ACI0071484
-				//DELETE_MAC_CONTENT($Obj_environment.databaseFolder)
-				//End if
-				//MESSAGES OFF
-				//$t:=Storage.environment.buildApp
-				//BUILD APPLICATION($t)
-				//$Boo_OK:=Bool(OK)
-				//MESSAGES ON
-				//Else
-				//$Boo_OK:=False
-				//End if
+				$success:=$build.run()
 				
-				$build.buildApp()
-				$success:=$build.success
-				
-			Until (wait($start; 2000; $Lon_process; 5))
+			Until (wait($start; 2000; $process; 5))
+			
+		Else 
+			
+			//TODO:ERROR
+			
 		End if 
 		
 		// MARK:Get the useful paths
@@ -399,7 +389,7 @@ Case of
 						
 						EXPORT_PROJECT
 						
-					Until (wait($start; 2000; $Lon_process; 5))
+					Until (wait($start; 2000; $process; 5))
 				End if 
 				
 				// MARK:Zip sources
@@ -434,7 +424,7 @@ Case of
 							$Boo_KO:=PHP_zip_archive_to($Txt_structure; $Txt_archiveFilePath+Replace string:C233($Txt_fileName; ".4db"; ".zip"))
 							
 						End if 
-					Until (wait($start; 2000; $Lon_process; 5))
+					Until (wait($start; 2000; $process; 5))
 				End if 
 			End if 
 			
@@ -454,7 +444,7 @@ Case of
 						
 					End use 
 					
-					DELAY PROCESS:C323($Lon_process; 50)
+					DELAY PROCESS:C323($process; 50)
 					
 					If ($builComponent)
 						
@@ -471,7 +461,7 @@ Case of
 					If ($buildServer)
 						
 					End if 
-				Until (wait($start; 5000; $Lon_process; 5))
+				Until (wait($start; 5000; $process; 5))
 			End if 
 			
 			// MARK:Delete help files and the non necessary resources for the final user
@@ -559,7 +549,7 @@ Case of
 					
 				End use 
 				
-				DELAY PROCESS:C323($Lon_process; 50)
+				DELAY PROCESS:C323($process; 50)
 				
 				If ($builComponent)
 					
@@ -602,7 +592,7 @@ Case of
 					
 				End use 
 				
-				DELAY PROCESS:C323($Lon_process; 50)
+				DELAY PROCESS:C323($process; 50)
 				
 				If ($builComponent)
 					
@@ -689,35 +679,24 @@ Case of
 							
 							If ($build.notarize($hdutil.target))
 								
-								Use (Storage:C1525.progress)
+								If ($build.staple($hdutil.target))
 									
-									Storage:C1525.progress.barber:=-2
-									Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
-									Storage:C1525.progress.title:="⏳ Waiting for Apple's response"
+									$t:=$build.ckeckWithGatekeeper()
 									
-								End use 
-								
-								If ($build.waitForNotarizeResult())
-									
-									If ($build.staple($hdutil.target))
+									If ($build.success)
 										
-										$t:=$build.ckeckWithGatekeeper()
-										
-										If ($build.success)
+										If ($hdutil.attach())
 											
-											If ($hdutil.attach())
+											$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite:K87:5)
+											
+											If ($file.exists)
 												
-												$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite:K87:5)
+												DISPLAY NOTIFICATION:C910($database.structure.name; "Successfully notarized for : "+$t)
 												
-												If ($file.exists)
+												If ($hdutil.detach())
 													
-													DISPLAY NOTIFICATION:C910($database.structure.name; "Successfully notarized for : "+$t)
+													$hdutil.target.delete()
 													
-													If ($hdutil.detach())
-														
-														$hdutil.target.delete()
-														
-													End if 
 												End if 
 											End if 
 										End if 
