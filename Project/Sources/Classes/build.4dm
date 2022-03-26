@@ -114,12 +114,14 @@ Function buildApp($settings)
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function removeSignature()
+Function removeSignature() : Boolean
 	
 	This:C1470.launch("codesign --remove-signature "+This:C1470.quoted(This:C1470.lib4d.path))
 	
+	return (This:C1470.success)
+	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function sign()
+Function sign() : Boolean
 	
 	var $identity : Text
 	
@@ -150,6 +152,8 @@ Function sign()
 		This:C1470.resultInErrorStream:=False:C215
 		
 	End if 
+	
+	return (This:C1470.success)
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function verifySignature($target : Object)->$success : Boolean
@@ -199,23 +203,42 @@ origin=Developer ID Application: Vincent de Lachaux (DYRKW64QA9)
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function zip()
-	
-	This:C1470.archive:=This:C1470.buildTarget.parent.file(This:C1470.buildTarget.name+".zip")
-	This:C1470.archive.delete()
-	
-	This:C1470.launch("/usr/bin/ditto -c -k --keepParent "+This:C1470.quoted(This:C1470.buildTarget.path)+" "+This:C1470.quoted(This:C1470.archive.path))
+	//Function zip()
+	//This.archive:=This.buildTarget.parent.file(This.buildTarget.name+".zip")
+	//This.archive.delete()
+	//This.launch("/usr/bin/ditto -c -k --keepParent "+This.quoted(This.buildTarget.path)+" "+This.quoted(This.archive.path))
+	////=== === === === === === === === === === === === === === === === === === === === === === ===
+	//Function dmg($action : Text)
+	//This.archive:=This.buildTarget.parent.file(This.buildTarget.name+".dmg")
+	//Case of 
+	////______________________________________________________
+	//: (Count parameters=0)
+	//This.archive.delete()
+	//This.launch("hdiutil create -format UDBZ -plist -srcfolder "+This.quoted(This.lib4d.path)+" "+This.quoted(This.archive.path))
+	////______________________________________________________
+	//: ($action="open")  // hdiutil attach /path/to/diskimage.dmg
+	//This.launch("hdiutil attach "+This.quoted(This.archive.path))
+	//If (This.success)
+	//var $pos; $len : Integer
+	//This.success:=Match regex("(?i-ms)\\t+(/\\H*)*$"; This.outputStream; 1; $pos; $len)
+	//If (This.success)
+	//This.disk:=Folder(Substring(This.outputStream; $pos+1; $len))
+	//This.success:=This.disk.exists
+	//Else 
+	//// ERROR
+	//End if 
+	//End if 
+	////______________________________________________________
+	//: ($action="close")  // hdiutil detach /dev/disk1s2
+	//This.launch("hdiutil detach "+This.disk.path)
+	////______________________________________________________
+	//Else 
+	//// A "Case of" statement should never omit "Else"
+	////______________________________________________________
+	//End case 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function dmg()
-	
-	This:C1470.archive:=This:C1470.buildTarget.parent.file(This:C1470.buildTarget.name+".dmg")
-	This:C1470.archive.delete()
-	
-	This:C1470.launch("hdiutil create -format UDBZ -plist -srcfolder "+This:C1470.quoted(This:C1470.buildTarget.path)+" "+This:C1470.quoted(This:C1470.archive.path))
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function notarize()
+Function notarize($target : 4D:C1709.File) : Boolean
 	
 	This:C1470.requestUID:=Null:C1517
 	
@@ -227,7 +250,7 @@ Function notarize()
 		+" -u "+This:C1470.appleID\
 		+" -p "+This:C1470.quoted(This:C1470.password)\
 		+" --primary-bundle-id "+$bundleIdentifer\
-		+" -f "+This:C1470.quoted(This:C1470.archive.path)\
+		+" -f "+This:C1470.quoted($target.path)\
 		+" --asc-public-id "+This:C1470.publicID)
 	This:C1470.setOutputType()
 	
@@ -248,8 +271,10 @@ Function notarize()
 		End if 
 	End if 
 	
+	return (This:C1470.success)
+	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function waitForNotarizeResult()
+Function waitForNotarizeResult() : Boolean
 	
 	var $notarized : Boolean
 	
@@ -290,10 +315,12 @@ Function waitForNotarizeResult()
 	
 	This:C1470.setOutputType()
 	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function staple()
+	return (This:C1470.success)
 	
-	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted(This:C1470.archive.path))
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function staple($target : 4D:C1709.File) : Boolean
+	
+	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted($target.path))
 	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
 	
 	If (Not:C34(This:C1470.success))
@@ -301,6 +328,8 @@ Function staple()
 		This:C1470._pushError(This:C1470.outputStream)
 		
 	End if 
+	
+	return (This:C1470.success)
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function compile($options : Object)->$error : Object

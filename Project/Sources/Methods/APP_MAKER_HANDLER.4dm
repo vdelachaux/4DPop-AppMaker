@@ -7,45 +7,36 @@
 // Build application and more...
 // ----------------------------------------------------
 // Declarations
-C_TEXT:C284($1)
-
-C_BOOLEAN:C305($Boo_auto; $Boo_compiled; $Boo_component; $Boo_execute; $Boo_KO; $Boo_OK)
-C_BOOLEAN:C305($Boo_server; $Boo_standalone)
-C_LONGINT:C283($Lon_bottom; $Lon_i; $Lon_left; $Lon_parameters; $Lon_process; $Lon_right)
-C_LONGINT:C283($Lon_Start; $Lon_top; $Win_hdl)
-C_TEXT:C284($Dir_compiled; $Dir_component; $Dir_server; $Dir_standalone; $Dom_element; $Dom_node)
-C_TEXT:C284($Dom_root; $kTxt_currentMethod; $t; $Txt_archiveFilePath; $Txt_buildApplicationName; $Txt_cmd)
-C_TEXT:C284($Txt_entryPoint; $Txt_fileName; $Txt_filePath; $Txt_path; $Txt_relativeCompiledTarget; $Txt_relativeComponentTarget)
-C_TEXT:C284($Txt_relativeServerTarget; $Txt_relativeStandaloneTarget; $Txt_structure)
-C_OBJECT:C1216($ƒ; $o; $Obj_database; $Obj_environment; $Obj_paths)
-C_COLLECTION:C1488($c)
+#DECLARE($action : Text)
 
 If (False:C215)
 	C_TEXT:C284(APP_MAKER_HANDLER; $1)
 End if 
 
-// ----------------------------------------------------
-// Initialisations
-$Lon_parameters:=Count parameters:C259
-
-If ($Lon_parameters>=1)
-	
-	$Txt_entryPoint:=$1
-	
-End if 
-
-$kTxt_currentMethod:=Current method name:C684
+var $Dir_compiled; $Dom_element; $node; $pathComponent; $pathname; $pathServer : Text
+var $pathStandalone; $root; $t; $Txt_archiveFilePath; $Txt_buildApplicationName; $Txt_cmd : Text
+var $Txt_fileName; $Txt_filePath; $Txt_relativeCompiledTarget; $Txt_relativeComponentTarget; $Txt_relativeServerTarget; $Txt_relativeStandaloneTarget : Text
+var $Txt_structure : Text
+var $batch; $Boo_KO; $builComponent; $buildCompiled; $buildServer; $buildStandalone : Boolean
+var $run; $success : Boolean
+var $Lon_bottom; $Lon_i; $Lon_left; $Lon_process; $Lon_right; $Lon_top : Integer
+var $start; $Win_hdl : Integer
+var $database; $environment; $ƒ; $o; $Obj_paths : Object
+var $c : Collection
+var $file : 4D:C1709.File
+var $build : cs:C1710.build
+var $hdutil : cs:C1710.hdutil
 
 // ----------------------------------------------------
 Case of 
 		
 		//================================================================================
-	: (Length:C16($Txt_entryPoint)=0)  // No parameter
+	: (Length:C16($action)=0)  // No parameter
 		
 		Case of 
 				
 				//……………………………………………………………………
-			: (Method called on error:C704=$kTxt_currentMethod)
+			: (Method called on error:C704=Current method name:C684)
 				
 				// Error managemnt routine
 				
@@ -53,13 +44,13 @@ Case of
 			Else 
 				
 				// This method must be executed in a new process
-				BRING TO FRONT:C326(New process:C317($kTxt_currentMethod; 0; "$"+$kTxt_currentMethod; "_open"; *))
+				BRING TO FRONT:C326(New process:C317(Current method name:C684; 0; "$"+Current method name:C684; "_open"; *))
 				
 				//……………………………………………………………………
 		End case 
 		
 		//================================================================================
-	: ($Txt_entryPoint="_open")  // Display the main dialog
+	: ($action="_open")  // Display the main dialog
 		
 		APP_MAKER_HANDLER("_declarations")
 		APP_MAKER_HANDLER("_init")
@@ -73,12 +64,12 @@ Case of
 		APP_MAKER_HANDLER("_deinit")
 		
 		//================================================================================
-	: ($Txt_entryPoint="_run@")\
-		 | ($Txt_entryPoint="_autoBuild")  // Build the application
+	: ($action="_run@")\
+		 | ($action="_autoBuild")  // Build the application
 		
 		ARRAY TEXT:C222($tTxt_path; 0x0000)
 		
-		$Boo_auto:=($Txt_entryPoint="_autoBuild")
+		$batch:=($action="_autoBuild")
 		
 		// First launch of this method executed in a new process
 		APP_MAKER_HANDLER("_declarations")
@@ -86,8 +77,8 @@ Case of
 		
 		FLUSH CACHE:C297
 		
-		$Obj_database:=database  //Storage.database
-		$Obj_environment:=Storage:C1525.environment
+		$database:=database  //Storage.database
+		$environment:=Storage:C1525.environment
 		
 		$Lon_process:=New process:C317("BARBER"; 0; "$"+"BARBER"; "barber.open"; *)
 		
@@ -98,9 +89,9 @@ Case of
 		// Host database method to run before generation
 		$t:=String:C10($ƒ.get("methods@before").value)
 		
-		$Boo_OK:=(Length:C16($t)=0)
+		$success:=(Length:C16($t)=0)
 		
-		If (Not:C34($Boo_OK))
+		If (Not:C34($success))
 			
 			Use (Storage:C1525.progress)
 				
@@ -111,9 +102,9 @@ Case of
 			
 			DELAY PROCESS:C323($Lon_process; 50)
 			
-			EXECUTE METHOD:C1007($t; $Boo_OK)  // The host database must return true
+			EXECUTE METHOD:C1007($t; $success)  // The host database must return true
 			
-			If (Not:C34($Boo_OK))
+			If (Not:C34($success))
 				
 				BEEP:C151
 				
@@ -128,8 +119,8 @@ Case of
 			End if 
 		End if 
 		
-		// Update the Info.plist file
-		If ($Boo_OK)
+		// MARK:Update the Info.plist file
+		If ($success)
 			
 			$c:=$ƒ.get("info.plist").value
 			
@@ -143,13 +134,13 @@ Case of
 				End use 
 				
 				// Get the final application
-				$Dom_node:=DOM Find XML element:C864($Obj_environment.domBuildApp; "/Preferences4D/BuildApp/BuildApplicationName")
+				$node:=DOM Find XML element:C864($environment.domBuildApp; "/Preferences4D/BuildApp/BuildApplicationName")
 				
 				If (Bool:C1537(OK))
 					
-					DOM GET XML ELEMENT VALUE:C731($Dom_node; $Txt_buildApplicationName)
+					DOM GET XML ELEMENT VALUE:C731($node; $Txt_buildApplicationName)
 					
-					$o:=$Obj_database.root.file("Info.plist")
+					$o:=$database.root.file("Info.plist")
 					
 					If ($o.exists)
 						
@@ -157,24 +148,24 @@ Case of
 						
 					Else 
 						
-						$Dom_root:=DOM Create XML Ref:C861("plist")
+						$root:=DOM Create XML Ref:C861("plist")
 						
 						If (Bool:C1537(OK))
 							
-							DOM SET XML ATTRIBUTE:C866($Dom_root; \
+							DOM SET XML ATTRIBUTE:C866($root; \
 								"version"; "1.0")
 							
 							If (Bool:C1537(OK))
 								
-								$Dom_element:=DOM Append XML child node:C1080($Dom_root; XML DOCTYPE:K45:19; "plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"")
+								$Dom_element:=DOM Append XML child node:C1080($root; XML DOCTYPE:K45:19; "plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"")
 								
 								If (Bool:C1537(OK))
 									
-									$Dom_element:=DOM Create XML element:C865($Dom_root; "dict")
+									$Dom_element:=DOM Create XML element:C865($root; "dict")
 									
 									If (Bool:C1537(OK))
 										
-										DOM EXPORT TO FILE:C862($Dom_root; $o.platformPath)
+										DOM EXPORT TO FILE:C862($root; $o.platformPath)
 										
 										If (Bool:C1537(OK))
 											
@@ -185,7 +176,7 @@ Case of
 								End if 
 							End if 
 							
-							DOM CLOSE XML:C722($Dom_root)
+							DOM CLOSE XML:C722($root)
 							
 						End if 
 					End if 
@@ -208,16 +199,15 @@ Case of
 			End if 
 		End if 
 		
-		var $build : cs:C1710.build
 		$build:=cs:C1710.build.new()
 		
-		// Launch the application generation process
-		If ($Boo_OK)\
-			 & ($Txt_entryPoint#"@noBuild@")
+		// MARK:Launch the application generation process
+		If ($success)\
+			 & ($action#"@noBuild@")
 			
 			Repeat 
 				
-				$Lon_Start:=Milliseconds:C459
+				$start:=Milliseconds:C459
 				
 				Use (Storage:C1525.progress)
 					
@@ -230,52 +220,51 @@ Case of
 				//If ($o.exists)
 				//If (Is Windows)  // Turn around  ACI0071484
 				//DELETE_MAC_CONTENT($Obj_environment.databaseFolder)
-				//End if 
+				//End if
 				//MESSAGES OFF
 				//$t:=Storage.environment.buildApp
 				//BUILD APPLICATION($t)
 				//$Boo_OK:=Bool(OK)
 				//MESSAGES ON
-				//Else 
+				//Else
 				//$Boo_OK:=False
-				//End if 
+				//End if
 				
 				$build.buildApp()
-				$Boo_OK:=$build.success
+				$success:=$build.success
 				
-			Until (wait($Lon_Start; 2000; $Lon_process; 5))
+			Until (wait($start; 2000; $Lon_process; 5))
 		End if 
 		
-		// Get the useful paths
-		If ($Boo_OK)
+		// MARK:Get the useful paths
+		If ($success)
 			
 			$Obj_paths:=New object:C1471
 			
 			// Get the common part for structure folder and target path
-			$Obj_paths.root:=doc_getCommonPath($Obj_environment.databaseFolder; _o_APP_MAKER_Get_target_path(8))
 			
 			// Keep the variable part of any target if any
-			$Dom_node:=DOM Find XML element:C864($Obj_environment.domBuildApp; "/Preferences4D/BuildApp/BuildComponent")
+			$node:=DOM Find XML element:C864($environment.domBuildApp; "/Preferences4D/BuildApp/BuildComponent")
 			
 			If (Bool:C1537(OK))
 				
-				DOM GET XML ELEMENT VALUE:C731($Dom_node; $Boo_component)
+				DOM GET XML ELEMENT VALUE:C731($node; $builComponent)
 				
-				If ($Boo_component)
+				If ($builComponent)
 					
-					$Dir_component:=_o_APP_MAKER_Get_target_path(800)
-					$Txt_relativeComponentTarget:=Replace string:C233($Dir_component; String:C10($Obj_paths.root); ""; 1)
+					$pathComponent:=_o_APP_MAKER_Get_target_path(800)
+					$Txt_relativeComponentTarget:=Replace string:C233($pathComponent; String:C10($Obj_paths.root); ""; 1)
 					
 				End if 
 			End if 
 			
-			$Dom_node:=DOM Find XML element:C864($Obj_environment.domBuildApp; "/Preferences4D/BuildApp/BuildCompiled")
+			$node:=DOM Find XML element:C864($environment.domBuildApp; "/Preferences4D/BuildApp/BuildCompiled")
 			
 			If (Bool:C1537(OK))
 				
-				DOM GET XML ELEMENT VALUE:C731($Dom_node; $Boo_compiled)
+				DOM GET XML ELEMENT VALUE:C731($node; $buildCompiled)
 				
-				If ($Boo_compiled)
+				If ($buildCompiled)
 					
 					$Dir_compiled:=_o_APP_MAKER_Get_target_path(810)+Folder separator:K24:12
 					$Txt_relativeCompiledTarget:=Replace string:C233($Dir_compiled; String:C10($Obj_paths.root); ""; 1)
@@ -283,30 +272,30 @@ Case of
 				End if 
 			End if 
 			
-			$Dom_node:=DOM Find XML element:C864($Obj_environment.domBuildApp; "/Preferences4D/BuildApp/BuildApplicationSerialized")
+			$node:=DOM Find XML element:C864($environment.domBuildApp; "/Preferences4D/BuildApp/BuildApplicationSerialized")
 			
 			If (Bool:C1537(OK))
 				
-				DOM GET XML ELEMENT VALUE:C731($Dom_node; $Boo_standalone)
+				DOM GET XML ELEMENT VALUE:C731($node; $buildStandalone)
 				
-				If ($Boo_standalone)
+				If ($buildStandalone)
 					
-					$Dir_standalone:=_o_APP_MAKER_Get_target_path(820)+Folder separator:K24:12
-					$Txt_relativeStandaloneTarget:=Replace string:C233($Dir_standalone; String:C10($Obj_paths.root); ""; 1)
+					$pathStandalone:=_o_APP_MAKER_Get_target_path(820)+Folder separator:K24:12
+					$Txt_relativeStandaloneTarget:=Replace string:C233($pathStandalone; String:C10($Obj_paths.root); ""; 1)
 					
 				End if 
 			End if 
 			
-			$Dom_node:=DOM Find XML element:C864($Obj_environment.domBuildApp; "/Preferences4D/BuildApp/CS/BuildServerApplication")
+			$node:=DOM Find XML element:C864($environment.domBuildApp; "/Preferences4D/BuildApp/CS/BuildServerApplication")
 			
 			If (Bool:C1537(OK))
 				
-				DOM GET XML ELEMENT VALUE:C731($Dom_node; $Boo_server)
+				DOM GET XML ELEMENT VALUE:C731($node; $buildServer)
 				
-				If ($Boo_server)
+				If ($buildServer)
 					
-					$Dir_server:=_o_APP_MAKER_Get_target_path(830)+Folder separator:K24:12
-					$Txt_relativeServerTarget:=Replace string:C233($Dir_server; String:C10($Obj_paths.root); ""; 1)
+					$pathServer:=_o_APP_MAKER_Get_target_path(830)+Folder separator:K24:12
+					$Txt_relativeServerTarget:=Replace string:C233($pathServer; String:C10($Obj_paths.root); ""; 1)
 					
 				End if 
 			End if 
@@ -341,12 +330,12 @@ Case of
 		End if 
 		
 		// Options
-		If ($Boo_OK)
+		If ($success)
 			
-			// Increments the bundleVersion key
-			XML DECODE:C1091(String:C10($ƒ.get("options@increment_version").value); $Boo_execute)
+			// MARK:Increments the bundleVersion key
+			XML DECODE:C1091(String:C10($ƒ.get("options@increment_version").value); $run)
 			
-			If ($Boo_execute)
+			If ($run)
 				
 				Use (Storage:C1525.progress)
 					
@@ -355,11 +344,11 @@ Case of
 					
 				End use 
 				
-				$o:=$Obj_database.root.file("Info.plist")
+				$o:=$database.root.file("Info.plist")
 				
 				If ($o.exists)
 					
-					// Update the 'Info.plist' file 
+					// Update the 'Info.plist' file
 					$t:=application.branch
 					$o:=pList($o.platformPath)
 					$o.set(New object:C1471("key"; "CFBundleGetInfoString"; "value"; $Txt_buildApplicationName))\
@@ -391,15 +380,15 @@ Case of
 				End if 
 			End if 
 			
-			If ($Obj_database.isDatabase)
+			If ($database.isDatabase)
 				
-				XML DECODE:C1091(String:C10($ƒ.get("options@exportStructure").value); $Boo_execute)
+				XML DECODE:C1091(String:C10($ƒ.get("options@exportStructure").value); $run)
 				
-				If ($Boo_execute)
+				If ($run)
 					
 					Repeat 
 						
-						$Lon_Start:=Milliseconds:C459
+						$start:=Milliseconds:C459
 						
 						Use (Storage:C1525.progress)
 							
@@ -410,17 +399,19 @@ Case of
 						
 						EXPORT_PROJECT
 						
-					Until (wait($Lon_Start; 2000; $Lon_process; 5))
+					Until (wait($start; 2000; $Lon_process; 5))
 				End if 
 				
-				// Zip sources
-				XML DECODE:C1091(String:C10($ƒ.get("options@zip_source").value); $Boo_execute)
+				// MARK:Zip sources
+				XML DECODE:C1091(String:C10($ƒ.get("options@zip_source").value); $run)
 				
-				If ($Boo_execute)
+				If ($run)
+					
+					// TODO: Use 4D.zip
 					
 					Repeat 
 						
-						$Lon_Start:=Milliseconds:C459
+						$start:=Milliseconds:C459
 						
 						Use (Storage:C1525.progress)
 							
@@ -432,10 +423,10 @@ Case of
 						// Structure file path
 						$Txt_structure:=Structure file:C489(*)
 						$Txt_filePath:=Convert path system to POSIX:C1106($Txt_structure)
-						$Txt_fileName:=Replace string:C233($Txt_structure; $Obj_environment.databaseFolder; "")
+						$Txt_fileName:=Replace string:C233($Txt_structure; $environment.databaseFolder; "")
 						
 						// Archive file path
-						$Txt_archiveFilePath:=$Obj_environment.databaseFolder+"SOURCES"+Folder separator:K24:12
+						$Txt_archiveFilePath:=$environment.databaseFolder+"SOURCES"+Folder separator:K24:12
 						CREATE FOLDER:C475($Txt_archiveFilePath; *)
 						
 						If (Test path name:C476($Txt_archiveFilePath)=Is a folder:K24:2)
@@ -443,64 +434,53 @@ Case of
 							$Boo_KO:=PHP_zip_archive_to($Txt_structure; $Txt_archiveFilePath+Replace string:C233($Txt_fileName; ".4db"; ".zip"))
 							
 						End if 
-					Until (wait($Lon_Start; 2000; $Lon_process; 5))
+					Until (wait($start; 2000; $Lon_process; 5))
 				End if 
 			End if 
 			
-			// Delete Mac content
-			If (Is macOS:C1572)
+			// MARK:Delete Mac content
+			XML DECODE:C1091(String:C10($ƒ.get("options@delete_mac_content").value); $run)
+			
+			If ($run && Is macOS:C1572)
 				
-				XML DECODE:C1091(String:C10($ƒ.get("options@delete_mac_content").value); $Boo_execute)
-				
-				If ($Boo_execute)
+				Repeat 
 					
-					Repeat 
+					$start:=Milliseconds:C459
+					
+					Use (Storage:C1525.progress)
 						
-						$Lon_Start:=Milliseconds:C459
+						Storage:C1525.progress.barber:=-2
+						Storage:C1525.progress.title:="🧽 "+Get localized string:C991("deleteMacOsSpecificFiles")
 						
-						Use (Storage:C1525.progress)
-							
-							Storage:C1525.progress.barber:=-2
-							Storage:C1525.progress.title:="🧽 "+Get localized string:C991("deleteMacOsSpecificFiles")
-							
-						End use 
+					End use 
+					
+					DELAY PROCESS:C323($Lon_process; 50)
+					
+					If ($builComponent)
 						
-						DELAY PROCESS:C323($Lon_process; 50)
+					End if 
+					
+					If ($buildCompiled)
 						
-						If ($Boo_component)
-							
-							DELETE_MAC_CONTENT($Dir_component)
-							
-						End if 
+					End if 
+					
+					If ($buildStandalone)
 						
-						If ($Boo_compiled)
-							
-							DELETE_MAC_CONTENT($Dir_compiled)
-							
-						End if 
+					End if 
+					
+					If ($buildServer)
 						
-						If ($Boo_standalone)
-							
-							DELETE_MAC_CONTENT($Dir_standalone)
-							
-						End if 
-						
-						If ($Boo_server)
-							
-							DELETE_MAC_CONTENT($Dir_server)
-							
-						End if 
-					Until (wait($Lon_Start; 5000; $Lon_process; 5))
-				End if 
+					End if 
+				Until (wait($start; 5000; $Lon_process; 5))
 			End if 
 			
-			// Delete help files and the non necessary resources for the final user
-			XML DECODE:C1091(String:C10($ƒ.get("options@removeDevResources").value); $Boo_execute)
+			// MARK:Delete help files and the non necessary resources for the final user
+			XML DECODE:C1091(String:C10($ƒ.get("options@removeDevResources").value); $run)
 			
-			If ($Boo_execute)\
-				 & ($Boo_compiled | $Boo_standalone | $Boo_server)
+			If ($run)\
+				 && ($buildCompiled || $buildStandalone || $buildServer)
 				
-				$Lon_Start:=Milliseconds:C459
+				$start:=Milliseconds:C459
 				
 				Use (Storage:C1525.progress)
 					
@@ -510,62 +490,62 @@ Case of
 				End use 
 				
 				// Relative paths are listed in the file AppMaker delete.xml in the Preferences folder of the host database…
-				$Txt_path:=Replace string:C233(Get 4D folder:C485(Current resources folder:K5:16; *); "Resources"; "Preferences")+"AppMaker delete.xml"
+				$pathname:=Replace string:C233(Get 4D folder:C485(Current resources folder:K5:16; *); "Resources"; "Preferences")+"AppMaker delete.xml"
 				
-				If (Test path name:C476($Txt_path)#Is a document:K24:1)
+				If (Test path name:C476($pathname)#Is a document:K24:1)
 					
 					// Use the default set
-					$Txt_path:=Get 4D folder:C485(Current resources folder:K5:16)+"AppMaker delete.xml"
+					$pathname:=Get 4D folder:C485(Current resources folder:K5:16)+"AppMaker delete.xml"
 					
 				End if 
 				
-				If (Test path name:C476($Txt_path)=Is a document:K24:1)
+				If (Test path name:C476($pathname)=Is a document:K24:1)
 					
 					// Load the list of items to delete
-					$Dom_root:=DOM Parse XML source:C719($Txt_path)
+					$root:=DOM Parse XML source:C719($pathname)
 					
 					If (OK=1)
 						
-						ARRAY TEXT:C222($tDom_items; 0x0000)
-						$tDom_items{0}:=DOM Find XML element:C864($Dom_root; "items/item"; $tDom_items)
+						ARRAY TEXT:C222($nodes; 0x0000)
+						$nodes{0}:=DOM Find XML element:C864($root; "items/item"; $nodes)
 						
-						For ($Lon_i; 1; Size of array:C274($tDom_items); 1)
+						For ($Lon_i; 1; Size of array:C274($nodes); 1)
 							
-							DOM GET XML ELEMENT VALUE:C731($tDom_items{$Lon_i}; $t)
+							DOM GET XML ELEMENT VALUE:C731($nodes{$Lon_i}; $t)
 							APPEND TO ARRAY:C911($tTxt_path; Replace string:C233($t; "/"; Folder separator:K24:12))
 							
 						End for 
 						
-						DOM CLOSE XML:C722($Dom_root)
+						DOM CLOSE XML:C722($root)
 						
 					End if 
 					
 					// Remove from compiled package if any
-					If ($Boo_compiled)
+					If ($buildCompiled)
 						
 						buildApp_DELETE_RESOURCES($Dir_compiled; ->$tTxt_path)
 						
 					End if 
 					
 					// Remove from final application if any
-					If ($Boo_standalone)
+					If ($buildStandalone)
 						
-						buildApp_DELETE_RESOURCES($Dir_standalone+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
+						buildApp_DELETE_RESOURCES($pathStandalone+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
 						
 					End if 
 					
 					// Remove from server application if any
-					If ($Boo_server)
+					If ($buildServer)
 						
-						buildApp_DELETE_RESOURCES($Dir_server+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
+						buildApp_DELETE_RESOURCES($pathServer+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
 						
 					End if 
 				End if 
 			End if 
 		End if 
 		
-		// Copy
-		If ($Boo_OK)
+		// MARK:Copy
+		If ($success)
 			
 			$c:=$ƒ.get("copy").value
 			
@@ -574,32 +554,32 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=0
-					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+					Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 					Storage:C1525.progress.title:="⚙️ "+Get localized string:C991("preparationOfCopy")
 					
 				End use 
 				
 				DELAY PROCESS:C323($Lon_process; 50)
 				
-				If ($Boo_component)
+				If ($builComponent)
 					
 					COPY(String:C10($Obj_paths.root)+$Txt_relativeComponentTarget; $c)
 					
 				End if 
 				
-				If ($Boo_compiled)
+				If ($buildCompiled)
 					
 					COPY(String:C10($Obj_paths.root)+$Txt_relativeCompiledTarget; $c)
 					
 				End if 
 				
-				If ($Boo_standalone)
+				If ($buildStandalone)
 					
 					COPY(String:C10($Obj_paths.root)+$Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12; $c)
 					
 				End if 
 				
-				If ($Boo_server)
+				If ($buildServer)
 					
 					COPY(String:C10($Obj_paths.root)+$Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12; $c)
 					
@@ -607,8 +587,8 @@ Case of
 			End if 
 		End if 
 		
-		// Deletion
-		If ($Boo_OK)
+		// MARK:Deletion
+		If ($success)
 			
 			$c:=$ƒ.get("delete").value
 			
@@ -617,32 +597,32 @@ Case of
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=0
-					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+					Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 					Storage:C1525.progress.title:="🚧 "+Get localized string:C991("preparingForRemoval")
 					
 				End use 
 				
 				DELAY PROCESS:C323($Lon_process; 50)
 				
-				If ($Boo_component)
+				If ($builComponent)
 					
 					DELETE(String:C10($Obj_paths.root); $c; $Txt_relativeComponentTarget)
 					
 				End if 
 				
-				If ($Boo_compiled)
+				If ($buildCompiled)
 					
 					DELETE(String:C10($Obj_paths.root); $c; $Txt_relativeCompiledTarget)
 					
 				End if 
 				
-				If ($Boo_standalone)
+				If ($buildStandalone)
 					
 					DELETE(String:C10($Obj_paths.root); $c; $Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12)
 					
 				End if 
 				
-				If ($Boo_server)
+				If ($buildServer)
 					
 					DELETE(String:C10($Obj_paths.root); $c; $Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12)
 					
@@ -650,8 +630,9 @@ Case of
 			End if 
 		End if 
 		
-		// Make the package and its content readable/executable and writable by everyone
-		If ($Boo_OK)
+		// MARK:Make the package and its content readable/executable and writable by everyone
+		// TODO: Use $build.unlockDirectory()
+		If ($success)
 			
 			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; String:C10($Obj_paths.root))
@@ -671,8 +652,8 @@ Case of
 			End if 
 		End if 
 		
-		// Host database method to run at the end
-		If ($Boo_OK)
+		// MARK:Host database method to run at the end
+		If ($success)
 			
 			$t:=String:C10($ƒ.get("methods@after").value)
 			
@@ -683,61 +664,62 @@ Case of
 			End if 
 		End if 
 		
-		// * NOTARIZATION *
-		If ($Boo_OK) & (Is macOS:C1572)
+		If ($success)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@notarize").value); $Boo_execute)
+			// MARK:Notarization
+			XML DECODE:C1091(String:C10($ƒ.get("options@notarize").value); $run)
 			
-			If ($Boo_execute)
+			If ($run && Is macOS:C1572)
 				
 				Use (Storage:C1525.progress)
 					
 					Storage:C1525.progress.barber:=-2
-					Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+					Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 					Storage:C1525.progress.title:="🍏 Notarization process"
 					
 				End use 
 				
-				$build.removeSignature()
-				
-				If ($build.success)
+				If ($build.removeSignature())
 					
-					$build.sign()
-					
-					If ($build.success)
+					If ($build.sign())
 						
-						$build.dmg()  //$build.zip()
+						$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
 						
-						If ($build.success)
+						If ($hdutil.create($build.lib4d))
 							
-							$build.notarize()
-							
-							If ($build.success)
+							If ($build.notarize($hdutil.target))
 								
 								Use (Storage:C1525.progress)
 									
 									Storage:C1525.progress.barber:=-2
-									Storage:C1525.progress.max:=$c.length*(Num:C11($Boo_component)+Num:C11($Boo_compiled)+Num:C11($Boo_standalone)+Num:C11($Boo_server))
+									Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 									Storage:C1525.progress.title:="⏳ Waiting for Apple's response"
 									
 								End use 
 								
-								$build.waitForNotarizeResult()
-								
-								If ($build.success)
+								If ($build.waitForNotarizeResult())
 									
-									$build.staple()
-									
-									If ($build.success)
+									If ($build.staple($hdutil.target))
 										
 										$t:=$build.ckeckWithGatekeeper()
 										
 										If ($build.success)
 											
-											DISPLAY NOTIFICATION:C910($Obj_database.structure.name; "Successfully notarized for : "+$t)
-											
-											$build.archive.delete()
-											
+											If ($hdutil.attach())
+												
+												$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite:K87:5)
+												
+												If ($file.exists)
+													
+													DISPLAY NOTIFICATION:C910($database.structure.name; "Successfully notarized for : "+$t)
+													
+													If ($hdutil.detach())
+														
+														$hdutil.target.delete()
+														
+													End if 
+												End if 
+											End if 
 										End if 
 									End if 
 								End if 
@@ -748,63 +730,54 @@ Case of
 				
 				If (Not:C34($build.success))
 					
-					ALERT:C41($build.lastError)
+					ALERT:C41($build.lastError || $hdutil.lastError)
 					
 				End if 
 			End if 
 		End if 
 		
-		If ($Txt_entryPoint="_autoBuild")
-			
-			//#MARK_TODO
-			
-		End if 
-		
 		BARBER("barber.close")
 		
 		// p4 tool
-		If ($Boo_OK)
-			
-			If ($Obj_database.componentAvailable("p4"))  // Need p4
-				
-				EXECUTE METHOD:C1007("perforce_AFTER_BUILD"; $Boo_OK)
-				
-			End if 
-		End if 
+		//If ($success)
+		//If ($database.componentAvailable("p4"))  // Need p4
+		//EXECUTE METHOD("perforce_AFTER_BUILD"; $success)
+		//End if 
+		//End if 
 		
-		// Reveal he target
-		If ($Boo_OK)
+		If ($success)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("reveal@path").value); $Boo_execute)
+			XML DECODE:C1091(String:C10($ƒ.get("reveal@path").value); $run)
 			
-			If (Not:C34($Boo_execute) | $Boo_component)
+			// MARK:Reveal he target
+			If (Not:C34($run) | $builComponent)
 				
 				$t:=String:C10($ƒ.get("reveal@path").value)
 				
-				If ($Boo_OK)\
+				If ($success)\
 					 & (Length:C16($t)>0)
 					
 					Case of 
 							
 							//………………………………………………………………
-						: ($Boo_component)
+						: ($builComponent)
 							
-							SHOW ON DISK:C922($Dir_component)
+							SHOW ON DISK:C922($pathComponent)
 							
 							//………………………………………………………………
-						: ($Boo_compiled)
+						: ($buildCompiled)
 							
 							SHOW ON DISK:C922($Dir_compiled)
 							
 							//………………………………………………………………
-						: ($Boo_standalone)
+						: ($buildStandalone)
 							
-							SHOW ON DISK:C922($Dir_standalone)
+							SHOW ON DISK:C922($pathStandalone)
 							
 							//………………………………………………………………
-						: ($Boo_server)
+						: ($buildServer)
 							
-							SHOW ON DISK:C922($Dir_server)
+							SHOW ON DISK:C922($pathServer)
 							
 							//………………………………………………………………
 					End case 
@@ -812,57 +785,57 @@ Case of
 			End if 
 		End if 
 		
-		// Close the dialog
-		XML DECODE:C1091(String:C10($ƒ.get("options@close").value); $Boo_execute)
+		// MARK:Close the dialog
+		XML DECODE:C1091(String:C10($ƒ.get("options@close").value); $run)
 		
-		If ($Boo_OK & $Boo_execute)
+		If ($success & $run)
 			
 			CANCEL:C270
 			
 		End if 
 		
-		// Launch target
-		If ($Boo_OK)
+		// MARK:Launch target
+		If ($success)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@launch").value); $Boo_execute)
+			XML DECODE:C1091(String:C10($ƒ.get("options@launch").value); $run)
 			
 			Case of 
 					
 					//…………………………………………………………………………………
-				: (Not:C34($Boo_execute))\
-					 | ($Boo_component)
+				: (Not:C34($run))\
+					 | ($builComponent)
 					
 					// NOTHING MORE TO DO
 					
 					//…………………………………………………………………………………
-				: ($Boo_compiled)
+				: ($buildCompiled)
 					
 					EXECUTE FORMULA:C63(Command name:C538(1321)+"($Dir_compiled)")
 					
 					//…………………………………………………………………………………
-				: ($Boo_standalone)
+				: ($buildStandalone)
 					
 					SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_BLOCKING_EXTERNAL_PROCESS"; "false")
-					LAUNCH EXTERNAL PROCESS:C811(Choose:C955(Is Windows:C1573; $Dir_standalone; "open '"+Convert path system to POSIX:C1106($Dir_standalone)+"'"))
+					LAUNCH EXTERNAL PROCESS:C811(Choose:C955(Is Windows:C1573; $pathStandalone; "open '"+Convert path system to POSIX:C1106($pathStandalone)+"'"))
 					
 					//…………………………………………………………………………………
-				: ($Boo_server)
+				: ($buildServer)
 					
 					SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_BLOCKING_EXTERNAL_PROCESS"; "false")
-					LAUNCH EXTERNAL PROCESS:C811(Choose:C955(Is Windows:C1573; $Dir_server; "open '"+Convert path system to POSIX:C1106($Dir_server)+"'"))
+					LAUNCH EXTERNAL PROCESS:C811(Choose:C955(Is Windows:C1573; $pathServer; "open '"+Convert path system to POSIX:C1106($pathServer)+"'"))
 					
 					//…………………………………………………………………………………
 			End case 
 		End if 
 		
-		// Notification
-		If ($Boo_OK)
+		// MARK:Notification
+		If ($success)
 			
-			DISPLAY NOTIFICATION:C910($Obj_database.structure.name; Get localized string:C991("theBuildIsAchieved"))
+			DISPLAY NOTIFICATION:C910($database.structure.name; Get localized string:C991("theBuildIsAchieved"))
 			
 		End if 
 		
-		If ($Boo_OK & $Boo_auto)
+		If ($success & $batch)
 			
 			QUIT 4D:C291
 			
@@ -871,17 +844,17 @@ Case of
 		APP_MAKER_HANDLER("_deinit")
 		
 		//================================================================================
-	: ($Txt_entryPoint="_declarations")
+	: ($action="_declarations")
 		
 		Compiler_component
 		
 		//================================================================================
-	: ($Txt_entryPoint="_init")
+	: ($action="_init")
 		
 		appMaker_INIT
 		
 		//================================================================================
-	: ($Txt_entryPoint="_deinit")
+	: ($action="_deinit")
 		
 		If (Storage:C1525.environment.domBuildApp#Null:C1517)
 			
@@ -896,7 +869,7 @@ Case of
 			End use 
 		End if 
 		
-		$Boo_OK:=PHP Execute:C1058(""; "quit_4d_php")
+		$success:=PHP Execute:C1058(""; "quit_4d_php")
 		
 		//================================================================================
 	Else 
