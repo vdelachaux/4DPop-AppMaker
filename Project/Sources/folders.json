@@ -35,8 +35,7 @@
 	"Classes": {
 		"classes": [
 			"build",
-			"hdutil",
-			"lep"
+			"hdutil"
 		]
 	},
 	"Component": {
@@ -58,6 +57,7 @@
 	},
 	"Libraries": {
 		"classes": [
+			"lep",
 			"xml"
 		]
 	},

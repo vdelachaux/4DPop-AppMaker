@@ -49,7 +49,9 @@ Case of
 			
 			// Load the description file
 			$xml:=cs:C1710.xml.new(File:C1566("/RESOURCES/BuildAppKey.xml"))
-			Form:C1466.buildApp:=$xml.toList($xml.root; ->$uid; "/Preferences4D")
+			//Form.buildApp:=$xml.toList($xml.root; ->$uid; "/Preferences4D")
+			
+			Form:C1466.buildApp:=$xml.toList(->$uid; "/Preferences4D")
 			$xml.close()
 			
 			OBJECT SET VALUE:C1742("key.list"; Form:C1466.buildApp)
@@ -75,8 +77,15 @@ Case of
 					End if 
 				End if 
 				
-				SET LIST ITEM ICON:C950(Form:C1466.buildApp; $ref; Choose:C955(Bool:C1537(OK); $set; $notSet))
-				
+				If (Bool:C1537(OK))
+					
+					SET LIST ITEM ICON:C950(Form:C1466.buildApp; $ref; $set)
+					
+				Else 
+					
+					SET LIST ITEM ICON:C950(Form:C1466.buildApp; $ref; $notSet)
+					
+				End if 
 			End for 
 			
 			key_UPDATE
