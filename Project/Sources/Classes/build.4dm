@@ -57,6 +57,51 @@ Class constructor($buildAppSettingsFile)
 	This:C1470.buildStatus:=Null:C1517
 	This:C1470.requestUID:=Null:C1517
 	
+	//MARK:[COMPUTED]
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function get destinationFolder() : 4D:C1709.Folder
+	
+	If (This:C1470.settings#Null:C1517)
+		
+		Case of 
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+			: (Is Windows:C1573)
+				
+				$path:=This:C1470.settings.BuildWinDestFolder
+				
+				//MARK: TO TEST
+				If (Substring:C12($path; 1; 1)=Folder separator:K24:12)
+					
+					var $parentFolderPath; $path : Text
+					$parentFolderPath:=Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).parent.parent.platformPath
+					$parentFolderPath:=Substring:C12($parentFolderPath; 1; Length:C16($parentFolderPath)-1)
+					$parentFolderPath:=$parentFolderPath+Delete string:C232($path; 1; 1)
+					
+					return (Folder:C1567($parentFolderPath; fk platform path:K87:2))
+					
+				Else 
+					
+					return (Folder:C1567($path; fk platform path:K87:2))
+					
+				End if 
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+			: (Is macOS:C1572)
+				
+				$path:=This:C1470.settings.BuildMacDestFolder
+				
+				If ($path[[1]]=":")
+					
+					return (Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).folder(Replace string:C233(Delete string:C232($path; 1; 1); Folder separator:K24:12; "/")))
+					
+				End if 
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+		End case 
+	End if 
+	
+	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function run() : Boolean
 	
@@ -310,10 +355,61 @@ Function findIdentity()->$identities : Collection
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function CommitAndPush($message : Text)->$error : Object
+	
+	var $cmd; $err; $in; $out; $path : Text
+	
+	$path:=Get 4D folder:C485(Database folder:K5:14; *)
+	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
+	
+	If (($out#"")\
+		 | ($err#""))
+		
+		$error:=New object:C1471(\
+			"success"; False:C215; \
+			"Error git add"; $out+" "+$err)
+		
+	Else 
+		
+		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+		$cmd:="git commit -a -q -m "+Char:C90(34)+$message+Char:C90(34)
+		LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
+		
+		If (($out#"")\
+			 | ($err#""))
+			
+			$error:=New object:C1471(\
+				"success"; False:C215; \
+				"Error git commit"; $out+" "+$err)
+			
+		Else 
+			
+			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
+			
+			If ($err#"")
+				
+				$error:=New object:C1471(\
+					"success"; False:C215; \
+					"Error git push"; $err)
+				
+			Else 
+				
+				$error:=New object:C1471(\
+					"success"; True:C214; \
+					"git commit"; $out)
+				
+			End if 
+		End if 
+	End if 
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function _getPublicID($password : Text)
 	
 	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.appleID+" -p "+$password)
 	
+	//MARK:[COMPUTED]
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 	// Returns settings as object
 Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
@@ -877,56 +973,6 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 				End if 
 				
 				DOM CLOSE XML:C722($root)
-				
-			End if 
-		End if 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function CommitAndPush($message : Text)->$error : Object
-	
-	var $cmd; $err; $in; $out; $path : Text
-	
-	$path:=Get 4D folder:C485(Database folder:K5:14; *)
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
-	
-	If (($out#"")\
-		 | ($err#""))
-		
-		$error:=New object:C1471(\
-			"success"; False:C215; \
-			"Error git add"; $out+" "+$err)
-		
-	Else 
-		
-		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-		$cmd:="git commit -a -q -m "+Char:C90(34)+$message+Char:C90(34)
-		LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
-		
-		If (($out#"")\
-			 | ($err#""))
-			
-			$error:=New object:C1471(\
-				"success"; False:C215; \
-				"Error git commit"; $out+" "+$err)
-			
-		Else 
-			
-			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
-			
-			If ($err#"")
-				
-				$error:=New object:C1471(\
-					"success"; False:C215; \
-					"Error git push"; $err)
-				
-			Else 
-				
-				$error:=New object:C1471(\
-					"success"; True:C214; \
-					"git commit"; $out)
 				
 			End if 
 		End if 

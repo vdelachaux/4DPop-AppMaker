@@ -56,6 +56,11 @@
 			"Editor"
 		]
 	},
+	"Libraries": {
+		"classes": [
+			"xml"
+		]
+	},
 	"Private": {
 		"methods": [
 			"APP_MAKER_Go_to_page",
@@ -69,7 +74,6 @@
 			"COPY",
 			"DELETE",
 			"DELETE_MAC_CONTENT",
-			"key_mark",
 			"key_UPDATE",
 			"quickOpenActions"
 		]
@@ -98,8 +102,7 @@
 			"xml_Clean_up",
 			"xml_noError",
 			"xml_Reference",
-			"xml_Save_file",
-			"XML_TO_LIST"
+			"xml_Save_file"
 		]
 	},
 	"trash": {}

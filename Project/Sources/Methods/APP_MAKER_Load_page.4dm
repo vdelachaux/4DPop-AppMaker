@@ -7,37 +7,28 @@
 //
 // ----------------------------------------------------
 // Declarations
-C_LONGINT:C283($1)
-
-C_BOOLEAN:C305($Boo_expanded; $Boo_load; $Boo_on)
-C_LONGINT:C283($Lon_i; $Lon_page; $Lon_reference; $Lon_sublist; $Lon_UID)
-C_PICTURE:C286($Pic_mark)
-C_TEXT:C284($Dom_node; $Dom_root; $Txt_buffer; $Txt_filePath)
-C_OBJECT:C1216($ƒ)
+#DECLARE($page : Integer)
 
 If (False:C215)
 	C_LONGINT:C283(APP_MAKER_Load_page; $1)
 End if 
 
-$Lon_page:=$1
+var $node; $root; $t : Text
+var $notSet; $set : Picture
+var $expanded; $isOn; $loaded : Boolean
+var $i; $page; $ref; $sublist; $uid : Integer
+var $ƒ : Object
+var $xml : cs:C1710.xml
 
 $ƒ:=Storage:C1525.preferences
 
-If ($Lon_page<=(Form:C1466.loaded.length-1))
-	
-	// Test if page was already loaded
-	$Boo_load:=Not:C34(Bool:C1537(Form:C1466.loaded[$Lon_page]))
-	
-Else 
-	
-	$Boo_load:=True:C214
-	
-End if 
+// Test if page was already loaded
+$loaded:=$page>(Form:C1466.loaded.length-1) ? False:C215 : Bool:C1537(Form:C1466.loaded[$page])
 
 Case of 
 		
 		//………………………………………………………
-	: ($Lon_page=1)
+	: ($page=1)
 		
 		If (OBJECT Get visible:C1075(*; "tips.run"))
 			
@@ -46,78 +37,58 @@ Case of
 		End if 
 		
 		//………………………………………………………
-	: ($Lon_page=2)  // BuildApp
+	: ($page=2)  // BuildApp
 		
-		If (Count list items:C380(Form:C1466.buildApp)=0)
+		If (Not:C34($loaded))
 			
-			READ PICTURE FILE:C678(Get 4D folder:C485(Current resources folder:K5:16)+"Images"+Folder separator:K24:12+"xml_mark.png"; $Pic_mark)
+			READ PICTURE FILE:C678(File:C1566("/RESOURCES/Images/xml_mark.png").platformPath; $set)
+			CREATE THUMBNAIL:C679($notSet; $notSet; 8; 8)
 			
-			// Description file
-			$Txt_filePath:=Get 4D folder:C485(Current resources folder:K5:16)+"BuildAppKey.xml"
+			// ⚠️ Delete the empty list created during loading
+			CLEAR LIST:C377(Form:C1466.buildApp; *)
 			
-			If (Asserted:C1132(Test path name:C476($Txt_filePath)=Is a document:K24:1))
+			// Load the description file
+			$xml:=cs:C1710.xml.new(File:C1566("/RESOURCES/BuildAppKey.xml"))
+			Form:C1466.buildApp:=$xml.toList($xml.root; ->$uid; "/Preferences4D")
+			$xml.close()
+			
+			OBJECT SET VALUE:C1742("key.list"; Form:C1466.buildApp)
+			
+			// Load the user buildApp settings
+			$root:=Storage:C1525.environment.domBuildApp
+			
+			For ($i; 1; Count list items:C380(Form:C1466.buildApp; *))
 				
-				$Dom_root:=DOM Parse XML source:C719($Txt_filePath)
+				GET LIST ITEM:C378(Form:C1466.buildApp; $i; $ref; $t; $sublist; $expanded)
 				
-				If (Asserted:C1132(OK=1))
+				OK:=Num:C11($sublist=0)
+				
+				If (Bool:C1537(OK))
 					
-					$Lon_UID:=1
+					GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; $ref; "xpath"; $t)
+					$node:=DOM Find XML element:C864($root; $t)
 					
-					XML_TO_LIST($Dom_root; Form:C1466.buildApp; ->$Lon_UID; "/Preferences4D")
-					
-					If (Count list items:C380(Form:C1466.buildApp)>0)
+					If (Bool:C1537(OK))
 						
-						GET LIST ITEM:C378(Form:C1466.buildApp; 1; $Lon_reference; $Txt_buffer; $Lon_sublist; $Boo_expanded)
-						SET LIST ITEM:C385(Form:C1466.buildApp; $Lon_reference; $Txt_buffer; $Lon_reference; $Lon_sublist; True:C214)
-						SELECT LIST ITEMS BY POSITION:C381(Form:C1466.buildApp; 1)
+						SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp; $ref; "dom"; $node)
 						
 					End if 
-					
-					DOM CLOSE XML:C722($Dom_root)
-					
 				End if 
-			End if 
-			
-			If (Asserted:C1132(OK=1))
 				
-				For ($Lon_i; 1; Count list items:C380(Form:C1466.buildApp; *))
-					
-					GET LIST ITEM:C378(Form:C1466.buildApp; $Lon_i; $Lon_reference; $Txt_buffer; $Lon_sublist; $Boo_expanded)
-					
-					OK:=Num:C11($Lon_sublist=0)
-					
-					If (OK=1)
-						
-						GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; $Lon_reference; "xpath"; $Txt_buffer)
-						$Dom_node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp; $Txt_buffer)
-						
-						If (OK=1)
-							
-							SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp; $Lon_reference; "UID"; $Dom_node)
-							
-						End if 
-					End if 
-					
-					If (OK=1)
-						
-						key_mark(True:C214; $Lon_reference; $Pic_mark)
-						
-					Else 
-						
-						key_mark(False:C215; $Lon_reference)
-						
-					End if 
-				End for 
-			End if 
+				SET LIST ITEM ICON:C950(Form:C1466.buildApp; $ref; Choose:C955(Bool:C1537(OK); $set; $notSet))
+				
+			End for 
 			
 			key_UPDATE
+			
+			OBJECT SET VALUE:C1742("key.list"; Form:C1466.buildApp)
 			
 		End if 
 		
 		//………………………………………………………
-	: ($Lon_page=3)  // Before
+	: ($page=3)  // Before
 		
-		If ($Boo_load)
+		If ($loaded)
 			
 			Form:C1466.methods.before:=String:C10($ƒ.get("methods@before").value)
 			Form:C1466.plist:=$ƒ.get("info.plist").value
@@ -130,39 +101,38 @@ Case of
 		GOTO OBJECT:C206(*; "method.before.box")
 		
 		//………………………………………………………
-	: ($Lon_page=4)  // Options
+	: ($page=4)  // Options
 		
-		If ($Boo_load)
+		If ($loaded)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@increment_version").value); $Boo_on)
-			Form:C1466.options.increment_version:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@increment_version").value); $isOn)
+			Form:C1466.options.increment_version:=$isOn
 			
 			OBJECT SET ENABLED:C1123(*; "option.increment-build"; File:C1566("/PACKAGE/Info.plist"; *).exists)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@zip_source").value); $Boo_on)
-			Form:C1466.options.zip_source:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@zip_source").value); $isOn)
+			Form:C1466.options.zip_source:=$isOn
 			OBJECT SET ENABLED:C1123(*; "option.zip-sources"; Storage:C1525.database.isDatabase)
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@close").value); $Boo_on)
-			Form:C1466.options.close:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@close").value); $isOn)
+			Form:C1466.options.close:=$isOn
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@delete_mac_content").value); $Boo_on)
-			Form:C1466.options.delete_mac_content:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@delete_mac_content").value); $isOn)
 			OBJECT SET ENABLED:C1123(*; "option.delete-mac-content"; Is macOS:C1572)
 			
 			Form:C1466.reveal.path:=(String:C10($ƒ.get("reveal@path").value)="./")
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@removeDevResources").value); $Boo_on)
-			Form:C1466.options.removeDevResources:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@removeDevResources").value); $isOn)
+			Form:C1466.options.removeDevResources:=$isOn
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@launch").value); $Boo_on)
-			Form:C1466.options.launch:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@launch").value); $isOn)
+			Form:C1466.options.launch:=$isOn
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@exportStructure").value); $Boo_on)
-			Form:C1466.options.exportStructure:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@exportStructure").value); $isOn)
+			Form:C1466.options.exportStructure:=$isOn
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@gitRepository").value); $Boo_on)
-			Form:C1466.options.gitRepository:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@gitRepository").value); $isOn)
+			Form:C1466.options.gitRepository:=$isOn
 			
 			If (Storage:C1525.database.isProject)
 				
@@ -175,15 +145,15 @@ Case of
 				
 			End if 
 			
-			XML DECODE:C1091(String:C10($ƒ.get("options@notarize").value); $Boo_on)
-			Form:C1466.options.notarize:=$Boo_on
+			XML DECODE:C1091(String:C10($ƒ.get("options@notarize").value); $isOn)
+			Form:C1466.options.notarize:=$isOn
 			
 		End if 
 		
 		//………………………………………………………
-	: ($Lon_page=5)  // After
+	: ($page=5)  // After
 		
-		If ($Boo_load)
+		If ($loaded)
 			
 			Form:C1466.copy:=$ƒ.get("copy").value
 			Form:C1466.delete:=$ƒ.get("delete").value
@@ -205,4 +175,4 @@ Case of
 		//………………………………………………………
 End case 
 
-Form:C1466.loaded[$Lon_page]:=True:C214
+Form:C1466.loaded[$page]:=True:C214

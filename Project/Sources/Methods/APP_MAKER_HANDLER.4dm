@@ -19,9 +19,9 @@ var $Txt_fileName; $Txt_filePath; $Txt_relativeCompiledTarget; $Txt_relativeComp
 var $Txt_structure : Text
 var $batch; $Boo_KO; $builComponent; $buildCompiled; $buildServer; $buildStandalone : Boolean
 var $run; $success : Boolean
-var $Lon_bottom; $Lon_i; $Lon_left; $process; $Lon_right; $Lon_top : Integer
-var $start; $Win_hdl : Integer
-var $database; $environment; $ƒ; $o; $Obj_paths : Object
+var $Lon_bottom; $Lon_i; $Lon_left; $Lon_right; $Lon_top; $process : Integer
+var $start : Integer
+var $data; $database; $environment; $ƒ; $o; $Obj_paths : Object
 var $c : Collection
 var $file : 4D:C1709.File
 var $build : cs:C1710.build
@@ -55,9 +55,30 @@ Case of
 		APP_MAKER_HANDLER("_declarations")
 		APP_MAKER_HANDLER("_init")
 		
-		$Win_hdl:=Open form window:C675("Editor"; Plain form window:K39:10; Horizontally centered:K39:1; Vertically centered:K39:4; *)
-		DIALOG:C40("Editor")
-		CLOSE WINDOW:C154
+		$data:=New object:C1471(\
+			"process"; Current process:C322; \
+			"window"; Open form window:C675("Editor"; Plain form window:K39:10; Horizontally centered:K39:1; Vertically centered:K39:4; *))
+		DIALOG:C40("Editor"; $data)
+		CLOSE WINDOW:C154($data.window)
+		
+		If (Storage:C1525.environment.domBuildApp#Null:C1517)
+			
+			If (Bool:C1537($data.modified))
+				
+				DOM EXPORT TO FILE:C862(Storage:C1525.environment.domBuildApp; Storage:C1525.environment.buildApp)
+				
+			End if 
+			
+			Use (Storage:C1525)
+				
+				Use (Storage:C1525.environment)
+					
+					DOM CLOSE XML:C722(Storage:C1525.environment.domBuildApp)
+					Storage:C1525.environment.domBuildApp:=Null:C1517
+					
+				End use 
+			End use 
+		End if 
 		
 		Storage:C1525.preferences.save()
 		
@@ -77,7 +98,7 @@ Case of
 		
 		FLUSH CACHE:C297
 		
-		$database:=database  //Storage.database
+		$database:=database  // Storage.database
 		$environment:=Storage:C1525.environment
 		
 		$process:=New process:C317("BARBER"; 0; "$"+"BARBER"; "barber.open"; *)
@@ -222,7 +243,7 @@ Case of
 			
 		Else 
 			
-			//TODO:ERROR
+			// TODO:ERROR
 			
 		End if 
 		
@@ -635,7 +656,7 @@ Case of
 			Else 
 				
 				// -R Change the modes of the file hierarchies rooted in the files instead of just the files themselves.
-				//755 Make the package and its content readable/executable and writable by everyone
+				// 755 Make the package and its content readable/executable and writable by everyone
 				$Txt_cmd:="chmod -R 777 "+Replace string:C233(Convert path system to POSIX:C1106(String:C10($Obj_paths.root)); " "; "\\ ")
 				LAUNCH EXTERNAL PROCESS:C811($Txt_cmd)
 				
@@ -717,12 +738,12 @@ Case of
 		
 		BARBER("barber.close")
 		
-		// p4 tool
+		// P4 tool
 		//If ($success)
 		//If ($database.componentAvailable("p4"))  // Need p4
 		//EXECUTE METHOD("perforce_AFTER_BUILD"; $success)
-		//End if 
-		//End if 
+		// End if
+		// End if
 		
 		If ($success)
 			
@@ -834,19 +855,6 @@ Case of
 		
 		//================================================================================
 	: ($action="_deinit")
-		
-		If (Storage:C1525.environment.domBuildApp#Null:C1517)
-			
-			Use (Storage:C1525)
-				
-				Use (Storage:C1525.environment)
-					
-					DOM CLOSE XML:C722(Storage:C1525.environment.domBuildApp)
-					Storage:C1525.environment.domBuildApp:=Null:C1517
-					
-				End use 
-			End use 
-		End if 
 		
 		$success:=PHP Execute:C1058(""; "quit_4d_php")
 		
