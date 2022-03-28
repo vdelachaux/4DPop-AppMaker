@@ -57,7 +57,9 @@
 	},
 	"Libraries": {
 		"classes": [
+			"codesign",
 			"lep",
+			"notarytool",
 			"xml"
 		]
 	},

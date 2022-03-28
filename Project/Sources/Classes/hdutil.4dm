@@ -12,7 +12,7 @@ Class constructor($target : 4D:C1709.File; $content)
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function create($content) : Boolean
 	
-	// TODO: Allow collection & pathname
+	// TODO: Allow collection & more (File, Folder,…)
 	This:C1470.content:=$content
 	
 	If ((This:C1470.target#Null:C1517) && This:C1470.target.exists)

@@ -228,21 +228,21 @@ Function sign() : Boolean
 	return (This:C1470.success)
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function notarize($target : 4D:C1709.File) : Boolean
+Function notarize($file : 4D:C1709.File) : Boolean
 	
-	This:C1470.success:=(OB Instance of:C1731($target; 4D:C1709.File))
+	var $response : Object
+	var $notarytool : cs:C1710.notarytool
 	
-	This:C1470.setOutputType(Is object:K8:27)
-	This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted($target.path)\
-		+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
-		+" --output-format json --wait")
-	This:C1470.setOutputType()
+	This:C1470.success:=($file.exists)
 	
 	If (This:C1470.success)
 		
-		This:C1470.requestStatus:=String:C10(This:C1470.outputStream.status)
-		This:C1470.requestUID:=String:C10(This:C1470.outputStream.id)
-		This:C1470.success:=(This:C1470.requestStatus="Accepted")
+		$notarytool:=cs:C1710.notarytool.new(This:C1470.keychainProfile)
+		This:C1470.notarization:=$notarytool.submit($file.path)
+		
+	Else 
+		
+		This:C1470._pushError("File not found: "+String:C10($file.path))
 		
 	End if 
 	
@@ -411,7 +411,7 @@ Function _getPublicID($password : Text)
 	
 	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.appleID+" -p "+$password)
 	
-	//MARK:[COMPUTED]
+	//MARK:[PRIVATE]
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 	// Returns settings as object
 Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object

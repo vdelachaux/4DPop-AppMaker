@@ -690,35 +690,41 @@ Case of
 					
 				End use 
 				
-				If ($build.removeSignature())
+				var $codesign : cs:C1710.codesign
+				$codesign:=cs:C1710.codesign.new(New object:C1471(\
+					"appleID"; $build.appleID; \
+					"certificate"; $build.certificate; \
+					"publicID"; $build.publicID))
+				
+				//If ($build.removeSignature())
+				//If ($build.sign())
+				
+				If ($codesign.sign($build.lib4d))
 					
-					If ($build.sign())
+					$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
+					
+					If ($hdutil.create($build.lib4d))
 						
-						$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
-						
-						If ($hdutil.create($build.lib4d))
+						If ($build.notarize($hdutil.target))
 							
-							If ($build.notarize($hdutil.target))
+							If ($build.staple($hdutil.target))
 								
-								If ($build.staple($hdutil.target))
+								$t:=$build.ckeckWithGatekeeper()
+								
+								If ($build.success)
 									
-									$t:=$build.ckeckWithGatekeeper()
-									
-									If ($build.success)
+									If ($hdutil.attach())
 										
-										If ($hdutil.attach())
+										$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite:K87:5)
+										
+										If ($file.exists)
 											
-											$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite:K87:5)
+											DISPLAY NOTIFICATION:C910($database.structure.name; "Successfully notarized for : "+$t)
 											
-											If ($file.exists)
+											If ($hdutil.detach())
 												
-												DISPLAY NOTIFICATION:C910($database.structure.name; "Successfully notarized for : "+$t)
+												$hdutil.target.delete()
 												
-												If ($hdutil.detach())
-													
-													$hdutil.target.delete()
-													
-												End if 
 											End if 
 										End if 
 									End if 
@@ -727,6 +733,7 @@ Case of
 						End if 
 					End if 
 				End if 
+				//End if 
 				
 				If (Not:C34($build.success))
 					
