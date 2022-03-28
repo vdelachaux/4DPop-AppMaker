@@ -1,58 +1,59 @@
 //%attributes = {"invisible":true}
-  // ----------------------------------------------------
-  // Method : BuildApp_SET_ARRAY
-  // Created 02/06/08 by vdl
-  // ----------------------------------------------------
-  // Description
-  //
-  // ----------------------------------------------------
-C_POINTER:C301($1)
-
-C_LONGINT:C283($Lon_i;$Lon_x)
-C_TEXT:C284($Txt_Buffer;$Txt_Node;$Txt_UID)
+// ----------------------------------------------------
+// Method : BuildApp_SET_ARRAY
+// Created 02/06/08 by vdl
+// ----------------------------------------------------
+// Description
+//
+// ----------------------------------------------------
+#DECLARE($array : Pointer)
 
 If (False:C215)
-	C_POINTER:C301(BuildApp_SET_ARRAY ;$1)
+	C_POINTER:C301(BuildApp_SET_ARRAY; $1)
 End if 
 
-GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp;*;"xpath";$Txt_Buffer)
-GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp;*;"UID";$Txt_UID)
+var $node; $root; $xpath : Text
+var $count; $i : Integer
 
-If (Length:C16($Txt_UID)=0)
+GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "xpath"; $xpath)
+GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "dom"; $node)
+
+$root:=Storage:C1525.environment.domBuildApp
+
+If (Length:C16($node)=0)
 	
-	$Txt_UID:=DOM Create XML element:C865(Storage:C1525.environment.domBuildApp;$Txt_Buffer)
+	$node:=DOM Create XML element:C865($root; $xpath)
 	
-	If (OK=1)
+	If (Bool:C1537(OK))
 		
-		SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp;*;"UID";$Txt_UID)
-		$Txt_Node:=DOM Create XML element:C865(Storage:C1525.environment.domBuildApp;$Txt_Buffer+"/ItemsCount")
+		SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp; *; "dom"; $node)
+		$node:=DOM Create XML element:C865($root; $xpath+"/ItemsCount")
 		
 	End if 
 End if 
 
-If (OK=1)
+If (Bool:C1537(OK))
 	
-	$Txt_Node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp;$Txt_Buffer+"/ItemsCount")
+	$node:=DOM Find XML element:C864($root; $xpath+"/ItemsCount")
 	
-	If (OK=1)
+	If (Bool:C1537(OK))
 		
-		  // Delete the array
-		DOM GET XML ELEMENT VALUE:C731($Txt_Node;$Lon_x)
+		// Delete the array
+		DOM GET XML ELEMENT VALUE:C731($node; $count)
 		
-		For ($Lon_i;1;$Lon_x;1)
+		For ($i; 1; $count; 1)
 			
-			DOM REMOVE XML ELEMENT:C869(DOM Find XML element:C864(Storage:C1525.environment.domBuildApp;$Txt_Buffer+"/Item"+String:C10($Lon_i)))
+			DOM REMOVE XML ELEMENT:C869(DOM Find XML element:C864($root; $xpath+"/Item"+String:C10($i)))
 			
 		End for 
 		
-		  // Construct the array
-		$Lon_x:=Size of array:C274($1->)
-		DOM SET XML ELEMENT VALUE:C868($Txt_Node;$Lon_x)
+		// Construct the array
+		$count:=Size of array:C274($array->)
+		DOM SET XML ELEMENT VALUE:C868($node; $count)
 		
-		For ($Lon_i;1;$Lon_x;1)
+		For ($i; 1; $count; 1)
 			
-			DOM SET XML ELEMENT VALUE:C868(DOM Create XML element:C865(Storage:C1525.environment.domBuildApp;$Txt_Buffer+"/Item"+String:C10($Lon_i));\
-				$1->{$Lon_i})
+			DOM SET XML ELEMENT VALUE:C868(DOM Create XML element:C865($root; $xpath+"/Item"+String:C10($i)); $array->{$i})
 			
 		End for 
 		

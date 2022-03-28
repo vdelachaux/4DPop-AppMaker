@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><preferences stamp="33">
+<?xml version="1.0" encoding="UTF-8"?><preferences stamp="36">
 	<com.4d>
 		<interface>
 			<misc/>
@@ -35,7 +35,7 @@
 			<options compilation_path="3" fat_binary="true" target="all"/>
 			<typage default_for_button="2"/>
 			<method_suffix arrays="" interprocess_arrays="" interprocess_variables="" methods="" variables=""/>                      </compiler>
-		<general execute_host_database_event="true">
+		<general component_classStore_name="" execute_host_database_event="true">
 			<mover always_display_dialog="2"/>
 		</general>
 		<server>

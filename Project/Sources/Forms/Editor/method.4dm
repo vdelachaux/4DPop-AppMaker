@@ -1,32 +1,32 @@
-  // ----------------------------------------------------
-  // Form method : Editor
-  // Created 30/05/08 by Vincent de Lachaux
-  // ----------------------------------------------------
-  // Description
-  //
-  // ----------------------------------------------------
-  // Declarations
-C_LONGINT:C283($Lon_event;$Lon_page)
+// ----------------------------------------------------
+// Form method : Editor
+// Created 30/05/08 by Vincent de Lachaux
+// ----------------------------------------------------
+// Description
+//
+// ----------------------------------------------------
+// Declarations
+C_LONGINT:C283($Lon_event; $Lon_page)
 
-  // ----------------------------------------------------
-  // Initialisations
+// ----------------------------------------------------
+// Initialisations
 $Lon_page:=FORM Get current page:C276
 
-  // ----------------------------------------------------
+// ----------------------------------------------------
 Case of 
 		
-		  //______________________________________________________
-	: (Form event:C388=On Load:K2:1)
+		//______________________________________________________
+	: (Form event code:C388=On Load:K2:1)
 		
 		Form:C1466.refresh:=Formula:C1597(SET TIMER:C645(-1))
-		Form:C1466.key:=Formula:C1597(key_UPDATE )
-		Form:C1466.load:=Formula:C1597(APP_MAKER_Load_page )
-		Form:C1466.page:=Formula:C1597(APP_MAKER_Go_to_page )
+		Form:C1466.key:=Formula:C1597(key_UPDATE)
+		Form:C1466.load:=Formula:C1597(APP_MAKER_Load_page)
+		Form:C1466.page:=Formula:C1597(APP_MAKER_Go_to_page)
 		
 		Form:C1466.loaded:=New collection:C1472
 		
 		Form:C1466.buildApp:=New list:C375
-		(OBJECT Get pointer:C1124(Object named:K67:5;"key.list"))->:=Form:C1466.buildApp
+		OBJECT SET VALUE:C1742("key.list"; Form:C1466.buildApp)
 		
 		Form:C1466.options:=New object:C1471
 		Form:C1466.reveal:=New object:C1471
@@ -37,13 +37,13 @@ Case of
 		Form:C1466.action:=-1
 		Form:C1466.refresh()
 		
-		  //______________________________________________________
-	: (Form event:C388=On Page Change:K2:54)
+		//______________________________________________________
+	: (Form event code:C388=On Page Change:K2:54)
 		
 		Form:C1466.load($Lon_page)
 		
-		  //______________________________________________________
-	: (Form event:C388=On Timer:K2:25)
+		//______________________________________________________
+	: (Form event code:C388=On Timer:K2:25)
 		
 		SET TIMER:C645(0)
 		
@@ -52,22 +52,22 @@ Case of
 		
 		Case of 
 				
-				  //…………………………………………………………
+				//…………………………………………………………
 			: ($Lon_event=-1)
 				
 				Form:C1466.load($Lon_page)
 				
-				  //…………………………………………………………
+				//…………………………………………………………
 			: ($Lon_event=-2)
 				
 				Form:C1466.key()
 				
-				  //…………………………………………………………
+				//…………………………………………………………
 			: ($Lon_event=-5)
 				
 				Form:C1466.key()
 				
-				  //…………………………………………………………
+				//…………………………………………………………
 		End case 
 		
 		If (Form:C1466.action#0)
@@ -76,23 +76,23 @@ Case of
 			
 		End if 
 		
-		  //______________________________________________________
-	: (Form event:C388=On Resize:K2:27)
+		//______________________________________________________
+	: (Form event code:C388=On Resize:K2:27)
 		
-		Obj_CENTER ("icon.run";"_gabarit")
-		Obj_CENTER ("tips.run";"_gabarit";Horizontally centered:K39:1)
+		Obj_CENTER("icon.run"; "_gabarit")
+		Obj_CENTER("tips.run"; "_gabarit"; Horizontally centered:K39:1)
 		
-		  //______________________________________________________
-	: (Form event:C388=On Close Box:K2:21)
+		//______________________________________________________
+	: (Form event code:C388=On Close Box:K2:21)
 		
 		CLEAR LIST:C377(Form:C1466.buildApp)
 		
 		CANCEL:C270
 		
-		  //______________________________________________________
+		//______________________________________________________
 	Else 
 		
 		ASSERT:C1129(False:C215)
 		
-		  //______________________________________________________
+		//______________________________________________________
 End case 

@@ -7,6 +7,14 @@ Class constructor
 	
 	This:C1470.reset()
 	
+	//MARK:- 📌 COMPUTED ATTRIBUTES
+	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+	// The time spend in millisecondes since the last countTimeInit() call
+Function get timeSpent()->$duration : Integer
+	
+	$duration:=Milliseconds:C459-This:C1470.startTime
+	
+	//MARK:- 📌 FUNCTIONS
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Restores the initial values of the class
 Function reset()->$this : cs:C1710.lep
@@ -32,60 +40,34 @@ Function reset()->$this : cs:C1710.lep
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-	// Pause current process if the condition is true, in any case returns the time spent. 
-Function delay($condition : Boolean; $delay : Integer)->$duration : Integer
-	
-	If ($condition)
-		
-		IDLE:C311
-		DELAY PROCESS:C323(Current process:C322; Choose:C955($delay=0; 60; $delay))
-		
-	End if 
-	
-	$duration:=This:C1470.timeSpent
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Initialization of the counting of the time spent
 Function countTimeInit()
 	
 	This:C1470.startTime:=Milliseconds:C459
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-	// Returns the time spend in millisecondes since the last countTimeInit() call
-Function get timeSpent()->$duration : Integer
+	// Pause current process if the condition is true, in any case returns the time spent. 
+Function delay($condition : Boolean; $delay : Integer)->$duration : Integer
 	
-	$duration:=Milliseconds:C459-This:C1470.startTime
+	If ($condition)
+		
+		IDLE:C311
+		DELAY PROCESS:C323(Current process:C322; $delay=0 ? 60 : $delay)
+		
+	End if 
+	
+	$duration:=This:C1470.timeSpent
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setCharSet($charset : Text)->$this : cs:C1710.lep
 	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.charSet:=$charset
-		
-	Else 
-		
-		// Default
-		This:C1470.charSet:="UTF-8"
-		
-	End if 
-	
+	This:C1470.charSet:=$charset="" ? "UTF-8" : $charset
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setOutputType($outputType : Integer)->$this : cs:C1710.lep
 	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.outputType:=$outputType
-		
-	Else 
-		
-		// Default
-		This:C1470.outputType:=Is text:K8:3
-		
-	End if 
-	
+	This:C1470.outputType:=$outputType=0 ? Is text:K8:3 : $outputType
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
@@ -361,21 +343,20 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 				//……………………………………………………………………
 			: (This:C1470.outputType=Is object:K8:27)
 				
-				This:C1470.success:=(Length:C16($t)>0)
-				
-				If (This:C1470.success)
+				If (Length:C16($t)>0)
 					
 					This:C1470.success:=(Match regex:C1019("(?si-m)^(?:\\{.*\\})|(?:^\\[.*\\])$"; $t; 1))
 					
-					If (This:C1470.success)
-						
-						This:C1470.outputStream:=JSON Parse:C1218($t)
-						
-					Else 
-						
-						This:C1470.errorStream:=$t
-						
-					End if 
+				End if 
+				
+				If (This:C1470.success)
+					
+					This:C1470.outputStream:=JSON Parse:C1218($t)
+					
+				Else 
+					
+					This:C1470.errorStream:=$t
+					
 				End if 
 				
 				//……………………………………………………………………
@@ -415,91 +396,18 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 	
 	If (This:C1470.debug)
 		
-		This:C1470.log()
+		This:C1470._log()
 		
 	End if 
 	
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-	// Remove unnecessary carriage returns and line breaks from the error/output stream
-Function _cleanupStream($textToCleanUp : Text)->$cleaned : Text
-	
-	var $stop : Boolean
-	
-	$cleaned:=$textToCleanUp
-	
-	If (Length:C16($cleaned)>0)
-		
-		$cleaned:=Replace string:C233($cleaned; "\r\n"; "\n")
-		
-		// Remove the 1st line feeds, if any
-		Repeat 
-			
-			If (Length:C16($cleaned)>0)
-				
-				If ($cleaned[[1]]="\n")
-					
-					$cleaned:=Substring:C12($cleaned; 2)
-					
-				Else 
-					
-					$stop:=True:C214
-					
-				End if 
-				
-			Else 
-				
-				$stop:=True:C214
-				
-			End if 
-			
-		Until ($stop)
-		
-		If (Length:C16($cleaned)>0)
-			
-			// Remove the last line feed, if any
-			$stop:=False:C215
-			
-			Repeat 
-				
-				If (Length:C16($cleaned)>0)
-					
-					If ($cleaned[[Length:C16($cleaned)]]="\n")
-						
-						$cleaned:=Substring:C12($cleaned; 1; Length:C16($cleaned)-1)
-						
-					Else 
-						
-						$stop:=True:C214
-						
-					End if 
-					
-				Else 
-					
-					$stop:=True:C214
-					
-				End if 
-				
-			Until ($stop)
-		End if 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Execute the external process in synchronous mode
 	// ⚠️ Must be call before .launch()
 Function synchronous($mode : Boolean)->$this : cs:C1710.lep
 	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.setEnvironnementVariable("asynchronous"; Choose:C955($mode; "true"; "false"))
-		
-	Else 
-		
-		This:C1470.setEnvironnementVariable("asynchronous"; "true")
-		
-	End if 
-	
+	This:C1470.setEnvironnementVariable("asynchronous"; (Count parameters:C259>=1) ? ($mode ? "true" : "false") : "true")
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
@@ -507,31 +415,13 @@ Function synchronous($mode : Boolean)->$this : cs:C1710.lep
 	// ⚠️ Must be call before .launch()
 Function asynchronous($mode : Boolean)->$this : cs:C1710.lep
 	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.setEnvironnementVariable("asynchronous"; Choose:C955($mode; "false"; "true"))
-		
-	Else 
-		
-		This:C1470.setEnvironnementVariable("asynchronous"; "false")
-		
-	End if 
-	
+	This:C1470.setEnvironnementVariable("asynchronous"; (Count parameters:C259>=1) ? ($mode ? "false" : "true") : "false")
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setDirectory($folder : 4D:C1709.Folder)->$this : cs:C1710.lep
 	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.environmentVariables["_4D_OPTION_CURRENT_DIRECTORY"]:=$folder.platformPath
-		
-	Else 
-		
-		This:C1470.environmentVariables["_4D_OPTION_CURRENT_DIRECTORY"]:=""
-		
-	End if 
-	
+	This:C1470.environmentVariables["_4D_OPTION_CURRENT_DIRECTORY"]:=Count parameters:C259>=1 ? $folder.platformPath : ""
 	This:C1470.success:=True:C214
 	
 	$this:=This:C1470
@@ -652,6 +542,7 @@ Function getEnvironnementVariable($name : Text; $nonDiacritic : Boolean)->$value
 		
 	End if 
 	
+	//MARK:- 🛠 Tools
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	//escape special caracters for lep commands
 Function escape($text : Text)->$escaped : Text
@@ -849,13 +740,13 @@ Function unlockDirectory($cible : 4D:C1709.Folder)->$this : cs:C1710.lep
 			
 			This:C1470.setEnvironnementVariable("directory"; $cible.platformPath)
 			
-			If (Is macOS:C1572)
+			If (Is Windows:C1573)
 				
-				This:C1470.launch("chmod -R u+rwX "+This:C1470.singleQuoted($cible.path))
+				This:C1470.launch("attrib.exe -R /D /S")
 				
 			Else 
 				
-				This:C1470.launch("attrib.exe -R /D /S")
+				This:C1470.launch("chmod -R u+rwX "+This:C1470.singleQuoted($cible.path))
 				
 			End if 
 			
@@ -872,6 +763,72 @@ Function unlockDirectory($cible : 4D:C1709.Folder)->$this : cs:C1710.lep
 	End if 
 	
 	$this:=This:C1470
+	
+	//MARK:- 📌 PRIVATES
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+	// Remove unnecessary carriage returns and line breaks from the error/output stream
+Function _cleanupStream($textToCleanUp : Text)->$cleaned : Text
+	
+	var $stop : Boolean
+	
+	$cleaned:=$textToCleanUp
+	
+	If (Length:C16($cleaned)>0)
+		
+		$cleaned:=Replace string:C233($cleaned; "\r\n"; "\n")
+		
+		// Remove the 1st line feeds, if any
+		Repeat 
+			
+			If (Length:C16($cleaned)>0)
+				
+				If ($cleaned[[1]]="\n")
+					
+					$cleaned:=Substring:C12($cleaned; 2)
+					
+				Else 
+					
+					$stop:=True:C214
+					
+				End if 
+				
+			Else 
+				
+				$stop:=True:C214
+				
+			End if 
+			
+		Until ($stop)
+		
+		If (Length:C16($cleaned)>0)
+			
+			// Remove the last line feed, if any
+			$stop:=False:C215
+			
+			Repeat 
+				
+				If (Length:C16($cleaned)>0)
+					
+					If ($cleaned[[Length:C16($cleaned)]]="\n")
+						
+						$cleaned:=Substring:C12($cleaned; 1; Length:C16($cleaned)-1)
+						
+					Else 
+						
+						$stop:=True:C214
+						
+					End if 
+					
+				Else 
+					
+					$stop:=True:C214
+					
+				End if 
+				
+			Until ($stop)
+		End if 
+	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function _shortcut($string : Text)->$variable : Text
@@ -961,7 +918,7 @@ Function _pushError($message : Text)
 	This:C1470.errors.push(This:C1470.lastError)
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function log()
+Function _log()
 	
 	var $current; $o : Object
 	var $c; $log : Collection
@@ -975,6 +932,7 @@ Function log()
 		If (Position:C15("lep."; $o.name)#1)
 			
 			$current:=$o
+			break
 			
 		End if 
 	End for each 
@@ -995,16 +953,21 @@ Function log()
 	$log.push(Choose:C955(This:C1470.success; "success"; "failed"))
 	
 	Case of 
-		: ((Value type:C1509(This:C1470.outputStream)=Is object:K8:27) | (Value type:C1509(This:C1470.outputStream)=Is collection:K8:32))
+			
+			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+		: ((Value type:C1509(This:C1470.outputStream)=Is object:K8:27)\
+			 | (Value type:C1509(This:C1470.outputStream)=Is collection:K8:32))
 			
 			$log.push("\r\rOUTPUT:")
 			$log.push(JSON Stringify:C1217(This:C1470.outputStream))
 			
+			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 		: (Value type:C1509(This:C1470.outputStream)=Is boolean:K8:9)
 			
 			$log.push("\r\rOUTPUT:")
 			$log.push(Choose:C955(This:C1470.outputStream; "true"; "false"))
 			
+			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 		: ((Value type:C1509(This:C1470.outputStream)=Is longint:K8:6)\
 			 | (Value type:C1509(This:C1470.outputStream)=Is integer:K8:5)\
 			 | (Value type:C1509(This:C1470.outputStream)=Is integer 64 bits:K8:25)\
@@ -1013,6 +976,7 @@ Function log()
 			$log.push("\r\rOUTPUT:")
 			$log.push(String:C10(This:C1470.outputStream))
 			
+			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 		Else 
 			
 			If (Length:C16(String:C10(This:C1470.outputStream))>0)
@@ -1021,6 +985,8 @@ Function log()
 				$log.push(String:C10(This:C1470.outputStream))
 				
 			End if 
+			
+			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 	End case 
 	
 	If (Length:C16(String:C10(This:C1470.errorStream))>0)

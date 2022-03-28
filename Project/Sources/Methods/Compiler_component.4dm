@@ -72,10 +72,6 @@ If (False:C215)  //Private
 	C_TEXT:C284(buildApp_DELETE_RESOURCES; $1)
 	C_POINTER:C301(buildApp_DELETE_RESOURCES; $2)
 	
-	C_BOOLEAN:C305(key_mark; $1)
-	C_LONGINT:C283(key_mark; $2)
-	C_PICTURE:C286(key_mark; $3)
-	
 	C_TEXT:C284(_o_param_GET_ARRAY; $1)
 	C_TEXT:C284(_o_param_GET_ARRAY; $2)
 	C_POINTER:C301(_o_param_GET_ARRAY; $3)

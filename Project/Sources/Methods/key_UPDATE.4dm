@@ -9,30 +9,17 @@
 //
 // ----------------------------------------------------
 // Declarations
-C_BOOLEAN:C305($Boo_keyDefined; $Boo_locked)
-C_LONGINT:C283($Lon_back; $Lon_bottom; $Lon_count; $Lon_height; $Lon_i; $Lon_left)
-C_LONGINT:C283($Lon_optimalHeight; $Lon_optimalWidth; $Lon_parameters; $Lon_ref; $Lon_right; $Lon_sublist)
-C_LONGINT:C283($Lon_top; $Lon_width; $Lon_x; $Lon_y)
-C_POINTER:C301($Ptr_column_1; $Ptr_column_2; $Ptr_column_3; $Ptr_object)
-C_TEXT:C284($Dom_node; $Txt_buffer; $Txt_name; $Txt_platform; $Txt_structureFolderPath; $Txt_tagValue)
-C_TEXT:C284($Txt_type; $Txt_UID; $Txt_xpath)
+var $isSet; $isLocked : Boolean
+var $goUp; $bottom; $number; $height; $i; $left : Integer
+var $optimalHeight; $optimalWidth; $ref; $right; $sublist : Integer
+var $top; $width; $indx; $pos : Integer
+var $Ptr_column_1; $Ptr_column_2; $Ptr_column_3 : Pointer
+var $node; $t; $name; $os; $databaseFolderPathname; $t : Text
+var $type; $node; $xpath : Text
+var $notSet : Picture
 
 // ----------------------------------------------------
-// Initialisations
-$Lon_parameters:=Count parameters:C259
-
-If (Asserted:C1132($Lon_parameters>=0; "Missing parameter"))
-	
-	//NO PARAMETERS REQUIRED
-	
-Else 
-	
-	ABORT:C156
-	
-End if 
-
-// ----------------------------------------------------
-GET LIST ITEM:C378(Form:C1466.buildApp; *; $Lon_ref; $Txt_name)
+GET LIST ITEM:C378(Form:C1466.buildApp; *; $ref; $name)
 
 OBJECT SET VISIBLE:C603(*; "element.@"; False:C215)
 OBJECT SET VISIBLE:C603(*; "button.array.@"; False:C215)
@@ -40,49 +27,43 @@ OBJECT SET VISIBLE:C603(*; "os.@"; False:C215)
 OBJECT SET VISIBLE:C603(*; "lock"; False:C215)
 OBJECT SET VISIBLE:C603(*; "alert"; False:C215)
 
-GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "xpath"; $Txt_xpath)
-$Txt_buffer:=Get localized string:C991($Txt_xpath)
+GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "xpath"; $xpath)
+$t:=Get localized string:C991($xpath)
+$t:=Length:C16($t)>0 ? $t : Get localized string:C991($name)
 
-If (Length:C16($Txt_buffer)=0)
-	
-	$Txt_buffer:=Get localized string:C991($Txt_name)
-	
-End if 
+OBJECT SET VALUE:C1742("help"; $t)
+OBJECT SET VALUE:C1742("help1"; $t)
 
-(OBJECT Get pointer:C1124(Object named:K67:5; "help"))->:=$Txt_buffer
-(OBJECT Get pointer:C1124(Object named:K67:5; "help1"))->:=$Txt_buffer
-OBJECT GET COORDINATES:C663(*; "help1"; $Lon_left; $Lon_top; $Lon_right; $Lon_bottom)
-$Lon_width:=$Lon_right-$Lon_left
-$Lon_height:=$Lon_bottom-$Lon_top
-OBJECT GET BEST SIZE:C717(*; "help1"; $Lon_optimalWidth; $Lon_optimalHeight; $Lon_width)
-OBJECT SET VISIBLE:C603(*; "help1"; $Lon_optimalHeight<=$Lon_height)
-OBJECT SET VISIBLE:C603(*; "help"; $Lon_optimalHeight>$Lon_height)
-REDRAW WINDOW:C456
+OBJECT GET COORDINATES:C663(*; "help1"; $left; $top; $right; $bottom)
+$width:=$right-$left
+$height:=$bottom-$top
+OBJECT GET BEST SIZE:C717(*; "help1"; $optimalWidth; $optimalHeight; $width)
+OBJECT SET VISIBLE:C603(*; "help1"; $optimalHeight<=$height)
+OBJECT SET VISIBLE:C603(*; "help"; $optimalHeight>$height)
 
 //%W-518.5
-If ($Lon_sublist=0)\
- & ($Lon_ref>0)
+If ($sublist=0)\
+ & ($ref>0)
 	
-	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "type"; $Txt_type)
-	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "os"; $Txt_platform)
-	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "UID"; $Txt_UID)
+	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "type"; $type)
+	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "os"; $os)
+	GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "dom"; $node)
 	
-	$Boo_keyDefined:=(Length:C16($Txt_UID)>0)
-	$Boo_locked:=(($Txt_platform#Choose:C955(Is macOS:C1572; "mac"; "win")) & (Length:C16($Txt_platform)>0))
+	$isSet:=(Length:C16($node)>0)
+	$isLocked:=(($os#Choose:C955(Is macOS:C1572; "mac"; "win")) & (Length:C16($os)>0))
 	
-	If (Form event code:C388=On Clicked:K2:4)\
-		 & ((Macintosh option down:C545 | Windows Alt down:C563) & $Boo_keyDefined)
+	If (FORM Event:C1606.code=On Clicked:K2:4)\
+		 & ((Macintosh option down:C545 | Windows Alt down:C563) & $isSet)
 		
 		CONFIRM:C162(Get localized string:C991("AreYouSureYouWantToClearThisKey?"); Get localized string:C991("CommonDelete"))
 		
 		If (OK=1)
 			
-			DOM REMOVE XML ELEMENT:C869($Txt_UID)
-			SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp; *; "UID"; "")
-			
-			key_mark(False:C215)
-			
+			DOM REMOVE XML ELEMENT:C869($node)
+			SET LIST ITEM PARAMETER:C986(Form:C1466.buildApp; *; "dom"; "")
 			Form:C1466.modified:=True:C214
+			
+			SET LIST ITEM ICON:C950(Form:C1466.buildApp; Selected list items:C379(Form:C1466.buildApp; *); $notSet)
 			
 		End if 
 		
@@ -91,31 +72,41 @@ If ($Lon_sublist=0)\
 		
 	Else 
 		
-		$Ptr_object:=OBJECT Get pointer:C1124(Object named:K67:5; "element.value.label")
 		OBJECT SET VISIBLE:C603(*; "element.value.label"; True:C214)
 		
-		$Lon_x:=Position:C15("."; $Txt_type)
+		$indx:=Position:C15("."; $type)
 		
-		If ($Lon_x>0)
+		If ($indx>0)
 			
-			OBJECT SET VISIBLE:C603(*; "element.@"+Substring:C12($Txt_type; 1; $Lon_x-1)+"@"; True:C214)
+			OBJECT SET VISIBLE:C603(*; "element.@"+Substring:C12($type; 1; $indx-1)+"@"; True:C214)
 			
 		Else 
 			
-			OBJECT SET VISIBLE:C603(*; "element.@"+$Txt_type+"@"; Length:C16($Txt_type)>0)
+			OBJECT SET VISIBLE:C603(*; "element.@"+$type+"@"; Length:C16($type)>0)
 			
 		End if 
 		
 		Case of 
 				
 				//…………………………………………
-			: ($Txt_type="alpha@")
+			: ($type="alpha@")
 				
-				$Ptr_object->:=Get localized string:C991(Replace string:C233($Txt_type; "alpha."; ""))
+				$t:=Get localized string:C991(Replace string:C233($type; "alpha."; ""))
 				
-				If ($Boo_keyDefined)
+				If (Length:C16($t)=0)
 					
-					DOM GET XML ELEMENT VALUE:C731($Txt_UID; <>Txt_value)
+					OBJECT SET VALUE:C1742("element.value.label"; Replace string:C233($type; "alpha."; ""))
+					
+				Else 
+					
+					OBJECT SET VALUE:C1742("element.value.label"; $t)
+					
+				End if 
+				
+				//FIXME:Remove interprocess
+				If ($isSet)
+					
+					DOM GET XML ELEMENT VALUE:C731($node; <>Txt_value)
 					
 				Else 
 					
@@ -124,31 +115,27 @@ If ($Lon_sublist=0)\
 				End if 
 				
 				//…………………………………………
-			: ($Txt_type="boolean@")
+			: ($type="boolean@")
 				
-				$Ptr_object->:=Get localized string:C991(Replace string:C233($Txt_type; "boolean."; ""))
+				OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991(Replace string:C233($type; "boolean."; "")))
 				
-				If ($Boo_keyDefined)
+				If ($isSet)
 					
-					DOM GET XML ELEMENT VALUE:C731($Txt_UID; $Txt_tagValue)
-					
-					$Lon_x:=Num:C11($Txt_tagValue="True")
-					
-				Else 
-					
-					$Lon_x:=0
+					DOM GET XML ELEMENT VALUE:C731($node; $t)
 					
 				End if 
 				
-				(OBJECT Get pointer:C1124(Object named:K67:5; "element.boolean.1"))->:=$Lon_x
-				(OBJECT Get pointer:C1124(Object named:K67:5; "element.boolean.2"))->:=1-$Lon_x
+				$indx:=$t="True" ? 1 : 0
+				
+				OBJECT SET VALUE:C1742("element.boolean.1"; $indx)
+				OBJECT SET VALUE:C1742("element.boolean.2"; 1-$indx)
 				
 				//…………………………………………
-			: ($Txt_type="path.@")
+			: ($type="path.@")
 				
-				If ($Boo_keyDefined)
+				If ($isSet)
 					
-					DOM GET XML ELEMENT VALUE:C731($Txt_UID; <>Txt_value)
+					DOM GET XML ELEMENT VALUE:C731($node; <>Txt_value)
 					
 				Else 
 					
@@ -156,7 +143,7 @@ If ($Lon_sublist=0)\
 					
 				End if 
 				
-				If ($Boo_locked)
+				If ($isLocked)
 					
 					OBJECT SET VISIBLE:C603(*; "element.unlock.path@"; False:C215)
 					
@@ -172,53 +159,51 @@ If ($Lon_sublist=0)\
 						
 						If (doc_Is_Relative_Path(<>Txt_value))
 							
-							//Get the absolute path {
-							$Txt_structureFolderPath:=Storage:C1525.environment.databaseFolder
+							//Get the absolute path
+							$databaseFolderPathname:=Storage:C1525.environment.databaseFolder
 							
-							For ($Lon_i; 1; Length:C16(<>Txt_value); 1)
+							For ($i; 1; Length:C16(<>Txt_value); 1)
 								
-								If (Position:C15(<>Txt_value[[$Lon_i]]; Choose:C955(Is macOS:C1572; ":"; ".\\"))#0)
+								If (Position:C15(<>Txt_value[[$i]]; Choose:C955(Is macOS:C1572; ":"; ".\\"))#0)
 									
-									$Lon_back:=$Lon_i
+									$goUp:=$i
 									
 								Else 
 									
-									$Lon_i:=MAXLONG:K35:2-1
+									break
 									
 								End if 
 							End for 
 							
-							If ($Lon_back>0)
+							If ($goUp>0)
 								
 								If (Is Windows:C1573)
 									
-									$Lon_back:=$Lon_back-1
+									$goUp:=$goUp-1
 									
 								End if 
 							End if 
 							
-							For ($Lon_i; 1; $Lon_back; 1)
-								
-								$Lon_y:=0
+							For ($i; 1; $goUp; 1)
 								
 								Repeat 
 									
-									$Lon_x:=Position:C15(Folder separator:K24:12; $Txt_structureFolderPath; $Lon_y+1)
+									$indx:=Position:C15(Folder separator:K24:12; $databaseFolderPathname; $pos+1)
 									
-									If ($Lon_x>0)
+									If ($indx>0)
 										
-										$Lon_y:=$Lon_x
+										$pos:=$indx
 										
 									End if 
-								Until ($Lon_x=0)
+								Until ($indx=0)
 								
-								$Txt_structureFolderPath:=Substring:C12($Txt_structureFolderPath; 1; $Lon_y-1)
+								$databaseFolderPathname:=Substring:C12($databaseFolderPathname; 1; $pos-1)
 								
 							End for 
 							
-							<>Txt_value:=Delete string:C232(<>Txt_value; 1; $Lon_back-Num:C11(Is macOS:C1572))
-							<>Txt_value:=$Txt_structureFolderPath+<>Txt_value
-							//}
+							<>Txt_value:=Delete string:C232(<>Txt_value; 1; $goUp-Num:C11(Is macOS:C1572))
+							<>Txt_value:=$databaseFolderPathname+<>Txt_value
+							
 							
 						End if 
 					End if 
@@ -228,7 +213,7 @@ If ($Lon_sublist=0)\
 					Case of 
 							
 							//__________________________
-						: (Not:C34($Boo_keyDefined))
+						: (Not:C34($isSet))
 							
 							//__________________________
 						: (Test path name:C476(<>Txt_value)=Is a document:K24:1)
@@ -246,21 +231,21 @@ If ($Lon_sublist=0)\
 					End case 
 				End if 
 				
-				$Ptr_object->:=Choose:C955($Txt_type="@.folder@"; Get localized string:C991("folder"); Get localized string:C991("file"))
+				OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991($type="@.folder@" ? "folder" : "file"))
 				
-				$Txt_type:=Replace string:C233($Txt_type; ".folder"; "")
-				$Lon_x:=Position:C15(".file"; $Txt_type)
+				$type:=Replace string:C233($type; ".folder"; "")
+				$indx:=Position:C15(".file"; $type)
 				
-				If ($Lon_x>0)
+				If ($indx>0)
 					
-					$Txt_type:=Substring:C12($Txt_type; 1; $Lon_x-1)
+					$type:=Substring:C12($type; 1; $indx-1)
 					
 				End if 
 				
 				//…………………………………………
-			: ($Txt_type="array")
+			: ($type="array")
 				
-				OBJECT SET VISIBLE:C603(*; "element."+$Txt_type+"@"; True:C214)
+				OBJECT SET VISIBLE:C603(*; "element."+$type+"@"; True:C214)
 				OBJECT SET VISIBLE:C603(*; "element.value.label"; True:C214)
 				
 				OBJECT SET VISIBLE:C603(*; "C1"; True:C214)
@@ -275,30 +260,30 @@ If ($Lon_sublist=0)\
 				ARRAY LONGINT:C221($Ptr_column_2->; 0x0000)
 				ARRAY BOOLEAN:C223($Ptr_column_3->; 0x0000)
 				
-				If ($Boo_keyDefined)
+				If ($isSet)
 					
 					//Get the number elements of the array. Then the elements if any {
-					GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "xpath"; $Txt_buffer)
+					GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "xpath"; $t)
 					
-					If (Length:C16($Txt_buffer)>0)
+					If (Length:C16($t)>0)
 						
-						$Dom_node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp; $Txt_buffer+"/ItemsCount")
+						$node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp; $t+"/ItemsCount")
 						
 						If (OK=1)
 							
-							DOM GET XML ELEMENT VALUE:C731($Dom_node; $Lon_x)
+							DOM GET XML ELEMENT VALUE:C731($node; $indx)
 							
 						End if 
 						
-						ARRAY TEXT:C222($tTxt_values; $Lon_x)
+						ARRAY TEXT:C222($tTxt_values; $indx)
 						
-						For ($Lon_i; 1; $Lon_x; 1)
+						For ($i; 1; $indx; 1)
 							
-							$Dom_node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp; $Txt_buffer+"/Item"+String:C10($Lon_i))
+							$node:=DOM Find XML element:C864(Storage:C1525.environment.domBuildApp; $t+"/Item"+String:C10($i))
 							
 							If (OK=1)
 								
-								DOM GET XML ELEMENT VALUE:C731($Dom_node; $tTxt_values{$Lon_i})
+								DOM GET XML ELEMENT VALUE:C731($node; $tTxt_values{$i})
 								
 							End if 
 						End for 
@@ -312,66 +297,66 @@ If ($Lon_sublist=0)\
 				End if 
 				
 				//Get the type of the elements of the array and construct an appropriate listbox {
-				GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "arraytype"; $Txt_type)
+				GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "arraytype"; $type)
 				
 				Case of 
 						
 						//+++++++++++++++++++++++++++++++++++++++
-					: ($Txt_type="plugin.@")
+					: ($type="plugin.@")
 						
 						//Get the plugin list {
 						PLUGIN LIST:C847($Ptr_column_2->; $Ptr_column_1->)
 						
-						For ($Lon_i; Size of array:C274($Ptr_column_1->); 1; -1)
+						For ($i; Size of array:C274($Ptr_column_1->); 1; -1)
 							
 							Case of 
 									
 									//…………………………………………
-								: ($Ptr_column_1->{$Lon_i}="4D Internet Commands")
+								: ($Ptr_column_1->{$i}="4D Internet Commands")
 									
-									$Ptr_column_2->{$Lon_i}:=15010
-									
-									//…………………………………………
-								: ($Ptr_column_1->{$Lon_i}="4D@Pack")
-									
-									$Ptr_column_2->{$Lon_i}:=11999
+									$Ptr_column_2->{$i}:=15010
 									
 									//…………………………………………
-								: ($Ptr_column_2->{$Lon_i}=808464432)
+								: ($Ptr_column_1->{$i}="4D@Pack")
 									
-									DELETE FROM ARRAY:C228($Ptr_column_1->; $lon_i; 1)
-									DELETE FROM ARRAY:C228($Ptr_column_2->; $lon_i; 1)
-									
-									//…………………………………………
-								: ($Ptr_column_2->{$Lon_i}=4D View license:K44:4)
-									
-									$Ptr_column_2->{$Lon_i}:=13000
+									$Ptr_column_2->{$i}:=11999
 									
 									//…………………………………………
-								: ($Ptr_column_2->{$Lon_i}=4D Write license:K44:2)
+								: ($Ptr_column_2->{$i}=808464432)
 									
-									$Ptr_column_2->{$Lon_i}:=12000
+									DELETE FROM ARRAY:C228($Ptr_column_1->; $i; 1)
+									DELETE FROM ARRAY:C228($Ptr_column_2->; $i; 1)
 									
 									//…………………………………………
-								: ($Ptr_column_2->{$Lon_i}=4D ODBC Pro license:K44:9)
+								: ($Ptr_column_2->{$i}=4D View license:K44:4)
 									
-									$Ptr_column_2->{$Lon_i}:=13500
+									$Ptr_column_2->{$i}:=13000
+									
+									//…………………………………………
+								: ($Ptr_column_2->{$i}=4D Write license:K44:2)
+									
+									$Ptr_column_2->{$i}:=12000
+									
+									//…………………………………………
+								: ($Ptr_column_2->{$i}=4D ODBC Pro license:K44:9)
+									
+									$Ptr_column_2->{$i}:=13500
 									
 									//…………………………………………
 							End case 
 						End for 
 						//}
 						
-						$Lon_count:=Size of array:C274($Ptr_column_1->)
-						ARRAY BOOLEAN:C223($Ptr_column_3->; $Lon_count)
+						$number:=Size of array:C274($Ptr_column_1->)
+						ARRAY BOOLEAN:C223($Ptr_column_3->; $number)
 						
-						If ($Lon_count>0)
+						If ($number>0)
 							
-							If ($Txt_type="@.name")
+							If ($type="@.name")
 								
-								For ($Lon_i; 1; $Lon_count; 1)
+								For ($i; 1; $number; 1)
 									
-									$Ptr_column_3->{$Lon_i}:=(Find in array:C230($tTxt_values; $Ptr_column_1->{$Lon_i})=-1)
+									$Ptr_column_3->{$i}:=(Find in array:C230($tTxt_values; $Ptr_column_1->{$i})=-1)
 									
 								End for 
 								
@@ -379,9 +364,9 @@ If ($Lon_sublist=0)\
 								
 							Else 
 								
-								For ($Lon_i; 1; $Lon_count; 1)
+								For ($i; 1; $number; 1)
 									
-									$Ptr_column_3->{$Lon_i}:=(Find in array:C230($tTxt_values; String:C10($Ptr_column_2->{$Lon_i}))=-1)
+									$Ptr_column_3->{$i}:=(Find in array:C230($tTxt_values; String:C10($Ptr_column_2->{$i}))=-1)
 									
 								End for 
 								
@@ -391,67 +376,67 @@ If ($Lon_sublist=0)\
 							
 							OBJECT SET VISIBLE:C603(*; "C3"; True:C214)
 							
-							$Ptr_object->:=Get localized string:C991("plugin")
+							OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991("plugin"))
 							
 						Else 
 							
-							$Ptr_object->:=Get localized string:C991("no-plugin")
+							OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991("no-plugin"))
 							OBJECT SET VISIBLE:C603(*; "element.array"; False:C215)
 							
 						End if 
 						
 						//+++++++++++++++++++++++++++++++++++++++
-					: ($Txt_type="component")
+					: ($type="component")
 						
 						COMPONENT LIST:C1001($Ptr_column_1->)
 						
-						$Lon_count:=Size of array:C274($Ptr_column_1->)
+						$number:=Size of array:C274($Ptr_column_1->)
 						
-						If ($Lon_count>0)
+						If ($number>0)
 							
-							ARRAY BOOLEAN:C223($Ptr_column_3->; $Lon_count)
+							ARRAY BOOLEAN:C223($Ptr_column_3->; $number)
 							
-							For ($Lon_i; 1; $Lon_count; 1)
+							For ($i; 1; $number; 1)
 								
-								$Ptr_column_3->{$Lon_i}:=(Find in array:C230($tTxt_values; $Ptr_column_1->{$Lon_i})=-1)
+								$Ptr_column_3->{$i}:=(Find in array:C230($tTxt_values; $Ptr_column_1->{$i})=-1)
 								
 							End for 
 							
-							$Ptr_object->:=Get localized string:C991("component")
+							OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991("component"))
 							
-							ARRAY LONGINT:C221($Ptr_column_2->; $Lon_count)
+							ARRAY LONGINT:C221($Ptr_column_2->; $number)
 							OBJECT SET VISIBLE:C603(*; "C2"; False:C215)
 							
 						Else 
 							
-							$Ptr_object->:=Get localized string:C991("no-component")
+							OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991("no-component"))
 							OBJECT SET VISIBLE:C603(*; "element.array"; False:C215)
 							
 						End if 
 						
 						//+++++++++++++++++++++++++++++++++++++++
-					: ($Txt_type="path.@")  //Licences...
+					: ($type="path.@")  //Licences...
 						
-						If (Asserted:C1132($Txt_type="path.file.license4D"))
+						If (Asserted:C1132($type="path.file.license4D"))
 							
 							//%W-518.1
 							COPY ARRAY:C226($tTxt_values; $Ptr_column_1->)
 							//%W+518.1
 							
-							$Lon_count:=Size of array:C274($Ptr_column_1->)
+							$number:=Size of array:C274($Ptr_column_1->)
 							
-							$Ptr_object->:=Get localized string:C991("licences")
+							OBJECT SET VALUE:C1742("element.value.label"; Get localized string:C991("licences"))
 							
 						End if 
 						
-						ARRAY BOOLEAN:C223($Ptr_column_3->; $Lon_count)
-						ARRAY LONGINT:C221($Ptr_column_2->; $Lon_count)
+						ARRAY BOOLEAN:C223($Ptr_column_3->; $number)
+						ARRAY LONGINT:C221($Ptr_column_2->; $number)
 						OBJECT SET VISIBLE:C603(*; "C2"; False:C215)
 						OBJECT SET VISIBLE:C603(*; "C3"; False:C215)
 						
 						OBJECT SET VISIBLE:C603(*; "button.array.@"; True:C214)
 						
-						OBJECT SET VISIBLE:C603(*; "button.array.add@"; Not:C34($Boo_locked))
+						OBJECT SET VISIBLE:C603(*; "button.array.add@"; Not:C34($isLocked))
 						OBJECT SET VISIBLE:C603(*; "button.array.delete@"; $Ptr_column_1->>0)
 						
 						//+++++++++++++++++++++++++++++++++++++++
@@ -469,11 +454,11 @@ If ($Lon_sublist=0)\
 		End case 
 	End if 
 	
-	If (Length:C16($Txt_type)#0)
+	If (Length:C16($type)#0)
 		
-		If (Length:C16($Txt_platform)>0)
+		If (Length:C16($os)>0)
 			
-			OBJECT SET VISIBLE:C603(*; "os."+$Txt_platform+".alone@"; True:C214)
+			OBJECT SET VISIBLE:C603(*; "os."+$os+".alone@"; True:C214)
 			
 		Else 
 			
@@ -481,12 +466,9 @@ If ($Lon_sublist=0)\
 			
 		End if 
 		
-		OBJECT SET VISIBLE:C603(*; "lock"; $Boo_locked)
+		OBJECT SET VISIBLE:C603(*; "lock"; $isLocked)
 		
 	End if 
 	
 End if 
 //%W+518.5
-
-// ----------------------------------------------------
-// End  
