@@ -37,7 +37,7 @@ Case of
 		End if 
 		
 		//………………………………………………………
-	: ($page=2)  // BuildApp
+	: ($page=2)  // BuildApp keys
 		
 		If (Not:C34($loaded))
 			
@@ -94,10 +94,12 @@ Case of
 			
 		End if 
 		
+		LISTBOX SELECT ROW:C912(*; "key.list"; 1; lk replace selection:K53:1)
+		
 		//………………………………………………………
 	: ($page=3)  // Before
 		
-		If ($loaded)
+		If (Not:C34($loaded))
 			
 			Form:C1466.methods.before:=String:C10($ƒ.get("methods@before").value)
 			Form:C1466.plist:=$ƒ.get("info.plist").value
@@ -112,7 +114,7 @@ Case of
 		//………………………………………………………
 	: ($page=4)  // Options
 		
-		If ($loaded)
+		If (Not:C34($loaded))
 			
 			XML DECODE:C1091(String:C10($ƒ.get("options@increment_version").value); $isOn)
 			Form:C1466.options.increment_version:=$isOn
@@ -162,7 +164,7 @@ Case of
 		//………………………………………………………
 	: ($page=5)  // After
 		
-		If ($loaded)
+		If (Not:C34($loaded))
 			
 			Form:C1466.copy:=$ƒ.get("copy").value
 			Form:C1466.delete:=$ƒ.get("delete").value
