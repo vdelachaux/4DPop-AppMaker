@@ -544,38 +544,30 @@ Function getEnvironnementVariable($name : Text; $nonDiacritic : Boolean)->$value
 	
 	//MARK:- 🛠 Tools
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-	//escape special caracters for lep commands
-Function escape($text : Text)->$escaped : Text
+	// Escape special caracters for lep commands
+Function escape($text : Text) : Text
 	
-	var $t : Text
+	var $char : Text
 	
-	$escaped:=$text
-	
-	For each ($t; Split string:C1554("\\!\"#$%&'()=~|<>?;*`[] "; ""))
+	For each ($char; Split string:C1554("\\!\"#$%&'()=~|<>?;*`[] "; ""))
 		
-		$escaped:=Replace string:C233($escaped; $t; "\\"+$t; *)
+		$text:=Replace string:C233($text; $char; "\\"+$char; *)
 		
 	End for each 
 	
+	return $text
+	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Enclose, if necessary, the string in single quotation marks
-Function singleQuoted($string : Text)->$quoted : Text
+Function singleQuoted($string : Text) : Text
 	
-	$quoted:=Choose:C955(Match regex:C1019("^'.*'$"; $string; 1); $string; "'"+$string+"'")  // Already done // Do it
+	return Match regex:C1019("^'.*'$"; $string; 1) ? $string : ("'"+$string+"'")
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Returns the string between quotes
-Function quoted($string : Text)->$quoted : Text
+Function quoted($string : Text) : Text
 	
-	If (Match regex:C1019("^\".*\"$"; $string; 1))
-		
-		$quoted:=$string  // Already done
-		
-	Else 
-		
-		$quoted:="\""+$string+"\""  // Do it
-		
-	End if 
+	return Match regex:C1019("^\".*\"$"; $string; 1) ? $string : ("\""+$string+"\"")
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Compare two string version
@@ -732,13 +724,13 @@ ATTRIB [+R | -R] [+A | -A ] [+S | -S] [+H | -H] [+I | -I]
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	//Set write accesses to a directory with all its sub-folders and files
-Function unlockDirectory($cible : 4D:C1709.Folder)->$this : cs:C1710.lep
+Function unlockDirectory($folder : 4D:C1709.Folder) : cs:C1710.lep
 	
-	If (Bool:C1537($cible.exists))
+	If (Bool:C1537($folder.exists))
 		
-		If ($cible.isFolder)
+		If ($folder.isFolder)
 			
-			This:C1470.setEnvironnementVariable("directory"; $cible.platformPath)
+			This:C1470.setEnvironnementVariable("directory"; $folder.platformPath)
 			
 			If (Is Windows:C1573)
 				
@@ -746,23 +738,23 @@ Function unlockDirectory($cible : 4D:C1709.Folder)->$this : cs:C1710.lep
 				
 			Else 
 				
-				This:C1470.launch("chmod -R u+rwX "+This:C1470.singleQuoted($cible.path))
+				This:C1470.launch("chmod -R u+rwX "+This:C1470.singleQuoted($folder.path))
 				
 			End if 
 			
 		Else 
 			
-			This:C1470._pushError($cible.path+" is not a directory!")
+			This:C1470._pushError($folder.path+" is not a directory!")
 			
 		End if 
 		
 	Else 
 		
-		This:C1470._pushError("Invalid pathname: "+String:C10($cible.path))
+		This:C1470._pushError("Folder not found: "+String:C10($folder.path))
 		
 	End if 
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//MARK:- 📌 PRIVATES
 	

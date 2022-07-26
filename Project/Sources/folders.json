@@ -46,7 +46,14 @@
 			"Public"
 		],
 		"methods": [
-			"Compiler_component"
+			"application",
+			"Compiler_component",
+			"Compiler_new",
+			"component",
+			"database",
+			"pList",
+			"pref",
+			"preferences"
 		]
 	},
 	"Forms": {
@@ -70,6 +77,7 @@
 			"APP_MAKER_Load_page",
 			"appMaker_INIT",
 			"AUTO_BUILD",
+			"BARBER",
 			"buildApp_DELETE_RESOURCES",
 			"BuildApp_SET_ARRAY",
 			"buildApp_SET_ELEMENT",

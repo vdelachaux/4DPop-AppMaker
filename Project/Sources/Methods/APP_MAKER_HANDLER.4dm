@@ -101,7 +101,7 @@ Case of
 		$database:=database  // Storage.database
 		$environment:=Storage:C1525.environment
 		
-		$process:=New process:C317("BARBER"; 0; "$"+"BARBER"; "barber.open"; *)
+		$process:=New process:C317(Formula:C1597(BARBER).source; 0; "$"+"BARBER"; "barber.open"; *)
 		
 		$process:=Current process:C322
 		
@@ -744,13 +744,6 @@ Case of
 		End if 
 		
 		BARBER("barber.close")
-		
-		// P4 tool
-		//If ($success)
-		//If ($database.componentAvailable("p4"))  // Need p4
-		//EXECUTE METHOD("perforce_AFTER_BUILD"; $success)
-		// End if
-		// End if
 		
 		If ($success)
 			

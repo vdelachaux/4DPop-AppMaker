@@ -237,7 +237,7 @@ Function notarize($file : 4D:C1709.File) : Boolean
 	
 	If (This:C1470.success)
 		
-		$notarytool:=cs:C1710.notarytool.new(This:C1470.keychainProfile)
+		$notarytool:=cs:C1710.notarytool.new(String:C10(This:C1470.keychainProfile))
 		This:C1470.notarization:=$notarytool.submit($file.path)
 		
 	Else 
@@ -294,10 +294,6 @@ origin=Developer ID Application: Vincent de Lachaux (DYRKW64QA9)
 			
 		End if 
 	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function storeCredential() : Boolean
-	
 	
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -976,7 +972,6 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 		End if 
 	End if 
-	
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function _getBuildTarget() : 4D:C1709.Folder

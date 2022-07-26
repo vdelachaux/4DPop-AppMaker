@@ -14,7 +14,7 @@ Class constructor($keychainProfile : Text)
 		
 	Else 
 		
-		ALERT:C41("The command line tool \"notarytool\" is not available!")
+		ALERT:C41("The command line tool \"notarytool\" is not installed!")
 		
 	End if 
 	
@@ -23,17 +23,12 @@ Class constructor($keychainProfile : Text)
 Function getVersion() : Text
 	
 	This:C1470.launch("xcrun notarytool --version")
-	
 	return (This:C1470.success ? This:C1470.outputStream : "")
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 /*
 Save authentication credentials for the Apple notary service to the default login keychain.
-	
-	
 If using --key-path to pass the file path of a private key, the contents of the private key are stored
-	
-	
 in the new keychain item and the private key file can be deleted.
 */
 Function storeCredential($keychainProfile : Text; $appleId : Text; $teamID : Text; $password : Text)
