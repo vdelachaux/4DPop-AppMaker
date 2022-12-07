@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><preferences stamp="36">
+<?xml version="1.0" encoding="UTF-8"?><preferences stamp="39">
 	<com.4d>
 		<interface>
 			<misc/>
@@ -30,7 +30,7 @@
 		<database>
 			<cpu_priority/>
 			<cache size_fixed="32" size_maximum="100" size_reserved="128"/>
-			<misc mac_use_lf="false" no_bom="false" standard_xpath="true"/>                      </database>
+			<misc mac_use_lf="true" no_bom="true" prefer_null_than_blank_values="false" standard_xpath="true"/>                      </database>
 		<compiler>
 			<options compilation_path="3" fat_binary="true" target="all"/>
 			<typage default_for_button="2"/>

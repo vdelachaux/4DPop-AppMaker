@@ -17,6 +17,19 @@ Case of
 		DIALOG:C40("Barber")
 		
 		//_____________________________
+	: ($1="barber.error")
+		
+		BEEP:C151
+		
+		DELAY PROCESS:C323(Current process:C322; 500)
+		
+		Use (Storage:C1525.progress)
+			
+			Storage:C1525.progress.barber:=-1
+			
+		End use 
+		
+		//_____________________________
 	: ($1="barber.close")
 		
 		Use (Storage:C1525.progress)

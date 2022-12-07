@@ -6,10 +6,6 @@
 // Description
 // Component Entry Point
 // ----------------------------------------------------
-C_POINTER:C301($1)
-
-If (False:C215)
-	C_POINTER:C301(popAppMakerParameters; $1)
-End if 
+#DECLARE($ptr : Pointer)
 
 APP_MAKER_HANDLER

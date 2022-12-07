@@ -103,7 +103,6 @@ Function get destinationFolder() : 4D:C1709.Folder
 		End case 
 	End if 
 	
-	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function run() : Boolean
 	
@@ -183,7 +182,7 @@ Function run() : Boolean
 		
 	End if 
 	
-	return (This:C1470.success)
+	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function removeSignature() : Boolean
@@ -294,7 +293,6 @@ origin=Developer ID Application: Vincent de Lachaux (DYRKW64QA9)
 			
 		End if 
 	End if 
-	
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function staple($target : 4D:C1709.File) : Boolean
@@ -1152,5 +1150,4 @@ Function _defaultBuildSettings() : Object
 		"ClientSpecialBuild"; Null:C1517))
 	
 	return ($o)
-	
 	
