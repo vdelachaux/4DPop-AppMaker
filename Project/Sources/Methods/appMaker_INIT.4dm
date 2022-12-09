@@ -57,7 +57,7 @@ $o:=New shared object:C1526
 
 Use ($o)
 	
-	$o:=preferences
+	$o:=_o_preferences
 	
 End use 
 
@@ -140,10 +140,9 @@ If (Storage:C1525.progress=Null:C1517)
 	
 	Use (Storage:C1525.progress)
 		
-		Storage:C1525.progress.barber:=1
+		Storage:C1525.progress.indicator:=Barber shop:K42:35
 		Storage:C1525.progress.title:="…"
 		Storage:C1525.progress.value:=0
-		Storage:C1525.progress.max:=100
 		
 	End use 
 End if 

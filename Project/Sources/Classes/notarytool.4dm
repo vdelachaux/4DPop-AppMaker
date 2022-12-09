@@ -1,20 +1,35 @@
 Class extends lep
 
-Class constructor($keychainProfile : Text)
+Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 	
 	Super:C1705()
 	
-	// This.verbose:=False
+	This:C1470.responses:=New collection:C1472
 	This:C1470.version:=This:C1470.getVersion()
 	This:C1470.available:=This:C1470.success
 	
 	If (This:C1470.available)
 		
+		This:C1470.target:=$target
 		This:C1470.keychainProfile:=$keychainProfile ? $keychainProfile : Null:C1517
+		
+		This:C1470.success:=(This:C1470.target.exists) & (This:C1470.keychainProfile#Null:C1517)
+		
+		If (Not:C34(This:C1470.target.exists))
+			
+			This:C1470._pushError(This:C1470.target.path+" not found!")
+			
+		End if 
+		
+		If (This:C1470.keychainProfile=Null:C1517)
+			
+			This:C1470._pushError("Keychain profile not provided")
+			
+		End if 
 		
 	Else 
 		
-		ALERT:C41("The command line tool \"notarytool\" is not installed!")
+		This:C1470._pushError("The command line tool \"notarytool\" is not installed!")
 		
 	End if 
 	
@@ -61,40 +76,77 @@ xcrun notarytool store-credentials "AC_PASSWORD"
 /*
 Submit an archive to the Apple notary service.
 */
-Function submit($pathname : Text; $keychainProfile : Text) : Object
-	
-	// xcrun notarytool submit hello-1.0.pkg --keychain-profile "notary-scriptingosx" --wait
+Function submit() : Boolean
 	
 	If (This:C1470.available)
 		
-		$keychainProfile:=$keychainProfile ? $keychainProfile : This:C1470.keychainProfile
+		This:C1470.setOutputType(Is object:K8:27)
 		
-		This:C1470.success:=(Length:C16($keychainProfile)>0)
+		This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted(This:C1470.target.path)\
+			+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
+			+" --output-format json --wait")
+		
+		This:C1470.setOutputType()
+		
+		This:C1470.responses.push(JSON Stringify:C1217(This:C1470.outputStream))
 		
 		If (This:C1470.success)
 			
-			This:C1470.setOutputType(Is object:K8:27)
-			
-			This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted($pathname)\
-				+" --keychain-profile "+This:C1470.quoted($keychainProfile)\
-				+" --output-format json --wait")
-			
-			This:C1470.setOutputType()
-			
-			If (This:C1470.success)
-				
-				This:C1470.success:=(This:C1470.outputStream.status="Accepted")
-				
-				return (This:C1470.outputStream)
-				
-			End if 
-			
-		Else 
-			
-			// TODO:ERROR
+			This:C1470.success:=This:C1470.outputStream.status="Accepted"
 			
 		End if 
 	End if 
+	
+	return This:C1470.success
+	
+	// === === === === === === === === === === === === === === === === === === === === === === ===
+Function ckeckWithGatekeeper($path : Text; $certificate : Text) : Boolean
+	
+	// ⚠️ RESULT IS ON ERROR STREAM
+	This:C1470.resultInErrorStream:=True:C214
+	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted($path))
+	This:C1470.resultInErrorStream:=False:C215
+	
+	This:C1470.responses.push(This:C1470.outputStream+This:C1470.errorStream)
+	
+	If (This:C1470.success)
+		
+/*
+<file>: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: <certificate>
+*/
+		
+		ARRAY LONGINT:C221($len; 0)
+		ARRAY LONGINT:C221($pos; 0)
+		If (Match regex:C1019("(?mi-s): accepted\\nsource=Notarized Developer ID\\norigin=Developer ID Application: ([^$]*)$"; This:C1470.outputStream; 1; $pos; $len))
+			
+			This:C1470.success:=Substring:C12(This:C1470.outputStream; $pos{1}; $len{1})=$certificate
+			
+		Else 
+			
+			This:C1470.success:=False:C215
+			
+		End if 
+	End if 
+	
+	return This:C1470.success
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function staple() : Boolean
+	
+	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted(This:C1470.target.path))
+	This:C1470.responses.push(This:C1470.outputStream+This:C1470.errorStream)
+	
+	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
+	
+	If (Not:C34(This:C1470.success))
+		
+		This:C1470._pushError(This:C1470.outputStream)
+		
+	End if 
+	
+	return This:C1470.success
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 /*

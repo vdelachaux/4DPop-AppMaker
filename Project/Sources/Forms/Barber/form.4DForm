@@ -52,9 +52,10 @@
 					"left": 114,
 					"width": 272,
 					"height": 24,
-					"dataSource": "Storage:C1525.progress.barber",
+					"dataSource": "",
 					"fontFamily": "Lucida Grande",
-					"fontSize": 13
+					"fontSize": 13,
+					"visibility": "hidden"
 				},
 				"Variable2": {
 					"type": "input",
@@ -70,6 +71,34 @@
 					"focusable": false,
 					"fontWeight": "normal",
 					"fontTheme": "normal"
+				},
+				"percent": {
+					"type": "input",
+					"left": 307,
+					"top": 63,
+					"width": 79,
+					"height": 15,
+					"dataSource": "Storage:C1525.progress.value",
+					"dataSourceTypeHint": "integer",
+					"enterable": false,
+					"focusable": false,
+					"contextMenu": "none",
+					"numberFormat": "##0%",
+					"borderStyle": "none",
+					"textAlign": "right",
+					"fontSize": 11,
+					"visibility": "hidden"
+				},
+				"barber": {
+					"type": "progress",
+					"top": 74,
+					"left": 114,
+					"width": 272,
+					"height": 24,
+					"dataSource": "1",
+					"fontFamily": "Lucida Grande",
+					"fontSize": 13,
+					"visibility": "hidden"
 				}
 			}
 		}
@@ -77,5 +106,13 @@
 	"$4d": {
 		"version": "1",
 		"kind": "form"
+	},
+	"geometryStamp": 16,
+	"editor": {
+		"activeView": "View 1",
+		"defaultView": "View 1",
+		"views": {
+			"View 1": {}
+		}
 	}
 }

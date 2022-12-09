@@ -1,35 +1,35 @@
 Class extends lep
 
 //=== === === === === === === === === === === === === === === === === === === === === === ===
-Class constructor($buildAppSettingsFile)
+Class constructor($settings; $credentials : Object)
+	
+	Super:C1705()
 	
 	var $o : Object
 	var $file : 4D:C1709.File
 	
-	Super:C1705()
-	
 	// Project
-	This:C1470.package:=Folder:C1567(Folder:C1567(fk database folder:K87:14; *).platformPath; fk platform path:K87:2)  // Unsandboxed
+	
 	
 	// Settings
 	Case of 
 			
 			//______________________________________________________
-		: (Value type:C1509($buildAppSettingsFile)=Is object:K8:27)
+		: (Value type:C1509($settings)=Is object:K8:27)
 			
-			This:C1470.buildAppSettingsFile:=OB Instance of:C1731($buildAppSettingsFile; 4D:C1709.File) ? $buildAppSettingsFile : Null:C1517
+			This:C1470.buildAppSettingsFile:=OB Instance of:C1731($settings; 4D:C1709.File) ? $settings : Null:C1517
 			
 			//______________________________________________________
-		: (Value type:C1509($buildAppSettingsFile)=Is text:K8:3)\
-			 && (Length:C16($buildAppSettingsFile)>0)  // Pathname
+		: (Value type:C1509($settings)=Is text:K8:3)\
+			 && (Length:C16($settings)>0)  // Pathname
 			
-			This:C1470.buildAppSettingsFile:=File:C1566(String:C10($buildAppSettingsFile))
+			This:C1470.buildAppSettingsFile:=File:C1566(String:C10($settings))
 			
 			//______________________________________________________
 		Else   // Default
 			
-			$buildAppSettingsFile:=File:C1566(File:C1566(Build application settings file:K5:60; *).platformPath; fk platform path:K87:2)  // Unsandboxed
-			This:C1470.buildAppSettingsFile:=$buildAppSettingsFile.exists ? $buildAppSettingsFile : Null:C1517
+			$settings:=File:C1566(File:C1566(Build application settings file:K5:60; *).platformPath; fk platform path:K87:2)  // Unsandboxed
+			This:C1470.buildAppSettingsFile:=$settings.exists ? $settings : Null:C1517
 			
 			//______________________________________________________
 	End case 
@@ -37,30 +37,25 @@ Class constructor($buildAppSettingsFile)
 	This:C1470.settings:=This:C1470._getSettings(This:C1470.buildAppSettingsFile)
 	
 	// Notarization settings
-	$file:=This:C1470.package.file("Preferences/notarise.json")  // Database file
-	
-	If (Not:C34($file.exists))
-		
-		$file:=Folder:C1567(fk user preferences folder:K87:10).file("notarise.json")  // General file
-		
-	End if 
-	
-	If ($file.exists)
-		
-		$o:=JSON Parse:C1218($file.getText())
-		This:C1470.appleID:=$o.appleID ? String:C10($o.appleID) : Null:C1517
-		This:C1470.certificate:=$o.certificate ? String:C10($o.certificate) : Null:C1517
-		This:C1470.publicID:=$o.publicID ? String:C10($o.publicID) : Null:C1517
-		This:C1470.keychainProfile:=$o.keychainProfile ? String:C10($o.keychainProfile) : Null:C1517
-		
-	End if 
+	//FIXME: Usefull ?
+	This:C1470.credentials:=$credentials
+	//$file:=This.This.package:=Folder(fk database folder; *).file("Preferences/notarise.json")  // Database file
+	//If (Not($file.exists))
+	//$file:=Folder(fk user preferences folder).file("notarise.json")  // General file
+	//End if 
+	//If ($file.exists)
+	//$o:=JSON Parse($file.getText())
+	//This.appleID:=$o.appleID ? String($o.appleID) : Null
+	//This.certificate:=$o.certificate ? String($o.certificate) : Null
+	//This.publicID:=$o.publicID ? String($o.publicID) : Null
+	//This.keychainProfile:=$o.keychainProfile ? String($o.keychainProfile) : Null
+	//End if
 	
 	This:C1470.lib4d:=File:C1566("⛔️")
 	This:C1470.buildStatus:=Null:C1517
 	This:C1470.requestUID:=Null:C1517
 	
-	//MARK:[COMPUTED]
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
+	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get destinationFolder() : 4D:C1709.Folder
 	
 	If (This:C1470.settings#Null:C1517)
@@ -185,48 +180,6 @@ Function run() : Boolean
 	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function removeSignature() : Boolean
-	
-	This:C1470.launch("codesign --remove-signature "+This:C1470.quoted(This:C1470.lib4d.path))
-	
-	return (This:C1470.success)
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function sign() : Boolean
-	
-	var $identity : Text
-	
-	Case of 
-			//______________________________________________________
-		: (This:C1470.certificate#Null:C1517)
-			
-			$identity:=This:C1470.quoted("Developer ID Application: "+This:C1470.certificate)
-			
-			//______________________________________________________
-		: (This:C1470.identity#Null:C1517)
-			
-			$identity:=This:C1470.identity.name
-			
-			//______________________________________________________
-		Else 
-			
-			This:C1470._pushError("No certificate provided nor identity found")
-			
-			//______________________________________________________
-	End case 
-	
-	If (Length:C16($identity)>0)
-		
-		// ⚠️ RESULT IS ON ERROR STREAM
-		This:C1470.resultInErrorStream:=True:C214
-		This:C1470.launch("codesign --verbose --deep --timestamp --force --sign "+$identity+" "+This:C1470.quoted(This:C1470.lib4d.path))
-		This:C1470.resultInErrorStream:=False:C215
-		
-	End if 
-	
-	return (This:C1470.success)
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function notarize($file : 4D:C1709.File) : Boolean
 	
 	var $response : Object
@@ -236,8 +189,11 @@ Function notarize($file : 4D:C1709.File) : Boolean
 	
 	If (This:C1470.success)
 		
-		$notarytool:=cs:C1710.notarytool.new(String:C10(This:C1470.keychainProfile))
-		This:C1470.notarization:=$notarytool.submit($file.path)
+		$notarytool:=cs:C1710.notarytool.new(String:C10(This:C1470.credentials.keychainProfile))
+		
+		//This.notarization:=$notarytool.submit($file.path)
+		This:C1470.success:=$notarytool.submit($file.path)
+		This:C1470.notarization:=$notarytool.outputStream
 		
 	Else 
 		
@@ -245,10 +201,10 @@ Function notarize($file : 4D:C1709.File) : Boolean
 		
 	End if 
 	
-	return (This:C1470.success)
+	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function verifySignature($target : Object)->$success : Boolean
+Function verifySignature($target : Object) : Boolean
 	
 	If (Count parameters:C259>=1)
 		
@@ -268,6 +224,8 @@ lib4d-arm64.dylib: satisfies its Designated Requirement
 */
 		
 	End if 
+	
+	return This:C1470.success
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function ckeckWithGatekeeper()->$result : Text
@@ -306,7 +264,7 @@ Function staple($target : 4D:C1709.File) : Boolean
 		
 	End if 
 	
-	return (This:C1470.success)
+	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function compile($options : Object)->$error : Object
@@ -403,7 +361,7 @@ Function CommitAndPush($message : Text)->$error : Object
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function _getPublicID($password : Text)
 	
-	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.appleID+" -p "+$password)
+	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.credentials.appleID+" -p "+$password)
 	
 	//MARK:[PRIVATE]
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -1008,7 +966,7 @@ Function _getLib4D() : 4D:C1709.File
 	
 	If ($file.exists)
 		
-		return ($file)
+		return $file
 		
 	Else 
 		

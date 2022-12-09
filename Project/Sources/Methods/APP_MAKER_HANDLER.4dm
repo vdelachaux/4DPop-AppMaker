@@ -102,7 +102,7 @@ Case of
 		$environment:=Storage:C1525.environment
 		
 		// Start the Barber
-		$process:=New process:C317(Formula:C1597(BARBER).source; 0; "$AppMakerBarber"; "barber.open"; *)
+		$process:=New process:C317(Formula:C1597(_o_BARBER).source; 0; "$AppMakerBarber"; "barber.open"; *)
 		
 		var $xml : cs:C1710.xml
 		var $pref : Object
@@ -115,7 +115,7 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
 				Storage:C1525.progress.title:="🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; String:C10($pref.methods.before))
 				
 			End use 
@@ -132,7 +132,7 @@ Case of
 					
 				End use 
 				
-				BARBER("barber.error")
+				_o_BARBER("barber.error")
 				
 				return 
 				
@@ -144,7 +144,7 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
 				Storage:C1525.progress.title:="🚧 "+Get localized string:C991("Preparations")+"…"
 				
 			End use 
@@ -207,7 +207,7 @@ Case of
 				
 				Use (Storage:C1525.progress)
 					
-					Storage:C1525.progress.barber:=-2
+					Storage:C1525.progress.indicator:=Barber shop:K42:35
 					Storage:C1525.progress.title:="⚙️ "+Get localized string:C991("CompilationAndGeneration")
 					
 				End use 
@@ -220,7 +220,7 @@ Case of
 						
 					End use 
 					
-					BARBER("barber.error")
+					_o_BARBER("barber.error")
 					
 					return 
 					
@@ -285,7 +285,7 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
 				Storage:C1525.progress.title:="🚧 "+Get localized string:C991("Preparation")
 				
 			End use 
@@ -321,7 +321,7 @@ Case of
 					
 					Use (Storage:C1525.progress)
 						
-						Storage:C1525.progress.barber:=-2
+						Storage:C1525.progress.indicator:=Barber shop:K42:35
 						Storage:C1525.progress.title:="🚚 "+Get localized string:C991("exportProject")
 						
 					End use 
@@ -342,7 +342,7 @@ Case of
 					
 					Use (Storage:C1525.progress)
 						
-						Storage:C1525.progress.barber:=-2
+						Storage:C1525.progress.indicator:=Barber shop:K42:35
 						Storage:C1525.progress.title:="🗜 "+Get localized string:C991("compression")
 						
 					End use 
@@ -374,7 +374,7 @@ Case of
 				
 				Use (Storage:C1525.progress)
 					
-					Storage:C1525.progress.barber:=-2
+					Storage:C1525.progress.indicator:=Barber shop:K42:35
 					Storage:C1525.progress.title:="🧽 "+Get localized string:C991("deleteMacOsSpecificFiles")
 					
 				End use 
@@ -413,7 +413,7 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
 				Storage:C1525.progress.title:="🗜 Deleting unnecessary resources"
 				
 			End use 
@@ -484,8 +484,8 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=0
-				Storage:C1525.progress.max:=$pref.copy.array.item.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
+				Storage:C1525.progress.indicator:=0
+				Storage:C1525.progress.value:=$pref.copy.array.item.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 				Storage:C1525.progress.title:="⚙️ "+Get localized string:C991("preparationOfCopy")
 				
 			End use 
@@ -494,25 +494,25 @@ Case of
 			
 			If ($builComponent)
 				
-				COPY(String:C10($Obj_paths.root)+$Txt_relativeComponentTarget; $pref.copy.array.item.extract("$"))
+				_o_COPY(String:C10($Obj_paths.root)+$Txt_relativeComponentTarget; $pref.copy.array.item.extract("$"))
 				
 			End if 
 			
 			If ($buildCompiled)
 				
-				COPY(String:C10($Obj_paths.root)+$Txt_relativeCompiledTarget; $pref.copy.array.item.extract("$"))
+				_o_COPY(String:C10($Obj_paths.root)+$Txt_relativeCompiledTarget; $pref.copy.array.item.extract("$"))
 				
 			End if 
 			
 			If ($buildStandalone)
 				
-				COPY(String:C10($Obj_paths.root)+$Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12; $pref.copy.array.item.extract("$"))
+				_o_COPY(String:C10($Obj_paths.root)+$Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12; $pref.copy.array.item.extract("$"))
 				
 			End if 
 			
 			If ($buildServer)
 				
-				COPY(String:C10($Obj_paths.root)+$Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12; $pref.copy.array.item.extract("$"))
+				_o_COPY(String:C10($Obj_paths.root)+$Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12; $pref.copy.array.item.extract("$"))
 				
 			End if 
 		End if 
@@ -528,8 +528,8 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=0
-				Storage:C1525.progress.max:=$pref.delete.array.item.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
+				Storage:C1525.progress.indicator:=0
+				Storage:C1525.progress.value:=$pref.delete.array.item.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 				Storage:C1525.progress.title:="🚧 "+Get localized string:C991("preparingForRemoval")
 				
 			End use 
@@ -538,25 +538,25 @@ Case of
 			
 			If ($builComponent)
 				
-				DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeComponentTarget)
+				_o_DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeComponentTarget)
 				
 			End if 
 			
 			If ($buildCompiled)
 				
-				DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeCompiledTarget)
+				_o_DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeCompiledTarget)
 				
 			End if 
 			
 			If ($buildStandalone)
 				
-				DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12)
+				_o_DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeStandaloneTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Database"+Folder separator:K24:12)
 				
 			End if 
 			
 			If ($buildServer)
 				
-				DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12)
+				_o_DELETE(String:C10($Obj_paths.root); $pref.delete.array.item.extract("$"); $Txt_relativeServerTarget+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; "")+"Server Database"+Folder separator:K24:12)
 				
 			End if 
 		End if 
@@ -586,7 +586,7 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
 				Storage:C1525.progress.title:="🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; String:C10($pref.methods.after))
 				
 			End use 
@@ -603,7 +603,7 @@ Case of
 					
 				End use 
 				
-				BARBER("barber.error")
+				_o_BARBER("barber.error")
 				
 				return 
 				
@@ -615,11 +615,13 @@ Case of
 			
 			Use (Storage:C1525.progress)
 				
-				Storage:C1525.progress.barber:=-2
-				Storage:C1525.progress.max:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
+				Storage:C1525.progress.indicator:=Barber shop:K42:35
+				Storage:C1525.progress.value:=$c.length*(Num:C11($builComponent)+Num:C11($buildCompiled)+Num:C11($buildStandalone)+Num:C11($buildServer))
 				Storage:C1525.progress.title:="🍏 Notarization process"
 				
 			End use 
+			
+			//$build.removeSignature()
 			
 			var $codesign : cs:C1710.codesign
 			$codesign:=cs:C1710.codesign.new(New object:C1471(\
@@ -669,7 +671,7 @@ Case of
 			End if 
 		End if 
 		
-		BARBER("barber.close")
+		_o_BARBER("barber.close")
 		
 		// MARK:-Reveal he target
 		If (Length:C16(String:C10($pref.reveal.path))>0)

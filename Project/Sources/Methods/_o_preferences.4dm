@@ -12,9 +12,9 @@ C_COLLECTION:C1488($c)
 ARRAY TEXT:C222($tDom_items; 0)
 
 If (False:C215)
-	C_OBJECT:C1216(preferences; $0)
-	C_TEXT:C284(preferences; $1)
-	C_OBJECT:C1216(preferences; $2)
+	C_OBJECT:C1216(_o_preferences; $0)
+	C_TEXT:C284(_o_preferences; $1)
+	C_OBJECT:C1216(_o_preferences; $2)
 End if 
 
 If (This:C1470=Null:C1517)
@@ -39,11 +39,11 @@ If (This:C1470=Null:C1517)
 			
 		End if 
 		
-		$o.open:=Formula:C1597(preferences("open"))
-		$o.close:=Formula:C1597(preferences("close"))
-		$o.save:=Formula:C1597(preferences("save"))
-		$o.get:=Formula:C1597(preferences("get"; New object:C1471("xpath"; $1)))
-		$o.set:=Formula:C1597(preferences("set"; New object:C1471("xpath"; $1; "value"; $2)))
+		$o.open:=Formula:C1597(_o_preferences("open"))
+		$o.close:=Formula:C1597(_o_preferences("close"))
+		$o.save:=Formula:C1597(_o_preferences("save"))
+		$o.get:=Formula:C1597(_o_preferences("get"; New object:C1471("xpath"; $1)))
+		$o.set:=Formula:C1597(_o_preferences("set"; New object:C1471("xpath"; $1; "value"; $2)))
 		
 	End use 
 	

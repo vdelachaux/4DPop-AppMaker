@@ -3,15 +3,15 @@ C_OBJECT:C1216(database; $0)
 C_TEXT:C284(database; $1)
 C_OBJECT:C1216(database; $2)
 
-C_OBJECT:C1216(preferences; $0)
-C_TEXT:C284(preferences; $1)
-C_OBJECT:C1216(preferences; $2)
+C_OBJECT:C1216(_o_preferences; $0)
+C_TEXT:C284(_o_preferences; $1)
+C_OBJECT:C1216(_o_preferences; $2)
 
 C_OBJECT:C1216(pList; $0)
 C_TEXT:C284(pList; $1)
 C_OBJECT:C1216(pList; $2)
 
-C_TEXT:C284(BARBER; $1)
+C_TEXT:C284(_o_BARBER; $1)
 
 C_OBJECT:C1216(application; $0)
 C_TEXT:C284(application; $1)

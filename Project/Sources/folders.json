@@ -23,6 +23,21 @@
 			"_o_preferencesOpen"
 		]
 	},
+	"_TEMPO": {
+		"classes": [
+			"App",
+			"BuildApp",
+			"Console",
+			"SignApp",
+			"TM_Build"
+		]
+	},
+	"(database)": {
+		"methods": [
+			"(COMPILER_database)"
+		]
+	},
+	"(env)": {},
 	"00_dev": {
 		"methods": [
 			"00_test",
@@ -34,6 +49,7 @@
 	},
 	"Classes": {
 		"classes": [
+			"AppMaker",
 			"build",
 			"hdutil"
 		]
@@ -52,8 +68,7 @@
 			"component",
 			"database",
 			"pList",
-			"pref",
-			"preferences"
+			"pref"
 		]
 	},
 	"Forms": {
@@ -63,10 +78,20 @@
 		]
 	},
 	"Libraries": {
+		"methods": [
+			"COMPILER_env",
+			"databaseNonThreadSafe",
+			"envScreens",
+			"noERROR"
+		],
 		"classes": [
 			"codesign",
+			"database",
+			"env",
 			"lep",
+			"motor",
 			"notarytool",
+			"prefs",
 			"xml"
 		]
 	},
@@ -77,12 +102,9 @@
 			"APP_MAKER_Load_page",
 			"appMaker_INIT",
 			"AUTO_BUILD",
-			"BARBER",
 			"buildApp_DELETE_RESOURCES",
 			"BuildApp_SET_ARRAY",
 			"buildApp_SET_ELEMENT",
-			"COPY",
-			"DELETE",
 			"DELETE_MAC_CONTENT",
 			"key_UPDATE",
 			"quickOpenActions"
@@ -105,7 +127,6 @@
 			"doc_OBJET_LOCATION",
 			"EXPORT_PROJECT",
 			"git",
-			"noERROR",
 			"Obj_CENTER",
 			"PHP_zip_archive_to",
 			"wait",
@@ -115,5 +136,10 @@
 			"xml_Save_file"
 		]
 	},
-	"trash": {}
+	"trash": {
+		"groups": [
+			"(database)",
+			"(env)"
+		]
+	}
 }

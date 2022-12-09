@@ -28,3 +28,5 @@ _gsdata_
 Project/Sources/Methods/Method77.4dm
 Project/Sources/Methods/00_.4dm
 Build/Components/4DPop AppMaker.dmg
+Project/Sources/Methods/Method*.4dm
+Build/Components/lib4d-arm64.dmg

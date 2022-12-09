@@ -3,8 +3,9 @@
 // Method :  Compiler_component
 // Created 25/05/10 by Vincent de Lachaux
 // ----------------------------------------------------
-C_TEXT:C284(<>Txt_value)
+var AppMaker : cs:C1710.AppMaker
 
+C_TEXT:C284(<>Txt_value)
 
 If (False:C215)  //Public
 	
@@ -58,12 +59,12 @@ If (False:C215)  //Private
 	
 	C_LONGINT:C283(APP_MAKER_Load_page; $1)
 	
-	C_TEXT:C284(COPY; $1)
-	C_COLLECTION:C1488(COPY; $2)
+	C_TEXT:C284(_o_COPY; $1)
+	C_COLLECTION:C1488(_o_COPY; $2)
 	
-	C_TEXT:C284(DELETE; $1)
-	C_COLLECTION:C1488(DELETE; $2)
-	C_TEXT:C284(DELETE; $3)
+	C_TEXT:C284(_o_DELETE; $1)
+	C_COLLECTION:C1488(_o_DELETE; $2)
+	C_TEXT:C284(_o_DELETE; $3)
 	
 	C_POINTER:C301(BuildApp_SET_ARRAY; $1)
 	
