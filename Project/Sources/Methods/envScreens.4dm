@@ -2,7 +2,7 @@
 /*
 Non-thread-safe screen commands to be called in a cooperative process
 */
-#DECLARE($signal : Object)
+#DECLARE($signal : 4D:C1709.Signal)
 
 If (False:C215)
 	C_OBJECT:C1216(envScreens; $1)

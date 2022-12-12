@@ -1,0 +1,100 @@
+Class extends lep
+
+// https:// Ss64.com/osx/ditto.html
+
+Class constructor($rc : Object; $tgt : 4D:C1709.File)
+	
+	Super:C1705()
+	
+	This:C1470.src:=$rc
+	This:C1470.tgt:=$tgt
+	
+	This:C1470.CONSTANTS:=New object:C1471
+	
+	// Create or extract from a PKZip archive instead of the default CPIO.
+	// PKZip archives should be stored in filenames ending in .zip.
+	This:C1470.CONSTANTS.PKZip:=True:C214
+	
+	// When creating an archive, embed the parent directory name src in dst_archive.
+	This:C1470.CONSTANTS.keepParent:=True:C214
+	
+	// Preserve resource forks and HFS meta-data.
+	// As of Mac OS X 10.4, --rsrc is default behavior.
+	This:C1470.CONSTANTS.rsrc:=True:C214
+	
+	// Preserve extended attributes (requires --rsrc).
+	// As of Mac OS X 10.5, --extattr is the default.
+	This:C1470.CONSTANTS.extattr:=True:C214
+	
+	// Preserve quarantine information.
+	// As of Mac OS X 10.5, --qtn is the default.
+	This:C1470.CONSTANTS.qtn:=True:C214
+	
+	// The compression level can be set from 0 to 9, where 0 represents no compression
+	// By default, ditto will use the default compression level as defined by zlib.
+	This:C1470.CONSTANTS.zlibCompressionLevel:=-1
+	
+	// === === === === === === === === === === === === === === === === === === === === === === ===
+Function archive($tgt : 4D:C1709.File)
+	
+	This:C1470.tgt:=$tgt || This:C1470.tgt
+	
+	This:C1470.tgt.delete()
+	
+	This:C1470.launch(This:C1470._cmd("ditto -c ")+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
+	
+	// === === === === === === === === === === === === === === === === === === === === === === ===
+Function extract($tgt : 4D:C1709.Folder; $password : Text)
+	
+	This:C1470.tgt:=$tgt || This:C1470.tgt
+	
+	This:C1470.launch(This:C1470._cmd("ditto "; $password)+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _cmd($cmd : Text; $password : Text) : Text
+	
+	var $create : Boolean
+	$create:=Position:C15("-c "; $cmd)>0
+	
+	If (This:C1470.CONSTANTS.PKZip)
+		
+		$cmd+="-k "
+		
+	End if 
+	
+	If ($create)
+		
+		If (This:C1470.CONSTANTS.keepParent)
+			
+			$cmd+="--keepParent "
+			
+		End if 
+		
+		If (This:C1470.CONSTANTS.zlibCompressionLevel>=0)
+			
+			$cmd+="--zlibCompressionLevel "+String:C10(This:C1470.CONSTANTS.zlibCompressionLevel)+" "
+			
+		End if 
+	End if 
+	
+	If (Not:C34(This:C1470.CONSTANTS.rsrc))
+		
+		// Do not preserve resource forks and HFS meta-data.
+		
+		$cmd+="--norsrc "
+		
+		If (Not:C34(This:C1470.CONSTANTS.extattr))
+			
+			// Do not preserve extended attributes (requires --norsrc)
+			$cmd+="--noextattr "
+			
+		End if 
+	End if 
+	
+	If (Length:C16($password)>0)
+		
+		$cmd+="--password "+$password+" "
+		
+	End if 
+	
+	return $cmd

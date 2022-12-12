@@ -1,6 +1,6 @@
 //USE: envScreens
 
-Class constructor
+Class constructor($full : Boolean)
 	
 	This:C1470.machineName:=Current machine:C483
 	This:C1470.userName:=Current system user:C484
@@ -12,27 +12,17 @@ Class constructor
 	This:C1470.systemFolder:=Folder:C1567(fk system folder:K87:13)
 	This:C1470.applicationsFolder:=Folder:C1567(fk applications folder:K87:20)
 	
-	If (Is macOS:C1572 || Is Windows:C1573)
+	This:C1470.screens:=Null:C1517
+	This:C1470.mainScreenID:=0
+	This:C1470.mainScreen:=Null:C1517
+	This:C1470.menuBarHeight:=0
+	This:C1470.toolBarHeight:=0
+	
+	$full:=Count parameters:C259>=1 ? $full : False:C215
+	
+	If ($full && (Is macOS:C1572 || Is Windows:C1573))
 		
-		// Non-thread-safe screen commands are delegated to the application process
-		var $signal : 4D:C1709.Signal
-		$signal:=New signal:C1641("env")
-		CALL WORKER:C1389(1; "envScreens"; $signal)
-		$signal.wait()
-		
-		This:C1470.screens:=$signal.screens.copy()
-		This:C1470.mainScreenID:=$signal.mainScreenID
-		This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
-		This:C1470.menuBarHeight:=$signal.menuBarHeight
-		This:C1470.toolBarHeight:=$signal.toolBarHeight
-		
-	Else 
-		
-		This:C1470.screens:=New collection:C1472()
-		This:C1470.mainScreenID:=0
-		This:C1470.mainScreen:=0
-		This:C1470.menuBarHeight:=0
-		This:C1470.toolBarHeight:=0
+		This:C1470._screens()
 		
 	End if 
 	
@@ -165,6 +155,21 @@ Function applicationSupport($path : Text; $create : Boolean) : Object
 	return Count parameters:C259>=1 ? This:C1470._postProcessing($folder; $path; $create) : $folder
 	
 	//MARK:-
+	// *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+Function _screens()
+	
+	// Non-thread-safe screen commands are delegated to the application process
+	var $signal : 4D:C1709.Signal
+	$signal:=New signal:C1641("env")
+	CALL WORKER:C1389("$nonThreadSafe"; "envScreens"; $signal)
+	$signal.wait()
+	
+	This:C1470.screens:=$signal.screens.copy()
+	This:C1470.mainScreenID:=$signal.mainScreenID
+	This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
+	This:C1470.menuBarHeight:=$signal.menuBarHeight
+	This:C1470.toolBarHeight:=$signal.toolBarHeight
+	
 	// *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 Function _postProcessing($target : Object; $pathOrCreate; $create : Boolean) : Object
 	

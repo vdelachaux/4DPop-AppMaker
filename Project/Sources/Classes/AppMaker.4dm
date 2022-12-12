@@ -3,8 +3,8 @@ Class constructor()
 	var $file : 4D:C1709.File
 	
 	This:C1470.env:=cs:C1710.env.new()
-	This:C1470.motor:=cs:C1710.motor.new()
 	This:C1470.database:=cs:C1710.database.new()
+	This:C1470.motor:=cs:C1710.motor.new()
 	
 	// Ensure the preferences folder exists
 	This:C1470.database.preferencesFolder.create()
@@ -75,168 +75,79 @@ Function run($withUI : Boolean)
 	
 	FLUSH CACHE:C297
 	
-	// Load preferences
-	var $prefs : Object
-	$prefs:=This:C1470.prefs.load()
-	
-	// MARK:-Host database method to run before generation
-	If (Length:C16(String:C10($prefs.methods.before))>0)
-		
-		This:C1470._callBarber("🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $prefs.methods.before); Barber shop:K42:35)
-		
-		DELAY PROCESS:C323(Current process:C322; 50)
-		
-		var $success : Boolean
-		EXECUTE METHOD:C1007(String:C10($prefs.methods.before); $success)  // The host database must return true
-		
-		If (Not:C34($success))
-			
-			This:C1470._error("❌ "+Replace string:C233(Get localized string:C991("methodFailed"); "{methodName}"; $prefs.methods.before))
-			return 
-			
-		End if 
-	End if 
-	
 	var $build : cs:C1710.build
 	$build:=cs:C1710.build.new(This:C1470.buildAppFile; This:C1470.credentials)
 	This:C1470.applicationName:=$build.settings.BuildApplicationName
 	
-	// MARK:-Update the Info.plist file
-	If ($prefs["info.plist"]#Null:C1517)
+	// Load preferences
+	var $prefs : Object
+	$prefs:=This:C1470.prefs.load()
+	
+	var $success : Boolean
+	$success:=True:C214
+	
+	If ($prefs.methods.before#Null:C1517)
 		
-		This:C1470._callBarber("🚧 "+Get localized string:C991("Preparations")+"…")
+		$success:=This:C1470._executeMethod($prefs.methods.before)
 		
-		If (Not:C34(This:C1470.database.plistFile.exists))
-			
-			// Create a default from template
-			var $json : Text
-			$json:=File:C1566("/RESOURCES/InfoPlist.template").getText()
-			$json:=Replace string:C233($json; "{name}"; This:C1470.applicationName)
-			$json:=Replace string:C233($json; "{version}"; This:C1470.motor.branch)
-			$json:=Replace string:C233($json; "{build}"; "1")
-			$json:=Replace string:C233($json; "{copyright}"; "©"+String:C10(Year of:C25(Current date:C33)))
-			This:C1470.database.plistFile.setText($json)
-			
-		End if 
+	End if 
+	
+	If ($success && ($prefs["info.plist"]#Null:C1517))
 		
-		If (This:C1470.database.plistFile.exists)
+		$success:=This:C1470._updateInfoPlist($prefs["info.plist"])
+		
+	End if 
+	
+	If ($success)
+		
+		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
+		
+		// TODO:Detecting a version change or could be an option
+		This:C1470.database.clearCompiledCode()
+		
+		$success:=This:C1470.database.compile()
+		
+		If ($success)
 			
-			var $plistContent : Object
-			This:C1470.plist:=This:C1470.database.plistFile.getAppInfo()
+			$success:=$build.run()
 			
-			var $infos : Object
-			$infos:=$prefs["info.plist"]
-			This:C1470.plist.CFBundleName:=This:C1470.applicationName
-			This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)  // +1
-			This:C1470.plist.CFBundleGetInfoString:=This:C1470.motor.branch
-			This:C1470.plist.CFBundleShortVersionString:=This:C1470.motor.branch
-			This:C1470.plist.CFBundleLongVersionString:=This:C1470.plist.CFBundleShortVersionString+(This:C1470.plist.CFBundleVersion#Null:C1517 ? (" ("+String:C10(This:C1470.plist.CFBundleVersion)+")") : "")
-			This:C1470.plist.NSHumanReadableCopyright:=Length:C16(String:C10($infos.NSHumanReadableCopyright))>0 ? Replace string:C233(String:C10($infos.NSHumanReadableCopyright); "{currentYear}"; String:C10(Year of:C25(Current date:C33))) : "©"+String:C10(Year of:C25(Current date:C33))
-			This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
+			If (Not:C34($success))
+				
+				This:C1470._error("❌ Build failed")
+				
+			End if 
 			
 		Else 
 			
-			This:C1470._error("❌ Failed to update info.plist")
-			return 
+			This:C1470._error("❌ "+This:C1470.database.errors.pop().message)
 			
 		End if 
 	End if 
 	
-	Repeat 
+	If ($success)
 		
-		This:C1470._wait()
-		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
+		$success:=cs:C1710.lep.new().unlockDirectory($build.buildTarget).success
 		
-		// TODO:Detecting a version change
-		// Always re-compile the whole thing
-		This:C1470.database.clearCompiledCode()
-		
-		If (Not:C34($build.run()))
-			
-			This:C1470._error("❌ Build failed")
-			return 
-			
-		End if 
-	Until (This:C1470._wait(2000))
-	
-	// MARK:-Options
-	// MARK:Increments the bundleVersion key
-	If (Bool:C1537($prefs.options.increment_version))
-		
-		This:C1470._callBarber("🚧 "+Get localized string:C991("Preparation"); Barber shop:K42:35)
-		
-		// Create the 'InfoPlist.strings' file
-		var $t : Text
-		$t:=File:C1566("/RESOURCES/InfoPlist.template").getText()
-		$t:=Replace string:C233($t; "{name}"; This:C1470.applicationName)
-		$t:=Replace string:C233($t; "{version}"; This:C1470.motor.branch)
-		$t:=Replace string:C233($t; "{build}"; String:C10(Num:C11(This:C1470.plist.CFBundleVersion)))
-		$t:=Replace string:C233($t; "{copyright}"; This:C1470.plist.NSHumanReadableCopyright)
-		
-		This:C1470.database.resourcesFolder.file("InfoPlist.strings").setText($t; "UTF-16")
-		
-		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
-		This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
-		
-		// Delete the (older) unused localized files, if any
-		var $folder : 4D:C1709.Folder
-		
-		For each ($folder; This:C1470.database.resourcesFolder.folders().query("extension='.lproj'"))
-			
-			$folder.file("InfoPlist.strings").delete()
-			
-		End for each 
 	End if 
 	
-	// MARK:Delete Mac content
+	If ($success && Bool:C1537($prefs.options.increment_version))
+		
+		$success:=This:C1470._incrementBundleVersion()
+		
+	End if 
+	
 	If (Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
 		
-		Repeat 
-			
-			This:C1470._wait()
-			This:C1470._callBarber("🧽 "+Get localized string:C991("deleteMacOsSpecificFiles"); Barber shop:K42:35)
-			
-			DELAY PROCESS:C323(Current process:C322; 50)
-			
-			var $file : 4D:C1709.File
-			
-			For each ($file; $build.buildTarget.files(fk recursive:K87:7).query("name = :1"; ".@"))
-				
-				$file.delete()
-				
-			End for each 
-		Until (This:C1470._wait(2000))
+		$success:=This:C1470._deleteMacContent($build.buildTarget)
+		
 	End if 
 	
-	// MARK:Delete help files and the non necessary resources for the final user
-	If (Bool:C1537($prefs.options.removeDevResources))  // && ($buildCompiled || $buildStandalone || $buildServer))
+	If ($success && Bool:C1537($prefs.options.removeDevResources))
 		
-		This:C1470._callBarber("🗜 Deleting unnecessary resources"; Barber shop:K42:35)
+		$success:=This:C1470._deleteResources($build.buildTarget)
 		
-		$file:=This:C1470.database.preferencesFolder.file("AppMaker delete.xml")
-		
-		If (Not:C34($file.exists))
-			
-			// Use the default set
-			$file:=File:C1566("/RESOURCES/AppMaker delete.xml")
-			
-		End if 
-		
-		If ($file.exists)
-			
-			// Load the list of items to delete
-			var $xml : cs:C1710.xml
-			$xml:=cs:C1710.xml.new($file)
-			
-			// Remove from compiled package if any
-			This:C1470._deleteResources($build.buildTarget; $xml.toObject().item.extract("$"))
-			
-			$xml.close()
-			
-		End if 
 	End if 
 	
-	// MARK:-Copy
 	If ($prefs.copy#Null:C1517)
 		
 		If (Value type:C1509($prefs.copy.array.item)#Is collection:K8:32)
@@ -253,7 +164,6 @@ Function run($withUI : Boolean)
 		
 	End if 
 	
-	// MARK:-Deletion
 	If ($prefs.delete#Null:C1517)
 		
 		If (Value type:C1509($prefs.delete.array.item)#Is collection:K8:32)
@@ -270,49 +180,18 @@ Function run($withUI : Boolean)
 		
 	End if 
 	
-	// MARK:-Make the package and its content readable/executable and writable by everyone
-	// TODO: Use $build.unlockDirectory()
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $build.buildTarget.path)
-	
-	If (Is Windows:C1573)
+	If ($success && Bool:C1537($prefs.methods.after))
 		
-		LAUNCH EXTERNAL PROCESS:C811("attrib.exe -R /S /D")
-		
-	Else 
-		
-		LAUNCH EXTERNAL PROCESS:C811("chmod -R 777 "+Replace string:C233($build.buildTarget.path; " "; "\\ "))
+		$success:=This:C1470._executeMethod($prefs.methods.after)
 		
 	End if 
 	
-	// MARK:-Host database method to run at the end
-	If (Length:C16(String:C10($prefs.methods.after))>0)
-		
-		This:C1470._callBarber("🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $prefs.methods.after); Barber shop:K42:35)
-		
-		DELAY PROCESS:C323(Current process:C322; 50)
-		
-		var $success : Boolean
-		EXECUTE METHOD:C1007(String:C10($prefs.methods.after); $success)  // The host database must return true
-		
-		If (Not:C34($success))
-			
-			This:C1470._error("❌ "+Replace string:C233(Get localized string:C991("methodFailed"); "{methodName}"; $prefs.methods.after))
-			return 
-			
-		End if 
-	End if 
-	
-	// MARK:-Notarization
-	// ONLY AVAILABLE FOR COMPONENTS FOR THE MOMENT
-	If (Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && ($build.lib4d#Null:C1517))
+	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && ($build.lib4d#Null:C1517))
 		
 		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 		
 		var $codesign : cs:C1710.codesign
 		$codesign:=cs:C1710.codesign.new(This:C1470.credentials)
-		
-		//$codesign.removeSignature($build.lib4d.path)
 		
 		If ($codesign.sign($build.lib4d))
 			
@@ -328,26 +207,19 @@ Function run($withUI : Boolean)
 					
 					If ($notarytool.staple())
 						
+						$hdutil.target.delete()
+						
 						If ($notarytool.ckeckWithGatekeeper($build.lib4d.path; This:C1470.credentials.certificate))
 							
-							//If ($hdutil.attach())
-							//$file:=$hdutil.disk.file($build.lib4d.fullName).copyTo($build.lib4d.parent; fk overwrite)
-							//If ($file.exists)
+							// Make a zip
+							var $ditto : cs:C1710.ditto
+							$ditto:=cs:C1710.ditto.new($build.buildTarget).archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+".zip"))
 							
-							BEEP:C151
+							// Make a dmg
+							$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
+							$hdutil.create($build.buildTarget)
+							
 							DISPLAY NOTIFICATION:C910(This:C1470.database.name; "Successfully notarized for : "+This:C1470.credentials.certificate)
-							
-							//If ($hdutil.detach())
-							
-							If (This:C1470.database.isComponent)
-								
-								$hdutil.target.delete()
-								
-							End if 
-							
-							// End if
-							// End if
-							// End if
 							
 						End if 
 					End if 
@@ -355,7 +227,7 @@ Function run($withUI : Boolean)
 			End if 
 		End if 
 		
-		If (Not:C34($build.success))
+		If ($withUI && Not:C34($success))
 			
 			ALERT:C41($build.lastError || $hdutil.lastError)
 			
@@ -364,20 +236,175 @@ Function run($withUI : Boolean)
 	
 	This:C1470._closeBarber()
 	
-	// MARK:-
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// Delete help files and the non necessary resources for the final user
+Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	var $path : Text
+	var $file : 4D:C1709.File
+	var $xml : cs:C1710.xml
+	
+	This:C1470._callBarber("🗜 Deleting unnecessary resources"; Barber shop:K42:35)
+	
+	$file:=This:C1470.database.preferencesFolder.file("AppMaker delete.xml")
+	
+	If (Not:C34($file.exists))
+		
+		// Use the default set
+		$file:=File:C1566("/RESOURCES/AppMaker delete.xml")
+		
+	End if 
+	
+	If ($file.exists)
+		
+		// Load the list of items to delete
+		$xml:=cs:C1710.xml.new($file)
+		
+		For each ($path; $xml.toObject().item.extract("$"))
+			
+			$path:=$target.path+$path
+			
+			If ($path="@/")
+				
+				Folder:C1567($path).delete(fk recursive:K87:7)
+				
+			Else 
+				
+				File:C1566($path).delete()
+				
+			End if 
+		End for each 
+		
+		$xml.close()
+		
+	End if 
+	
+	return True:C214
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
+	
+	var $file : 4D:C1709.File
+	
+	Repeat 
+		
+		This:C1470._wait()
+		This:C1470._callBarber("🧽 "+Get localized string:C991("deleteMacOsSpecificFiles"); Barber shop:K42:35)
+		
+		DELAY PROCESS:C323(Current process:C322; 50)
+		
+		For each ($file; $target.files(fk recursive:K87:7).query("name = :1"; ".@"))
+			
+			$file.delete()
+			
+		End for each 
+	Until (This:C1470._wait(2000))
+	
+	return True:C214
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _incrementBundleVersion() : Boolean
+	
+	var $template : Text
+	
+	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparation"); Barber shop:K42:35)
+	
+	// Create the 'InfoPlist.strings' file
+	$template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
+	$template:=Replace string:C233($template; "{name}"; This:C1470.applicationName)
+	$template:=Replace string:C233($template; "{version}"; This:C1470.motor.branch)
+	$template:=Replace string:C233($template; "{build}"; String:C10(Num:C11(This:C1470.plist.CFBundleVersion)))
+	$template:=Replace string:C233($template; "{copyright}"; This:C1470.plist.NSHumanReadableCopyright)
+	
+	This:C1470.database.resourcesFolder.file("InfoPlist.strings").setText($template; "UTF-16")
+	
+	This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
+	This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
+	
+	// Delete the (older) unused localized files, if any
+	var $folder : 4D:C1709.Folder
+	For each ($folder; This:C1470.database.resourcesFolder.folders().query("extension='.lproj'"))
+		
+		$folder.file("InfoPlist.strings").delete()
+		
+	End for each 
+	
+	return True:C214
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _executeMethod($method : Text) : Boolean
+	
+	var $success : Boolean
+	
+	This:C1470._callBarber("🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $method); Barber shop:K42:35)
+	
+	DELAY PROCESS:C323(Current process:C322; 50)
+	
+	EXECUTE METHOD:C1007(String:C10($method); $success)  // The host database must return true
+	
+	If ($success)
+		
+		return True:C214
+		
+	Else 
+		
+		This:C1470._error("❌ "+Replace string:C233(Get localized string:C991("methodFailed"); "{methodName}"; $method))
+		return 
+		
+	End if 
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _updateInfoPlist($infos : Object) : Boolean
+	
+	var $json : Text
+	
+	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparations")+"…")
+	
+	If (Not:C34(This:C1470.database.plistFile.exists))
+		
+		// Create a default from template
+		$json:=File:C1566("/RESOURCES/InfoPlist.template").getText()
+		$json:=Replace string:C233($json; "{name}"; This:C1470.applicationName)
+		$json:=Replace string:C233($json; "{version}"; This:C1470.motor.branch)
+		$json:=Replace string:C233($json; "{build}"; "1")
+		$json:=Replace string:C233($json; "{copyright}"; "©"+String:C10(Year of:C25(Current date:C33)))
+		This:C1470.database.plistFile.setText($json)
+		
+	End if 
+	
+	If (This:C1470.database.plistFile.exists)
+		
+		This:C1470.plist:=This:C1470.database.plistFile.getAppInfo()
+		
+		This:C1470.plist.CFBundleName:=This:C1470.applicationName
+		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)  // +1
+		This:C1470.plist.CFBundleGetInfoString:=This:C1470.motor.branch
+		This:C1470.plist.CFBundleShortVersionString:=This:C1470.motor.branch
+		This:C1470.plist.CFBundleLongVersionString:=This:C1470.plist.CFBundleShortVersionString+(This:C1470.plist.CFBundleVersion#Null:C1517 ? (" ("+String:C10(This:C1470.plist.CFBundleVersion)+")") : "")
+		This:C1470.plist.NSHumanReadableCopyright:=Length:C16(String:C10($infos.NSHumanReadableCopyright))>0 ? Replace string:C233(String:C10($infos.NSHumanReadableCopyright); "{currentYear}"; String:C10(Year of:C25(Current date:C33))) : "©"+String:C10(Year of:C25(Current date:C33))
+		This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
+		
+		return True:C214
+		
+	Else 
+		
+		This:C1470._error("❌ Failed to update info.plist")
+		return 
+		
+	End if 
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _error($error : Text)
 	
 	This:C1470.errors.push($error)
 	This:C1470._displayError($error)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _warning($error : Text)
 	
 	This:C1470.warnings.push($error)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _delete($target : 4D:C1709.Folder; $c : Collection)
 	
 	var $item : Text
@@ -432,7 +459,7 @@ Function _delete($target : 4D:C1709.Folder; $c : Collection)
 		
 	End for each 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _copy($target : 4D:C1709.Folder; $c : Collection)
 	
 	var $item : Text
@@ -478,12 +505,7 @@ Function _copy($target : 4D:C1709.Folder; $c : Collection)
 		
 	End for each 
 	
-	// === === === === === === === === === === === === === === === === === === ===
-Function _deleteResources($target : 4D:C1709.Folder; $resources : Collection)
-	
-	// TODO:Delete according to the target
-	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _wait($delay : Integer) : Boolean
 	
 	If (Count parameters:C259=0)
@@ -502,7 +524,7 @@ Function _wait($delay : Integer) : Boolean
 		
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _initBarber() : cs:C1710.AppMaker
 	
 	Use (Storage:C1525.progress)
@@ -515,7 +537,7 @@ Function _initBarber() : cs:C1710.AppMaker
 	
 	return This:C1470
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _openBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -538,7 +560,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 		End if 
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _callBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -561,7 +583,7 @@ Function _callBarber($title : Text; $indicator : Integer)
 		End use 
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _displayError($error : Text)
 	
 	If (This:C1470.withUI)
@@ -586,7 +608,7 @@ Function _displayError($error : Text)
 		
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _closeBarber()
 	
 	If (This:C1470.withUI)

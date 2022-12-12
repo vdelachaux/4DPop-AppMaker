@@ -157,7 +157,7 @@ If ($sublist=0)\
 						
 					Else 
 						
-						If (doc_Is_Relative_Path(<>Txt_value))
+						If (_o_doc_Is_Relative_Path(<>Txt_value))
 							
 							//Get the absolute path
 							$databaseFolderPathname:=Storage:C1525.environment.databaseFolder
@@ -208,7 +208,7 @@ If ($sublist=0)\
 						End if 
 					End if 
 					
-					doc_OBJET_LOCATION(<>Txt_value; "element.unlock.path.Button"; On Load:K2:1; -1)
+					_o_doc_OBJET_LOCATION(<>Txt_value; "element.unlock.path.Button"; On Load:K2:1; -1)
 					
 					Case of 
 							

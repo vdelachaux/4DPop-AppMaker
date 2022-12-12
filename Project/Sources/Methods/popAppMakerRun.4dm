@@ -6,8 +6,6 @@
 // ----------------------------------------------------
 #DECLARE($ptr : Pointer; $cmd : Text)
 
-//BRING TO FRONT(New process(Formula(APP_MAKER_HANDLER).source; 0; "$AppMaker"; "_run"+$cmd; *))
-
 var AppMaker : cs:C1710.AppMaker
 AppMaker:=cs:C1710.AppMaker.new()
 AppMaker.run()

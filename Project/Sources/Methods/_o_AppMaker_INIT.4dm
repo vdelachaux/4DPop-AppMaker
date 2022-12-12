@@ -1,99 +1,148 @@
 //%attributes = {"invisible":true}
-  // ----------------------------------------------------
-  // Project method : AppMaker_INIT
-  // Database: 4DPop AppMaker
-  // ID[D2DAB151B9C84BF79929ECB4D9A720EB]
-  // Created #6-6-2014 by Vincent de Lachaux
-  // ----------------------------------------------------
-  // Description:
-  // This method is called at the time of initialization of the 4DPop's palet
-  // ----------------------------------------------------
-  // Declarations
-C_POINTER:C301($1)
+var $t : Text
+var $o : Object
 
-C_LONGINT:C283($Lon_i;$Lon_parameters)
-C_POINTER:C301($Ptr_button)
-C_TEXT:C284($Dom_node;$Dom_root;$Path_root)
-C_OBJECT:C1216($Obj_message)
-
-ARRAY TEXT:C222($tTxt_Components;0)
-ARRAY TEXT:C222($tTxt_files;0)
-ARRAY TEXT:C222($tTxt_items;0)
-ARRAY TEXT:C222($tTxt_methods;0)
-
-If (False:C215)
-	C_POINTER:C301(_o_AppMaker_INIT ;$1)
-End if 
-
-  // ----------------------------------------------------
-  // Initialisations
-$Lon_parameters:=Count parameters:C259
-
-If (Asserted:C1132($Lon_parameters>=0;"Missing parameter"))
+If (Storage:C1525.database=Null:C1517)\
+ | (Structure file:C489=Structure file:C489(*))
 	
-	  //NO PARAMETERS REQUIRED
+	$o:=New shared object:C1526
 	
-	  //Optional parameters
-	If ($Lon_parameters>=1)
+	Use ($o)
 		
-		$Ptr_button:=$1
+		$o:=_o_database
 		
-	End if 
-	
-Else 
-	
-	ABORT:C156
-	
-End if 
-
-  // ----------------------------------------------------
-  // #10-6-2014 - multi-project management
-If (Num:C11(Application version:C493)>=1440)  //14R4 and more
-	
-	COMPONENT LIST:C1001($tTxt_Components)
-	
-	If (Find in array:C230($tTxt_Components;"4DPop")>0)  //need 4DPop
-		
-		_o_APP_MAKER_GET_PROJECTS (->$tTxt_files)
-		
-		If ($tTxt_files=0)  //only one default project
+		Use ($o)
 			
-			  //NOTHING MORE TO DO
+			// Ensure the preferences folder exists
+			$o.preferences.create()
+			
+			//***************************************************
+			$o.preferencesFolder:=New shared object:C1526
+			
+			Use ($o.preferencesFolder)
+				
+				$o.preferencesFolder:=$o.root.folder("Preferences")
+				
+			End use 
+			
+			$o.preferencesFolder.create()
+			
+			$o.buildSettings:=New shared object:C1526
+			
+			Use ($o.buildSettings)
+				
+				If ($o.isNewArchitecture)
+					
+					$o.buildSettings:=$o.preferencesFolder
+					
+				Else 
+					
+					$o.buildSettings:=$o.root.folder("Preferences/BuildApp")
+					$o.buildSettings.create()
+					
+				End if 
+			End use 
+		End use 
+	End use 
+	
+	Use (Storage:C1525)
+		
+		Storage:C1525.database:=$o
+		
+	End use 
+End if 
+
+// COMPONENT
+$o:=New shared object:C1526
+
+Use ($o)
+	
+	$o:=_o_preferences
+	
+End use 
+
+Use (Storage:C1525)
+	
+	Storage:C1525.preferences:=$o
+	
+End use 
+
+If (Storage:C1525.environment=Null:C1517)\
+ | (Structure file:C489=Structure file:C489(*))
+	
+	Use (Storage:C1525)
+		
+		Storage:C1525.environment:=New shared object:C1526
+		
+	End use 
+	
+	Use (Storage:C1525.environment)
+		
+		Storage:C1525.environment.databaseFolder:=Storage:C1525.database.root.platformPath
+		Storage:C1525.environment.preferencesFolder:=Storage:C1525.database.root.folder(Choose:C955(Storage:C1525.database.isDatabase; "Preferences"; "Settings"))  // .platformPath
+		Storage:C1525.environment.preferences:=Storage:C1525.environment.preferencesFolder.file("4DPop AppMaker.xml").platformPath
+		Storage:C1525.environment.gitAvailable:=git(New object:C1471("action"; "--version")).success
+		
+		If (Num:C11(Application version:C493)>=1800)
+			
+			$o:=Folder:C1567(fk database folder:K87:14; *).file("Settings/buildApp.4DSettings")
+			
+			If (Not:C34($o.exists))
+				
+				$o:=Folder:C1567(fk database folder:K87:14; *).file("Preferences/BuildApp.xml")
+				
+				If ($o.exists)
+					
+					$o.copyTo(Folder:C1567(fk database folder:K87:14; *).folder("Settings"); "buildApp.4DSettings")
+					
+				End if 
+			End if 
+			
+			$o:=Folder:C1567(fk database folder:K87:14; *).file("Settings/buildApp.4DSettings")
 			
 		Else 
 			
-			OB SET:C1220($Obj_message;"action";"menu.add")
-			
-			APPEND TO ARRAY:C911($tTxt_items;"-")
-			APPEND TO ARRAY:C911($tTxt_methods;"")
-			
-			If (Length:C16($tTxt_files{0})>0)
-				
-				APPEND TO ARRAY:C911($tTxt_items;"BuildApp.xml")
-				APPEND TO ARRAY:C911($tTxt_methods;"AppMaker_RunProject()")
-				
-			End if 
-			
-			For ($Lon_i;1;$tTxt_files;1)
-				
-				APPEND TO ARRAY:C911($tTxt_items;$tTxt_files{$Lon_i})
-				APPEND TO ARRAY:C911($tTxt_methods;"AppMaker_RunProject(\""+$tTxt_files{$Lon_i}+"\")")
-				
-			End for 
-			
-			OB SET ARRAY:C1227($Obj_message;"items";$tTxt_items)
-			OB SET ARRAY:C1227($Obj_message;"methods";$tTxt_methods)
-			
-			  //4DPop_UPDATE_TOOL (id;object)
-			EXECUTE METHOD:C1007("4DPop_UPDATE_TOOL";*;"AppMaker";$Obj_message)
-			CLEAR VARIABLE:C89($Obj_message)
+			$o:=Folder:C1567(fk database folder:K87:14; *).file("Preferences/BuildApp/BuildApp.xml")
 			
 		End if 
-	End if 
+		
+		Storage:C1525.environment.buildApp:=$o.platformPath
+		
+		If ($o.exists)
+			
+			// <NOTHING MORE TO DO>
+			
+		Else 
+			
+			// Create a default file from template
+			$o.create()
+			$t:=File:C1566("/RESOURCES/BuildApp.xml").getText()
+			$t:=Replace string:C233($o.getText(); "{BuildApplicationName}"; Storage:C1525.database.structure.name)
+			$o.setText($t)
+			
+		End if 
+	End use 
 End if 
 
-  // ----------------------------------------------------
-  // Return
-  //>NONE>
-  // ----------------------------------------------------
-  // End  
+Use (Storage:C1525.environment)
+	
+	Storage:C1525.environment.domBuildApp:=DOM Parse XML source:C719(Storage:C1525.environment.buildApp)
+	
+End use 
+
+If (Storage:C1525.progress=Null:C1517)
+	
+	Use (Storage:C1525)
+		
+		Storage:C1525.progress:=New shared object:C1526
+		
+	End use 
+	
+	Use (Storage:C1525.progress)
+		
+		Storage:C1525.progress.indicator:=Barber shop:K42:35
+		Storage:C1525.progress.title:="…"
+		Storage:C1525.progress.value:=0
+		
+	End use 
+End if 

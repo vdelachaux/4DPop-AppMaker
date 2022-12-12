@@ -1,32 +1,63 @@
 {
 	"_o_": {
 		"methods": [
+			"__o_AppMaker_INIT",
+			"_barber",
 			"_o_APP_MAKER_GET_PROJECTS",
 			"_o_APP_MAKER_Get_target_path",
+			"_o_application",
 			"_o_AppMaker_DELETE_FOLDER",
 			"_o_AppMaker_Get_infoPlistKey",
 			"_o_AppMaker_Get_target_name",
-			"_o_AppMaker_INIT",
+			"_o_appMaker_INIT",
 			"_o_AppMaker_OPEN_TARGET_FOLDER",
 			"_o_AppMaker_SET_BARBER",
 			"_o_AppMaker_SET_infoPlistKey",
 			"_o_AppMaker_SET_MESSAGE",
+			"_o_BARBER",
+			"_o_buildApp_DELETE_RESOURCES",
+			"_o_component",
+			"_o_COPY",
+			"_o_database",
+			"_o_DELETE",
+			"_o_DELETE_MAC_CONTENT",
+			"_o_doc_DELETE",
+			"_o_doc_EMPTY_FOLDER",
 			"_o_doc_File",
 			"_o_doc_Folder",
+			"_o_doc_getCommonPath",
+			"_o_doc_getVolumeName",
+			"_o_doc_Is_Relative_Path",
+			"_o_doc_OBJET_LOCATION",
 			"_o_env_GET_infoPListPath",
+			"_o_EXPORT_PROJECT",
+			"_o_Obj_CENTER",
 			"_o_param_GET_ARRAY",
 			"_o_param_GET_ATTRIBUTES",
 			"_o_param_Get_value",
 			"_o_param_SET_ARRAY",
 			"_o_param_SET_ATTRIBUTES",
 			"_o_param_SET_VALUE",
-			"_o_preferencesOpen"
+			"_o_PHP_zip_archive_to",
+			"_o_pList",
+			"_o_pref",
+			"_o_preferences",
+			"_o_preferencesOpen",
+			"_o_wait",
+			"_o_xml_Clean_up",
+			"Compiler_",
+			"COMPILER_o_"
 		]
 	},
-	"_TEMPO": {
+	"_Public": {
+		"methods": [
+			"popAppMakerParameters",
+			"popAppMakerRun"
+		]
+	},
+	"(_TEMPO)": {
 		"classes": [
 			"App",
-			"BuildApp",
 			"Console",
 			"SignApp",
 			"TM_Build"
@@ -40,7 +71,6 @@
 	"(env)": {},
 	"00_dev": {
 		"methods": [
-			"00_test",
 			"AppMaker_RunProject",
 			"Compiler_dev",
 			"testAfter",
@@ -58,17 +88,11 @@
 		"groups": [
 			"Classes",
 			"Forms",
-			"Private",
-			"Public"
+			"Private"
 		],
 		"methods": [
-			"application",
 			"Compiler_component",
-			"Compiler_new",
-			"component",
-			"database",
-			"pList",
-			"pref"
+			"Compiler_new"
 		]
 	},
 	"Forms": {
@@ -100,44 +124,22 @@
 			"APP_MAKER_Go_to_page",
 			"APP_MAKER_HANDLER",
 			"APP_MAKER_Load_page",
-			"appMaker_INIT",
-			"AUTO_BUILD",
-			"buildApp_DELETE_RESOURCES",
 			"BuildApp_SET_ARRAY",
 			"buildApp_SET_ELEMENT",
-			"DELETE_MAC_CONTENT",
 			"key_UPDATE",
 			"quickOpenActions"
-		]
-	},
-	"Public": {
-		"methods": [
-			"popAppMakerParameters",
-			"popAppMakerRun"
 		]
 	},
 	"Tools": {
 		"methods": [
 			"Compiler_tools",
-			"doc_DELETE",
-			"doc_EMPTY_FOLDER",
-			"doc_getCommonPath",
-			"doc_getVolumeName",
-			"doc_Is_Relative_Path",
-			"doc_OBJET_LOCATION",
-			"EXPORT_PROJECT",
 			"git",
-			"Obj_CENTER",
-			"PHP_zip_archive_to",
-			"wait",
-			"xml_Clean_up",
-			"xml_noError",
-			"xml_Reference",
-			"xml_Save_file"
+			"xml_noError"
 		]
 	},
 	"trash": {
 		"groups": [
+			"(_TEMPO)",
 			"(database)",
 			"(env)"
 		]

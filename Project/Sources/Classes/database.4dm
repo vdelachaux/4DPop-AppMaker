@@ -1,7 +1,7 @@
 //USE: envDatabase
 //USE: noError
 
-Class constructor()
+Class constructor($full : Boolean)
 	
 	var $pathname : Text
 	var $o : Object
@@ -109,35 +109,40 @@ Class constructor()
 		
 	End if 
 	
-	// Non-thread-safe commands are delegated to the application process
-	$signal:=New signal:C1641("database")
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
-	$signal.wait()
+	$full:=Count parameters:C259>=1 ? $full : False:C215
 	
-	This:C1470.isProject:=$signal.isProject
-	This:C1470.isBinary:=$signal.isBinary
-	This:C1470.components:=$signal.components.copy()
-	This:C1470.plugins:=$signal.plugins.copy()
-	
-	Case of 
-			
-			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-		: (Value type:C1509($signal.parameters)=Is collection:K8:32)
-			
-			This:C1470.parameters:=$signal.parameters.copy()
-			
-			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-		: (Value type:C1509($signal.parameters)=Is object:K8:27)
-			
-			This:C1470.parameters:=OB Copy:C1225($signal.parameters)
-			
-			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-		Else 
-			
-			This:C1470.parameters:=$signal.parameters
-			
-			//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-	End case 
+	If ($full)
+		
+		// Non-thread-safe commands are delegated to the application process
+		$signal:=New signal:C1641("database")
+		CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
+		$signal.wait()
+		
+		This:C1470.isProject:=$signal.isProject
+		This:C1470.isBinary:=$signal.isBinary
+		This:C1470.components:=$signal.components.copy()
+		This:C1470.plugins:=$signal.plugins.copy()
+		
+		Case of 
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+			: (Value type:C1509($signal.parameters)=Is collection:K8:32)
+				
+				This:C1470.parameters:=$signal.parameters.copy()
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+			: (Value type:C1509($signal.parameters)=Is object:K8:27)
+				
+				This:C1470.parameters:=OB Copy:C1225($signal.parameters)
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+			Else 
+				
+				This:C1470.parameters:=$signal.parameters
+				
+				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+		End case 
+	End if 
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get mode() : Text
@@ -182,7 +187,7 @@ Function isMethodAvailable($name : Text) : Boolean
 		
 	End use 
 	
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
+	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
 	return $signal.available
@@ -210,6 +215,25 @@ Function isWritable()->$writable : Boolean
 	$writable:=$file.create()
 	$file.delete()
 	ON ERR CALL:C155($methodCalledOnError)
+	
+	// === === === === === === === === === === === === === === === === === === ===
+Function compile($options : Object) : Boolean
+	
+	var $compile; $error : Object
+	
+	If (Count parameters:C259>0)
+		
+		$compile:=Compile project:C1760($options)
+		
+	Else 
+		
+		$compile:=Compile project:C1760
+		
+	End if 
+	
+	This:C1470.errors:=$compile.errors.query("isError = :1"; True:C214)
+	
+	return $compile.success
 	
 	// === === === === === === === === === === === === === === === === === === ===
 Function clearCompiledCode()
@@ -263,7 +287,7 @@ Function methods($filter : Text) : Collection
 		
 	End use 
 	
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
+	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
 	return $signal.methods.copy()
@@ -308,7 +332,7 @@ Function setUserParam($userParam)
 		
 	End use 
 	
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
+	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
 	// === === === === === === === === === === === === === === === === === === ===
@@ -337,7 +361,7 @@ Function restart($options; $message : Text)
 		End if 
 	End use 
 	
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
+	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
 	// === === === === === === === === === === === === === === === === === === ===
@@ -371,7 +395,7 @@ Function _restart($compiled : Boolean; $userParam) : Object
 		End if 
 	End use 
 	
-	CALL WORKER:C1389(1; "databaseNonThreadSafe"; $signal)
+	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
 	return $signal.result

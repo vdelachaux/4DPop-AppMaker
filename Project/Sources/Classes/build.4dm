@@ -39,17 +39,6 @@ Class constructor($settings; $credentials : Object)
 	// Notarization settings
 	//FIXME: Usefull ?
 	This:C1470.credentials:=$credentials
-	//$file:=This.This.package:=Folder(fk database folder; *).file("Preferences/notarise.json")  // Database file
-	//If (Not($file.exists))
-	//$file:=Folder(fk user preferences folder).file("notarise.json")  // General file
-	//End if 
-	//If ($file.exists)
-	//$o:=JSON Parse($file.getText())
-	//This.appleID:=$o.appleID ? String($o.appleID) : Null
-	//This.certificate:=$o.certificate ? String($o.certificate) : Null
-	//This.publicID:=$o.publicID ? String($o.publicID) : Null
-	//This.keychainProfile:=$o.keychainProfile ? String($o.keychainProfile) : Null
-	//End if
 	
 	This:C1470.lib4d:=File:C1566("⛔️")
 	This:C1470.buildStatus:=Null:C1517
@@ -267,19 +256,6 @@ Function staple($target : 4D:C1709.File) : Boolean
 	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function compile($options : Object)->$error : Object
-	
-	If (Count parameters:C259>0)
-		
-		$error:=Compile project:C1760($options)
-		
-	Else 
-		
-		$error:=Compile project:C1760
-		
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
 	/// 
 Function findIdentity()->$identities : Collection
 	
@@ -383,13 +359,13 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 		
 		$root:=DOM Parse XML source:C719($settingsFile.platformPath)
 		
-		If (OK=1)
+		If (Bool:C1537(OK))
 			
 			$linkModes:=New collection:C1472("InDbStruct"; "ByAppName"; "ByAppPath")
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildApplicationName")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.BuildApplicationName:=$string
@@ -398,7 +374,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildCompiled")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.BuildCompiled:=$bool
@@ -407,7 +383,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/IncludeAssociatedFolders")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.IncludeAssociatedFolders:=$bool
@@ -416,7 +392,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildComponent")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.BuildComponent:=$bool
@@ -425,7 +401,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildApplicationSerialized")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.BuildApplicationSerialized:=$bool
@@ -434,7 +410,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildApplicationLight")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.BuildApplicationLight:=$bool
@@ -443,7 +419,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildMacDestFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.BuildMacDestFolder:=$string
@@ -452,7 +428,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/PackProject")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.PackProject:=$bool
@@ -461,7 +437,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/UseStandardZipFormat")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.UseStandardZipFormat:=$bool
@@ -470,7 +446,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/BuildWinDestFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.BuildWinDestFolder:=$string
@@ -479,7 +455,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/RuntimeVL/RuntimeVLIncludeIt")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.RuntimeVL.RuntimeVLIncludeIt:=$bool
@@ -488,7 +464,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/RuntimeVL/RuntimeVLMacFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.RuntimeVL.RuntimeVLMacFolder:=$string
@@ -497,7 +473,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/RuntimeVL/RuntimeVLWinFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.RuntimeVL.RuntimeVLWinFolder:=$string
@@ -506,7 +482,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/RuntimeVL/IsOEM")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.RuntimeVL.IsOEM:=$bool
@@ -515,7 +491,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ServerIncludeIt")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.CS.ServerIncludeIt:=$bool
@@ -524,7 +500,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientMacIncludeIt")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.CS.ClientMacIncludeIt:=$bool
@@ -533,7 +509,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientWinIncludeIt")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.CS.ClientWinIncludeIt:=$bool
@@ -542,7 +518,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ServerMacFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ServerMacFolder:=$string
@@ -551,7 +527,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ServerWinFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ServerWinFolder:=$string
@@ -560,7 +536,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientWinFolderToWin")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientWinFolderToWin:=$string
@@ -569,7 +545,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientWinFolderToMac")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientWinFolderToMac:=$string
@@ -578,7 +554,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientMacFolderToWin")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientMacFolderToWin:=$string
@@ -587,7 +563,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientMacFolderToMac")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientMacFolderToMac:=$string
@@ -596,7 +572,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ServerIconWinPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ServerIconWinPath:=$string
@@ -605,7 +581,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ServerIconMacPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ServerIconMacPath:=$string
@@ -614,7 +590,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientMacIconForMacPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientMacIconForMacPath:=$string
@@ -623,7 +599,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientWinIconForMacPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientWinIconForMacPath:=$string
@@ -632,7 +608,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientMacIconForWinPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientMacIconForWinPath:=$string
@@ -641,7 +617,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/ClientWinIconForWinPath")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.ClientWinIconForWinPath:=$string
@@ -650,7 +626,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/DatabaseToEmbedInClientMacFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.DatabaseToEmbedInClientMacFolder:=$string
@@ -659,7 +635,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/DatabaseToEmbedInClientWinFolder")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SourcesFiles.CS.DatabaseToEmbedInClientWinFolder:=$string
@@ -668,7 +644,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SourcesFiles/CS/IsOEM")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SourcesFiles.RuntimeVL.IsOEM:=$bool
@@ -677,7 +653,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/BuildServerApplication")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.CS.BuildServerApplication:=$bool
@@ -686,7 +662,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/LastDataPathLookup")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				
@@ -699,7 +675,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/BuildCSUpgradeable")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.CS.BuildCSUpgradeable:=$bool
@@ -708,7 +684,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/CurrentVers")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $integer)
 				
@@ -721,7 +697,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/HardLink")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.CS.HardLink:=$string
@@ -730,7 +706,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/BuildV13ClientUpgrades")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.CS.BuildV13ClientUpgrades:=$bool
@@ -739,7 +715,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/IPAddress")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.CS.IPAddress:=$string
@@ -748,7 +724,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/PortNumber")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $integer)
 				$settings.CS.PortNumber:=$integer
@@ -757,7 +733,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/RangeVersMin")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $integer)
 				
@@ -770,7 +746,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/RangeVersMax")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $integer)
 				
@@ -783,7 +759,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/ServerSelectionAllowed")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.CS.ServerSelectionAllowed:=$bool
@@ -792,7 +768,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/MacCompiledDatabaseToWin")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.CS.MacCompiledDatabaseToWin:=$string
@@ -801,7 +777,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/CS/MacCompiledDatabaseToWinIncludeIt")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.CS.MacCompiledDatabaseToWinIncludeIt:=$bool
@@ -810,7 +786,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SignApplication/MacSignature")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SignApplication.MacSignature:=$bool
@@ -819,7 +795,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SignApplication/MacCertificate")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				$settings.SignApplication.MacCertificate:=$string
@@ -828,7 +804,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/SignApplication/AdHocSign")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $bool)
 				$settings.SignApplication.AdHocSign:=$bool
@@ -837,7 +813,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/RuntimeVL/LastDataPathLookup")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				DOM GET XML ELEMENT VALUE:C731($node; $string)
 				
@@ -855,7 +831,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 				$name:=$names{$i}
 				$count:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/Licenses/"+$name+"/ItemsCount")
 				
-				If (OK=1)
+				If (Bool:C1537(OK))
 					
 					DOM GET XML ELEMENT VALUE:C731($count; $integer)
 					
@@ -878,14 +854,14 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 				
 				$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/"+$name+"/ItemsCount")
 				
-				If (OK=1)
+				If (Bool:C1537(OK))
 					
 					DOM GET XML ELEMENT VALUE:C731($node; $integer)
 					$settings[$name].ItemsCount:=$integer
 					
 					$node:=DOM Get next sibling XML element:C724($node)
 					
-					If (OK=1)
+					If (Bool:C1537(OK))
 						For ($j; 0; $integer-1)
 							
 							DOM GET XML ELEMENT VALUE:C731($node; $string)
@@ -900,7 +876,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			OB GET PROPERTY NAMES:C1232($settings.Versioning; $names)
 			$node:=DOM Find XML element:C864($root; "/Preferences4D/BuildApp/Versioning")
 			
-			If (OK=1)
+			If (Bool:C1537(OK))
 				
 				For ($i; 1; Size of array:C274($names); 1)
 					
@@ -914,7 +890,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 						$itemName:=$itemNames{$j}
 						$child:=DOM Find XML element:C864($parent; $itemName)
 						
-						If (OK=1)
+						If (Bool:C1537(OK))
 							
 							DOM GET XML ELEMENT VALUE:C731($child; $string)
 							$settings.Versioning[$name][$itemName]:=$string

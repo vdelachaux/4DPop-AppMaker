@@ -6,17 +6,17 @@ C_LONGINT:C283($3)
 C_LONGINT:C283($4)
 
 If (False:C215)
-	C_BOOLEAN:C305(wait ;$0)
-	C_LONGINT:C283(wait ;$1)
-	C_LONGINT:C283(wait ;$2)
-	C_LONGINT:C283(wait ;$3)
-	C_LONGINT:C283(wait ;$4)
+	C_BOOLEAN:C305(_o_wait; $0)
+	C_LONGINT:C283(_o_wait; $1)
+	C_LONGINT:C283(_o_wait; $2)
+	C_LONGINT:C283(_o_wait; $3)
+	C_LONGINT:C283(_o_wait; $4)
 End if 
 
 If (OK=1)
 	
 	While ((Milliseconds:C459-$1)<$2)
-		DELAY PROCESS:C323($3;$4)
+		DELAY PROCESS:C323($3; $4)
 	End while 
 	
 End if 

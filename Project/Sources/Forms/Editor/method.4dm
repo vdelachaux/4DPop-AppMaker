@@ -79,8 +79,8 @@ Case of
 		//______________________________________________________
 	: (Form event code:C388=On Resize:K2:27)
 		
-		Obj_CENTER("icon.run"; "_gabarit")
-		Obj_CENTER("tips.run"; "_gabarit"; Horizontally centered:K39:1)
+		_o_Obj_CENTER("icon.run"; "_gabarit")
+		_o_Obj_CENTER("tips.run"; "_gabarit"; Horizontally centered:K39:1)
 		
 		//______________________________________________________
 	: (Form event code:C388=On Close Box:K2:21)

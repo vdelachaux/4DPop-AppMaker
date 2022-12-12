@@ -1,22 +1,22 @@
 //%attributes = {"invisible":true}
-  // ----------------------------------------------------
-  // Method : doc_getCommonPath
-  // Created 29/05/08 by vdl
-  // ----------------------------------------------------
-  // Description
-  //
-  // ----------------------------------------------------
+// ----------------------------------------------------
+// Method : doc_getCommonPath
+// Created 29/05/08 by vdl
+// ----------------------------------------------------
+// Description
+//
+// ----------------------------------------------------
 C_TEXT:C284($0)
 C_TEXT:C284($1)
 C_TEXT:C284($2)
 
-C_LONGINT:C283($Lon_end;$Lon_i;$Lon_j)
-C_TEXT:C284($Txt_commonPath;$Txt_path1;$Txt_path2)
+C_LONGINT:C283($Lon_end; $Lon_i; $Lon_j)
+C_TEXT:C284($Txt_commonPath; $Txt_path1; $Txt_path2)
 
 If (False:C215)
-	C_TEXT:C284(doc_getCommonPath ;$0)
-	C_TEXT:C284(doc_getCommonPath ;$1)
-	C_TEXT:C284(doc_getCommonPath ;$2)
+	C_TEXT:C284(_o_doc_getCommonPath; $0)
+	C_TEXT:C284(_o_doc_getCommonPath; $1)
+	C_TEXT:C284(_o_doc_getCommonPath; $2)
 End if 
 
 $Txt_path1:=$1
@@ -33,7 +33,7 @@ If ($Lon_i>0) & ($Lon_j>0)
 		
 	End if 
 	
-	For ($Lon_i;1;$Lon_j;1)
+	For ($Lon_i; 1; $Lon_j; 1)
 		
 		If ($Txt_path1[[$Lon_i]]=Folder separator:K24:12)
 			
@@ -53,7 +53,7 @@ If ($Lon_i>0) & ($Lon_j>0)
 		
 	End for 
 	
-	$Txt_commonPath:=Substring:C12($Txt_commonPath;1;$Lon_end)
+	$Txt_commonPath:=Substring:C12($Txt_commonPath; 1; $Lon_end)
 	
 End if 
 

@@ -98,7 +98,7 @@ Case of
 		
 		FLUSH CACHE:C297
 		
-		$database:=database  // Storage.database
+		$database:=_o_database  // Storage.database
 		$environment:=Storage:C1525.environment
 		
 		// Start the Barber
@@ -163,7 +163,7 @@ Case of
 			$plist:=$database.root.file("Info.plist")
 			
 			var $branch : Text
-			$branch:=application.branch
+			$branch:=_o_application.branch
 			
 			If (Not:C34($plist.exists))
 				
@@ -226,7 +226,7 @@ Case of
 					
 				End if 
 				
-			Until (wait($start; 2000; Current process:C322; 5))
+			Until (_o_wait($start; 2000; Current process:C322; 5))
 			
 		Else 
 			
@@ -326,9 +326,9 @@ Case of
 						
 					End use 
 					
-					EXPORT_PROJECT
+					_o_EXPORT_PROJECT
 					
-				Until (wait($start; 2000; Current process:C322; 5))
+				Until (_o_wait($start; 2000; Current process:C322; 5))
 			End if 
 			
 			// MARK:Zip sources
@@ -358,10 +358,10 @@ Case of
 					
 					If (Test path name:C476($Txt_archiveFilePath)=Is a folder:K24:2)
 						
-						$Boo_KO:=PHP_zip_archive_to($Txt_structure; $Txt_archiveFilePath+Replace string:C233($Txt_fileName; ".4db"; ".zip"))
+						$Boo_KO:=_o_PHP_zip_archive_to($Txt_structure; $Txt_archiveFilePath+Replace string:C233($Txt_fileName; ".4db"; ".zip"))
 						
 					End if 
-				Until (wait($start; 2000; Current process:C322; 5))
+				Until (_o_wait($start; 2000; Current process:C322; 5))
 			End if 
 		End if 
 		
@@ -402,7 +402,7 @@ Case of
 				If ($buildServer)
 					
 				End if 
-			Until (wait($start; 5000; Current process:C322; 5))
+			Until (_o_wait($start; 5000; Current process:C322; 5))
 		End if 
 		
 		// MARK:Delete help files and the non necessary resources for the final user
@@ -452,21 +452,21 @@ Case of
 				// Remove from compiled package if any
 				If ($buildCompiled)
 					
-					buildApp_DELETE_RESOURCES($Dir_compiled; ->$tTxt_path)
+					_o_buildApp_DELETE_RESOURCES($Dir_compiled; ->$tTxt_path)
 					
 				End if 
 				
 				// Remove from final application if any
 				If ($buildStandalone)
 					
-					buildApp_DELETE_RESOURCES($pathStandalone+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
+					_o_buildApp_DELETE_RESOURCES($pathStandalone+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
 					
 				End if 
 				
 				// Remove from server application if any
 				If ($buildServer)
 					
-					buildApp_DELETE_RESOURCES($pathServer+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
+					_o_buildApp_DELETE_RESOURCES($pathServer+Choose:C955(Is macOS:C1572; "Contents"+Folder separator:K24:12; ""); ->$tTxt_path)
 					
 				End if 
 			End if 
@@ -752,12 +752,12 @@ Case of
 		//================================================================================
 	: ($action="_declarations")
 		
-		Compiler_component
+		COMPILER_o_
 		
 		//================================================================================
 	: ($action="_init")
 		
-		appMaker_INIT
+		_o_appMaker_INIT
 		
 		//================================================================================
 	: ($action="_deinit")

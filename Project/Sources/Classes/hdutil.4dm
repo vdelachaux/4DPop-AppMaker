@@ -70,7 +70,7 @@ Function _target() : Boolean
 	
 	If (Not:C34(This:C1470.success))
 		
-		This:C1470._pushError("Invalid target "+This:C1470.target ? "" : This:C1470.target.path)
+		This:C1470._pushError("Invalid target "+(This:C1470.target ? "" : This:C1470.target.path))
 		
 	End if 
 	
@@ -83,7 +83,7 @@ Function _disk() : Boolean
 	
 	If (Not:C34(This:C1470.success))
 		
-		This:C1470._pushError("Invalid disk "+This:C1470.disk ? "" : This:C1470.disk.path)
+		This:C1470._pushError("Invalid disk "+(This:C1470.disk ? "" : This:C1470.disk.path))
 		
 	End if 
 	
