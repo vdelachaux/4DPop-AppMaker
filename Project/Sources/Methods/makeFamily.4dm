@@ -1,15 +1,28 @@
 //%attributes = {}
-var $component; $pathname : Text
-var $make : Object
+#DECLARE($target : 4D:C1709.Folder)
+
+If (False:C215)
+	C_OBJECT:C1216(makeFamily; $1)
+End if 
+
+var $pathname : Text
+var $component; $make : Object
 var $makeFile : 4D:C1709.File
-var $family; $target; $src : 4D:C1709.Folder
-var $motor : cs:C1710.motor
+var $family; $src; $tgt : 4D:C1709.Folder
 
-$pathname:=Select folder:C670("select the component folder"; 8859)
-
-If (Bool:C1537(OK))
+If (Count parameters:C259=0)
 	
-	$target:=Folder:C1567($pathname; fk platform path:K87:2)
+	$pathname:=Select folder:C670("select the component folder"; 8859)
+	
+	If (Bool:C1537(OK))
+		
+		$target:=Folder:C1567($pathname; fk platform path:K87:2)
+		
+	End if 
+End if 
+
+If ($target#Null:C1517 && $target.exists)
+	
 	$makeFile:=$target.file("make.json")
 	
 	If ($makeFile.exists)
@@ -25,15 +38,14 @@ If (Bool:C1537(OK))
 		
 		$family.create()
 		
-		For each ($component; $make.family)
+		For each ($component; $make.components)
 			
-			If (Bool:C1537($make.family[$component]))
+			If (Bool:C1537($component.family))
 				
-				$src:=$target.folder($component).folder("Build/Components").folder($component+".4dbase")
+				$src:=$target.folder($component.name).folder("Build/Components").folder($component.name+".4dbase")
 				
 				If ($src.exists)
 					
-					var $tgt : 4D:C1709.Folder
 					$tgt:=$src.copyTo($family)
 					
 					If ($tgt.folder("_gsdata_").exists)
@@ -46,4 +58,3 @@ If (Bool:C1537(OK))
 		End for each 
 	End if 
 End if 
-

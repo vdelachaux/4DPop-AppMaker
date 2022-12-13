@@ -5,7 +5,7 @@
 // ----------------------------------------------------
 var AppMaker : cs:C1710.AppMaker
 
-If (False:C215)  //Public
+If (False:C215)  // Public
 	
 	C_POINTER:C301(popAppMakerRun; $1)
 	C_TEXT:C284(popAppMakerRun; $2)
@@ -16,7 +16,7 @@ If (False:C215)  //Public
 	
 End if 
 
-If (False:C215)  //Private
+If (False:C215)  // Private
 	
 	C_LONGINT:C283(onHostDatabaseEvent; $1)
 	
@@ -33,3 +33,15 @@ If (False:C215)  //Private
 	
 End if 
 
+If (False:C215)  // Tools
+	
+	C_OBJECT:C1216(gitCommit; $1)
+	C_TEXT:C284(gitCommit; $2)
+	C_BOOLEAN:C305(gitCommit; $0)
+	
+	C_OBJECT:C1216(makeFamily; $1)
+	
+	C_OBJECT:C1216(makeDMG; $1)
+	C_BOOLEAN:C305(makeDMG; $0)
+	
+End if 

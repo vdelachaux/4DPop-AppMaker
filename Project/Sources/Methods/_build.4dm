@@ -1,8 +1,11 @@
 //%attributes = {}
-var $appName; $cmd; $component; $err; $in; $out : Text
-var $pathname; $tJSON : Text
-var $file; $make : Object
+var $appName; $cmd; $commitMessage; $err; $in; $out : Text
+var $pathname : Text
+var $isMatrix; $success : Boolean
+var $progress : Integer
+var $component; $make : Object
 var $exe; $makeFile : 4D:C1709.File
+var $target : 4D:C1709.Folder
 
 If (Asserted:C1132(Is macOS:C1572))
 	
@@ -18,37 +21,44 @@ If (Asserted:C1132(Is macOS:C1572))
 			
 			If (Bool:C1537(OK))
 				
-				var $isMatrix : Boolean
 				$isMatrix:=Structure file:C489=Structure file:C489(*)
 				
-				var $builme : Boolean
-				var $headless : Boolean
+				$progress:=Progress New
 				
-				$headless:=True:C214
-				
-				If ($isMatrix && $builme)
+				If ($isMatrix)
 					
 					// Build me
+					Progress SET TITLE($progress; "Build "+Folder:C1567(fk database folder:K87:14).name+"…")
 					popAppMakerRun
 					
 				End if 
 				
-				$makeFile:=Folder:C1567($pathname; fk platform path:K87:2).file("make.json")
+				$target:=Folder:C1567($pathname; fk platform path:K87:2)
+				
+				$makeFile:=$target.file("make.json")
 				
 				If ($makeFile.exists)
 					
 					$make:=JSON Parse:C1218($makeFile.getText())
 					
+					$commitMessage:="Compilation "+cs:C1710.motor.new().branch
+					
 					For each ($component; $make.components)
 						
-						If ($isMatrix && ($component="4DPop AppMaker"))
+						$component.folder:=$makeFile.parent.path+$component.name
+						
+						If ($isMatrix && ($component.name="4DPop AppMaker"))
 							
+							Progress SET TITLE($progress; "Git push "+$component.name+"…")
+							gitCommit($component; $commitMessage)
 							continue
 							
 						End if 
 						
+						Progress SET TITLE($progress; "Build "+$component.name+"…")
+						
 						$cmd:=Char:C90(Quote:K15:44)+$exe.path+Char:C90(Quote:K15:44)
-						$cmd+=" --project "+Char:C90(Quote:K15:44)+$makeFile.parent.path+$component+"/Project/"+$component+".4DProject"+Char:C90(Quote:K15:44)
+						$cmd+=" --project "+Char:C90(Quote:K15:44)+$component.folder+"/Project/"+$component.name+".4DProject"+Char:C90(Quote:K15:44)
 						$cmd+=" --opening-mode interpreted"
 						$cmd+=" --user-param build"
 						$cmd+=" --dataless"
@@ -56,14 +66,32 @@ If (Asserted:C1132(Is macOS:C1572))
 						
 						LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
 						
-						// TODO:Git push
-						// TODO:Copy to family folder
+						// MARK:Git push
+						Progress SET TITLE($progress; "Git push "+$component.name+"…")
+						$success:=gitCommit($component; $commitMessage)
 						
+						If (Not:C34($success))
+							
+							break
+							
+						End if 
 					End for each 
 					
-					// TODO:Make dmg & push to github
-					
+					If ($success)
+						
+						// MARK:Copy to family folder
+						Progress SET TITLE($progress; "Family folder…")
+						makeFamily($target)
+						
+						// MARK:Make dmg & push to github
+						Progress SET TITLE($progress; "Family DMG…")
+						$success:=makeDMG($target)
+						
+					End if 
 				End if 
+				
+				Progress QUIT($progress)
+				
 			End if 
 		End if 
 	End if 
