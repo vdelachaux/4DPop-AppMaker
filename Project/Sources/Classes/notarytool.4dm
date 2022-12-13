@@ -102,8 +102,7 @@ Function submit() : Boolean
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function ckeckWithGatekeeper($path : Text; $certificate : Text) : Boolean
 	
-	// ⚠️ RESULT IS ON ERROR STREAM
-	This:C1470.resultInErrorStream:=True:C214
+	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
 	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted($path))
 	This:C1470.resultInErrorStream:=False:C215
 	
@@ -147,6 +146,34 @@ Function staple() : Boolean
 	End if 
 	
 	return This:C1470.success
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function findIdentity()->$identities : Collection
+	
+	var $info : Text
+	var $start : Integer
+	
+	ARRAY LONGINT:C221($pos; 0)
+	ARRAY LONGINT:C221($len; 0)
+	
+	$identities:=New collection:C1472
+	
+	This:C1470.launch("security find-identity -p basic -v")
+	
+	If (This:C1470.success)
+		
+		$start:=1
+		
+		While (Match regex:C1019("(?m)\\s+(\\d+\\))\\s+([:Hex_Digit:]+)\\s+\"([^\"]+)\"$"; This:C1470.outputStream; $start; $pos; $len))
+			
+			$identities.push(New object:C1471(\
+				"id"; Substring:C12($info; $pos{2}; $len{2}); \
+				"name"; Substring:C12(This:C1470.outputStream; $pos{3}; $len{3})))
+			
+			$start:=$pos{3}+$len{3}
+			
+		End while 
+	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 /*

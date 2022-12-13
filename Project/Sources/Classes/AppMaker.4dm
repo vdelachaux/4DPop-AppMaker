@@ -69,7 +69,7 @@ Class constructor()
 	// === === === === === === === === === === === === === === === === === === ===
 Function run($withUI : Boolean)
 	
-	This:C1470.withUI:=Count parameters:C259=0 ? True:C214 : $withUI
+	This:C1470.withUI:=Count parameters:C259=0 ? Not:C34(This:C1470.motor.headless) : $withUI
 	
 	This:C1470._initBarber()._openBarber("Starting…")
 	
@@ -102,8 +102,16 @@ Function run($withUI : Boolean)
 		
 		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
-		// TODO:Detecting a version change or could be an option
-		This:C1470.database.clearCompiledCode()
+		var $lastbuild : 4D:C1709.File
+		$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
+		$lastbuild.create()
+		
+		If ($lastbuild.getText()#This:C1470.motor.branch)
+			
+			This:C1470.database.clearCompiledCode()
+			$lastbuild.setText(This:C1470.motor.branch)
+			
+		End if 
 		
 		$success:=This:C1470.database.compile()
 		
@@ -236,7 +244,60 @@ Function run($withUI : Boolean)
 	
 	This:C1470._closeBarber()
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// === === === === === === === === === === === === === === === === === === ===
+Function CommitAndPush($message : Text) : Object
+	
+	var $cmd; $err; $in; $out; $path : Text
+	var $error : Object
+	
+	$path:=Get 4D folder:C485(Database folder:K5:14; *)
+	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
+	
+	If (($out#"")\
+		 | ($err#""))
+		
+		$error:=New object:C1471(\
+			"success"; False:C215; \
+			"Error git add"; $out+" "+$err)
+		
+	Else 
+		
+		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+		$cmd:="git commit -a -q -m "+Char:C90(34)+$message+Char:C90(34)
+		LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
+		
+		If (($out#"")\
+			 | ($err#""))
+			
+			$error:=New object:C1471(\
+				"success"; False:C215; \
+				"Error git commit"; $out+" "+$err)
+			
+		Else 
+			
+			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
+			
+			If ($err#"")
+				
+				$error:=New object:C1471(\
+					"success"; False:C215; \
+					"Error git push"; $err)
+				
+			Else 
+				
+				$error:=New object:C1471(\
+					"success"; True:C214; \
+					"git commit"; $out)
+				
+			End if 
+		End if 
+	End if 
+	
+	return $error
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 	// Delete help files and the non necessary resources for the final user
 Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 	
@@ -281,7 +342,7 @@ Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
 	
 	var $file : 4D:C1709.File
@@ -302,12 +363,15 @@ Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _incrementBundleVersion() : Boolean
 	
 	var $template : Text
 	
 	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparation"); Barber shop:K42:35)
+	
+	This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
+	This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
 	
 	// Create the 'InfoPlist.strings' file
 	$template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
@@ -317,9 +381,6 @@ Function _incrementBundleVersion() : Boolean
 	$template:=Replace string:C233($template; "{copyright}"; This:C1470.plist.NSHumanReadableCopyright)
 	
 	This:C1470.database.resourcesFolder.file("InfoPlist.strings").setText($template; "UTF-16")
-	
-	This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
-	This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
 	
 	// Delete the (older) unused localized files, if any
 	var $folder : 4D:C1709.Folder
@@ -331,7 +392,7 @@ Function _incrementBundleVersion() : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _executeMethod($method : Text) : Boolean
 	
 	var $success : Boolean
@@ -353,7 +414,7 @@ Function _executeMethod($method : Text) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _updateInfoPlist($infos : Object) : Boolean
 	
 	var $json : Text
@@ -377,7 +438,7 @@ Function _updateInfoPlist($infos : Object) : Boolean
 		This:C1470.plist:=This:C1470.database.plistFile.getAppInfo()
 		
 		This:C1470.plist.CFBundleName:=This:C1470.applicationName
-		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)  // +1
+		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)
 		This:C1470.plist.CFBundleGetInfoString:=This:C1470.motor.branch
 		This:C1470.plist.CFBundleShortVersionString:=This:C1470.motor.branch
 		This:C1470.plist.CFBundleLongVersionString:=This:C1470.plist.CFBundleShortVersionString+(This:C1470.plist.CFBundleVersion#Null:C1517 ? (" ("+String:C10(This:C1470.plist.CFBundleVersion)+")") : "")
@@ -393,24 +454,24 @@ Function _updateInfoPlist($infos : Object) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _error($error : Text)
 	
 	This:C1470.errors.push($error)
 	This:C1470._displayError($error)
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _warning($error : Text)
 	
 	This:C1470.warnings.push($error)
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _delete($target : 4D:C1709.Folder; $c : Collection)
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _delete($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
 	var $tgt : Object
 	
-	For each ($item; $c)
+	For each ($item; $items)
 		
 		Use (Storage:C1525.progress)
 			
@@ -451,7 +512,7 @@ Function _delete($target : 4D:C1709.Folder; $c : Collection)
 		
 		Use (Storage:C1525.progress)
 			
-			Storage:C1525.progress.value+=Round:C94(100/$c.length; 0)
+			Storage:C1525.progress.value+=Round:C94(100/$items.length; 0)
 			
 		End use 
 		
@@ -459,13 +520,13 @@ Function _delete($target : 4D:C1709.Folder; $c : Collection)
 		
 	End for each 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _copy($target : 4D:C1709.Folder; $c : Collection)
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+Function _copy($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
 	var $src; $tgt : Object
 	
-	For each ($item; $c)
+	For each ($item; $items)
 		
 		Use (Storage:C1525.progress)
 			
@@ -497,7 +558,7 @@ Function _copy($target : 4D:C1709.Folder; $c : Collection)
 		
 		Use (Storage:C1525.progress)
 			
-			Storage:C1525.progress.value+=Round:C94(100/$c.length; 0)
+			Storage:C1525.progress.value+=Round:C94(100/$items.length; 0)
 			
 		End use 
 		
@@ -505,7 +566,7 @@ Function _copy($target : 4D:C1709.Folder; $c : Collection)
 		
 	End for each 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _wait($delay : Integer) : Boolean
 	
 	If (Count parameters:C259=0)
@@ -524,7 +585,7 @@ Function _wait($delay : Integer) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _initBarber() : cs:C1710.AppMaker
 	
 	Use (Storage:C1525.progress)
@@ -535,9 +596,22 @@ Function _initBarber() : cs:C1710.AppMaker
 		
 	End use 
 	
+	If (This:C1470.withUI)
+		
+		If (Is macOS:C1572)
+			
+			LAUNCH EXTERNAL PROCESS:C811("osascript -e 'tell app \""+Application file:C491+"\" to activate'")
+			
+		Else 
+			
+			// TODO:On windows
+			
+		End if 
+	End if 
+	
 	return This:C1470
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _openBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -560,7 +634,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 		End if 
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _callBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -583,7 +657,7 @@ Function _callBarber($title : Text; $indicator : Integer)
 		End use 
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _displayError($error : Text)
 	
 	If (This:C1470.withUI)
@@ -608,7 +682,7 @@ Function _displayError($error : Text)
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
 Function _closeBarber()
 	
 	If (This:C1470.withUI)

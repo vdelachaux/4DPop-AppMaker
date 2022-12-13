@@ -22,7 +22,7 @@ Class constructor($full : Boolean)
 	
 	If ($full && (Is macOS:C1572 || Is Windows:C1573))
 		
-		This:C1470._screens()
+		This:C1470.getScreenInfos()
 		
 	End if 
 	
@@ -44,6 +44,14 @@ Function get linux() : Boolean
 	return Not:C34(Is Windows:C1573) & Not:C34(Is macOS:C1572)
 	
 	//MARK:-
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function startupDisk($path : Text; $create : Boolean) : Object
+	
+	var $folder : 4D:C1709.Folder
+	$folder:=Folder:C1567("/")
+	
+	return Count parameters:C259>=1 ? This:C1470._postProcessing($folder; $path; $create) : $folder
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Update user & system values that may have been modified
@@ -107,12 +115,19 @@ Function updateEnvironmentValues($system : Boolean)
 	This:C1470.timeShortPattern:=$value
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
-Function startupDisk($path : Text; $create : Boolean) : Object
+Function getScreenInfos()
 	
-	var $folder : 4D:C1709.Folder
-	$folder:=Folder:C1567("/")
+	// Non-thread-safe screen commands are delegated to the application process
+	var $signal : 4D:C1709.Signal
+	$signal:=New signal:C1641("env")
+	CALL WORKER:C1389("$nonThreadSafe"; "envScreens"; $signal)
+	$signal.wait()
 	
-	return Count parameters:C259>=1 ? This:C1470._postProcessing($folder; $path; $create) : $folder
+	This:C1470.screens:=$signal.screens.copy()
+	This:C1470.mainScreenID:=$signal.mainScreenID
+	This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
+	This:C1470.menuBarHeight:=$signal.menuBarHeight
+	This:C1470.toolBarHeight:=$signal.toolBarHeight
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function library($path : Text; $create : Boolean) : Object
@@ -155,20 +170,6 @@ Function applicationSupport($path : Text; $create : Boolean) : Object
 	return Count parameters:C259>=1 ? This:C1470._postProcessing($folder; $path; $create) : $folder
 	
 	//MARK:-
-	// *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
-Function _screens()
-	
-	// Non-thread-safe screen commands are delegated to the application process
-	var $signal : 4D:C1709.Signal
-	$signal:=New signal:C1641("env")
-	CALL WORKER:C1389("$nonThreadSafe"; "envScreens"; $signal)
-	$signal.wait()
-	
-	This:C1470.screens:=$signal.screens.copy()
-	This:C1470.mainScreenID:=$signal.mainScreenID
-	This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
-	This:C1470.menuBarHeight:=$signal.menuBarHeight
-	This:C1470.toolBarHeight:=$signal.toolBarHeight
 	
 	// *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 Function _postProcessing($target : Object; $pathOrCreate; $create : Boolean) : Object
@@ -194,7 +195,6 @@ Function _postProcessing($target : Object; $pathOrCreate; $create : Boolean) : O
 			$target.create()
 			
 		End if 
-		
 	End if 
 	
 	return $target

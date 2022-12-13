@@ -66,44 +66,39 @@ Function sign($path) : Boolean
 			$identity:=This:C1470.identity.name
 			
 			//______________________________________________________
+	End case 
+	
+	Case of 
+			
+			//______________________________________________________
+		: (Length:C16($identity)=0)
+			
+			This:C1470._pushError("No identity provided nor certificate found")
+			return 
+			
+			//______________________________________________________
+		: (Value type:C1509($path)=Is object:K8:27) && ((OB Instance of:C1731($path; 4D:C1709.File)) || (OB Instance of:C1731($path; 4D:C1709.Folder)))
+			
+			$path:=$path.path
+			
+			//______________________________________________________
+		: (Value type:C1509($path)=Is text:K8:3)
+			
+			// We assume that it's a unix pathname
+			// TODO:Test if exists
+			
+			//______________________________________________________
 		Else 
 			
-			This:C1470._pushError("No certificate provided nor identity found")
-			This:C1470.success:=False:C215
+			This:C1470._pushError("$path must be a unix pathname or a File/Folder object")
+			return 
 			
 			//______________________________________________________
 	End case 
 	
-	If (This:C1470.success)
-		
-		Case of 
-				//______________________________________________________
-			: (Value type:C1509($path)=Is object:K8:27) && ((OB Instance of:C1731($path; 4D:C1709.File)) || (OB Instance of:C1731($path; 4D:C1709.Folder)))
-				
-				$path:=$path.path
-				
-				//______________________________________________________
-			: (Value type:C1509($path)=Is text:K8:3)
-				
-				// We assume that it's a unix pathname
-				
-				//______________________________________________________
-			Else 
-				
-				This:C1470._pushError("$path must be a unix pathname or a File/Folder object")
-				
-				//______________________________________________________
-		End case 
-		
-		If (Length:C16($identity)>0)
-			
-			// ⚠️ RESULT IS ON ERROR STREAM
-			This:C1470.resultInErrorStream:=True:C214
-			This:C1470.launch("codesign --verbose --deep --timestamp --options runtime --force --sign "+$identity+" "+This:C1470.quoted($path))
-			This:C1470.resultInErrorStream:=False:C215
-			
-		End if 
-	End if 
+	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
+	This:C1470.launch("codesign --verbose --deep --timestamp --options runtime --force --sign "+$identity+" "+This:C1470.quoted($path))
+	This:C1470.resultInErrorStream:=False:C215
 	
 	return This:C1470.success
 	
@@ -120,11 +115,13 @@ Function verifySignature($path) : Boolean
 		: (Value type:C1509($path)=Is text:K8:3)
 			
 			// We assume that it's a unix pathname
+			// TODO:Test if exists
 			
 			//______________________________________________________
 		Else 
 			
 			This:C1470._pushError("$path must be a unix pathname or a File/Folder object")
+			return 
 			
 			//______________________________________________________
 	End case 

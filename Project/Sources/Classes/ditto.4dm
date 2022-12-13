@@ -34,6 +34,9 @@ Class constructor($rc : Object; $tgt : 4D:C1709.File)
 	// By default, ditto will use the default compression level as defined by zlib.
 	This:C1470.CONSTANTS.zlibCompressionLevel:=-1
 	
+	// Allow ditto to prompt for a password to use to extract the contents of a password-encrypted ZIP archive
+	This:C1470.CONSTANTS.password:=False:C215
+	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function archive($tgt : 4D:C1709.File)
 	
@@ -44,21 +47,21 @@ Function archive($tgt : 4D:C1709.File)
 	This:C1470.launch(This:C1470._cmd("ditto -c ")+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function extract($tgt : 4D:C1709.Folder; $password : Text)
+Function extract($tgt : 4D:C1709.Folder)
 	
 	This:C1470.tgt:=$tgt || This:C1470.tgt
 	
-	This:C1470.launch(This:C1470._cmd("ditto "; $password)+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
+	This:C1470.launch(This:C1470._cmd("ditto ")+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _cmd($cmd : Text; $password : Text) : Text
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+Function _cmd($cmd : Text) : Text
 	
 	var $create : Boolean
 	$create:=Position:C15("-c "; $cmd)>0
 	
 	If (This:C1470.CONSTANTS.PKZip)
 		
-		$cmd+="-k "
+		$cmd+="-k "  // Create or extract from a PKZip archive instead of the default CPIO.
 		
 	End if 
 	
@@ -66,7 +69,7 @@ Function _cmd($cmd : Text; $password : Text) : Text
 		
 		If (This:C1470.CONSTANTS.keepParent)
 			
-			$cmd+="--keepParent "
+			$cmd+="--keepParent "  // Embed the parent directory name src in dst_archive.
 			
 		End if 
 		
@@ -75,26 +78,25 @@ Function _cmd($cmd : Text; $password : Text) : Text
 			$cmd+="--zlibCompressionLevel "+String:C10(This:C1470.CONSTANTS.zlibCompressionLevel)+" "
 			
 		End if 
-	End if 
-	
-	If (Not:C34(This:C1470.CONSTANTS.rsrc))
 		
-		// Do not preserve resource forks and HFS meta-data.
+	Else 
 		
-		$cmd+="--norsrc "
-		
-		If (Not:C34(This:C1470.CONSTANTS.extattr))
+		If (This:C1470.CONSTANTS.password)
 			
-			// Do not preserve extended attributes (requires --norsrc)
-			$cmd+="--noextattr "
+			$cmd+="--password "  // Allow ditto to prompt for a password to use to extract the contents of the file
 			
 		End if 
 	End if 
 	
-	If (Length:C16($password)>0)
+	If (Not:C34(This:C1470.CONSTANTS.rsrc))
 		
-		$cmd+="--password "+$password+" "
+		$cmd+="--norsrc "  // Do not preserve resource forks and HFS meta-data.
 		
+		If (Not:C34(This:C1470.CONSTANTS.extattr))
+			
+			$cmd+="--noextattr "  // Do not preserve extended attributes (requires --norsrc)
+			
+		End if 
 	End if 
 	
 	return $cmd

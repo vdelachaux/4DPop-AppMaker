@@ -1,5 +1,5 @@
-//USE: envDatabase
-//USE: noError
+//USE: databaseNonThreadSafe
+//USE: noERROR
 
 Class constructor($full : Boolean)
 	
@@ -29,18 +29,19 @@ Class constructor($full : Boolean)
 	If (This:C1470.isRemote)
 		
 		This:C1470.name:=$pathname
-		This:C1470.dataless:=False:C215
+		This:C1470.isDataless:=False:C215
 		
 	Else 
 		
 		This:C1470.structureFile:=File:C1566($pathname; fk platform path:K87:2)
 		
 		$pathname:=Data file:C490
-		This:C1470.dataless:=(Length:C16($pathname)=0)
+		This:C1470.isDataless:=(Length:C16($pathname)=0)
 		
-		If (Not:C34(This:C1470.dataless))
+		If (Not:C34(This:C1470.isDataless))
 			
 			This:C1470.dataFile:=File:C1566($pathname; fk platform path:K87:2)
+			This:C1470.dataFolder:=This:C1470.dataFile.parent
 			This:C1470.dataReadOnly:=Is data file locked:C716
 			
 		End if 
@@ -48,7 +49,7 @@ Class constructor($full : Boolean)
 		This:C1470.name:=This:C1470.structureFile.name
 		
 		// Unsanboxing
-		This:C1470.databaseFolder:=Folder:C1567(Folder:C1567(fk database folder:K87:14; *).platformPath; fk platform path:K87:2)
+		This:C1470.databaseFolder:=Folder:C1567(Folder:C1567("/PACKAGE/"; *).platformPath; fk platform path:K87:2)
 		
 		This:C1470.plistFile:=This:C1470.databaseFolder.file("Info.plist")
 		
@@ -157,7 +158,7 @@ Function isDataEmpty() : Boolean
 	var $table : Text
 	var $empty : Boolean
 	
-	If (This:C1470.dataless)
+	If (This:C1470.isDataless)
 		
 		return True:C214
 		

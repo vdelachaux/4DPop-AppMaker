@@ -18,6 +18,8 @@ End if
 
 If (False:C215)  //Private
 	
+	C_LONGINT:C283(onHostDatabaseEvent; $1)
+	
 	C_LONGINT:C283(APP_MAKER_Go_to_page; $1)
 	C_LONGINT:C283(APP_MAKER_Go_to_page; $2)
 	

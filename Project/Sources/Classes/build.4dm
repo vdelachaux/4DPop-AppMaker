@@ -47,44 +47,21 @@ Class constructor($settings; $credentials : Object)
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get destinationFolder() : 4D:C1709.Folder
 	
+	var $parentFolderPath; $path : Text
+	
 	If (This:C1470.settings#Null:C1517)
 		
-		Case of 
-				
-				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-			: (Is Windows:C1573)
-				
-				$path:=This:C1470.settings.BuildWinDestFolder
-				
-				//MARK: TO TEST
-				If (Substring:C12($path; 1; 1)=Folder separator:K24:12)
-					
-					var $parentFolderPath; $path : Text
-					$parentFolderPath:=Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).parent.parent.platformPath
-					$parentFolderPath:=Substring:C12($parentFolderPath; 1; Length:C16($parentFolderPath)-1)
-					$parentFolderPath:=$parentFolderPath+Delete string:C232($path; 1; 1)
-					
-					return (Folder:C1567($parentFolderPath; fk platform path:K87:2))
-					
-				Else 
-					
-					return (Folder:C1567($path; fk platform path:K87:2))
-					
-				End if 
-				
-				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-			: (Is macOS:C1572)
-				
-				$path:=This:C1470.settings.BuildMacDestFolder
-				
-				If ($path[[1]]=":")
-					
-					return (Folder:C1567(Get 4D folder:C485(Database folder:K5:14; *); fk platform path:K87:2).folder(Replace string:C233(Delete string:C232($path; 1; 1); Folder separator:K24:12; "/")))
-					
-				End if 
-				
-				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-		End case 
+		$path:=Is Windows:C1573 ? This:C1470.settings.BuildWinDestFolder : This:C1470.settings.BuildMacDestFolder
+		
+		If ($path[[1]]=Folder separator:K24:12)
+			
+			return (Folder:C1567("/PACKAGE/"; *).folder(Replace string:C233(Delete string:C232($path; 1; 1); Folder separator:K24:12; "/")))
+			
+		Else 
+			
+			return (Folder:C1567($path; fk platform path:K87:2))
+			
+		End if 
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -92,6 +69,9 @@ Function run() : Boolean
 	
 	var $code; $desc; $message; $root; $target; $type : Text
 	var $i : Integer
+	var $o : Object
+	var $file : 4D:C1709.File
+	var $folder : 4D:C1709.Folder
 	
 	If (This:C1470.success)
 		
@@ -146,12 +126,44 @@ Function run() : Boolean
 			End if 
 			
 			This:C1470.success:=(This:C1470.buildStatus.length>0)
+			This:C1470.lib4d:=Null:C1517  // NOT COMPILED FOR AMD
+			This:C1470.buildTarget:=Null:C1517
 			
 			If (This:C1470.success)
 				
-				This:C1470.buildTarget:=This:C1470._getBuildTarget()
-				This:C1470.lib4d:=This:C1470._getLib4D()
+				$o:=This:C1470.buildStatus.query("message = :1"; "Start copying files : @").pop()
 				
+				If ($o#Null:C1517)
+					
+					$folder:=File:C1566(Replace string:C233($o.message; "Start copying files : "; ""); fk platform path:K87:2).parent
+					
+					If ($folder.exists)
+						
+						This:C1470.buildTarget:=$folder
+						
+					Else 
+						
+						// TODO:ERROR
+						
+					End if 
+					
+				Else 
+					
+					// TODO:ERROR
+					
+				End if 
+				
+				$file:=This:C1470.buildTarget.file("Libraries/lib4d-arm64.dylib")
+				
+				If ($file.exists)
+					
+					This:C1470.lib4d:=$file
+					
+				Else 
+					
+					// TODO:ERROR
+					
+				End if 
 			End if 
 			
 		Else 
@@ -167,177 +179,6 @@ Function run() : Boolean
 	End if 
 	
 	return This:C1470.success
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function notarize($file : 4D:C1709.File) : Boolean
-	
-	var $response : Object
-	var $notarytool : cs:C1710.notarytool
-	
-	This:C1470.success:=($file.exists)
-	
-	If (This:C1470.success)
-		
-		$notarytool:=cs:C1710.notarytool.new(String:C10(This:C1470.credentials.keychainProfile))
-		
-		//This.notarization:=$notarytool.submit($file.path)
-		This:C1470.success:=$notarytool.submit($file.path)
-		This:C1470.notarization:=$notarytool.outputStream
-		
-	Else 
-		
-		This:C1470._pushError("File not found: "+String:C10($file.path))
-		
-	End if 
-	
-	return This:C1470.success
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function verifySignature($target : Object) : Boolean
-	
-	If (Count parameters:C259>=1)
-		
-		This:C1470.launch("codesign --verify --verbose --deep --strict  "+This:C1470.quoted($target.path))
-		
-	Else 
-		
-		This:C1470.launch("codesign --verify --verbose --deep --strict  "+This:C1470.quoted(This:C1470.lib4d.path))
-		
-	End if 
-	
-	If (This:C1470.success)
-		
-/*
-lib4d-arm64.dylib: valid on disk
-lib4d-arm64.dylib: satisfies its Designated Requirement
-*/
-		
-	End if 
-	
-	return This:C1470.success
-	
-	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function ckeckWithGatekeeper()->$result : Text
-	
-	// ⚠️ RESULT IS ON ERROR STREAM
-	This:C1470.resultInErrorStream:=True:C214
-	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted(This:C1470.lib4d.path))
-	This:C1470.resultInErrorStream:=False:C215
-	
-	If (This:C1470.success)
-		
-/*
-lib4d-arm64.dylib: accepted
-source=Notarized Developer ID
-origin=Developer ID Application: Vincent de Lachaux (DYRKW64QA9)
-*/
-		
-		ARRAY LONGINT:C221($len; 0)
-		ARRAY LONGINT:C221($pos; 0)
-		If (Match regex:C1019("(?mi-s): accepted\\nsource=Notarized Developer ID\\norigin=Developer ID Application: ([^$]*)$"; This:C1470.outputStream; 1; $pos; $len))
-			
-			$result:=Substring:C12(This:C1470.outputStream; $pos{1}; $len{1})
-			
-		End if 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function staple($target : 4D:C1709.File) : Boolean
-	
-	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted($target.path))
-	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
-	
-	If (Not:C34(This:C1470.success))
-		
-		This:C1470._pushError(This:C1470.outputStream)
-		
-	End if 
-	
-	return This:C1470.success
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-	/// 
-Function findIdentity()->$identities : Collection
-	
-	var $info : Text
-	var $start : Integer
-	
-	ARRAY LONGINT:C221($pos; 0)
-	ARRAY LONGINT:C221($len; 0)
-	
-	$identities:=New collection:C1472
-	
-	This:C1470.launch("security find-identity -p basic -v")
-	
-	If (This:C1470.success)
-		
-		$start:=1
-		
-		While (Match regex:C1019("(?m)\\s+(\\d+\\))\\s+([:Hex_Digit:]+)\\s+\"([^\"]+)\"$"; This:C1470.outputStream; $start; $pos; $len))
-			
-			$identities.push(New object:C1471(\
-				"id"; Substring:C12($info; $pos{2}; $len{2}); \
-				"name"; Substring:C12(This:C1470.outputStream; $pos{3}; $len{3})))
-			
-			$start:=$pos{3}+$len{3}
-			
-		End while 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function CommitAndPush($message : Text)->$error : Object
-	
-	var $cmd; $err; $in; $out; $path : Text
-	
-	$path:=Get 4D folder:C485(Database folder:K5:14; *)
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
-	
-	If (($out#"")\
-		 | ($err#""))
-		
-		$error:=New object:C1471(\
-			"success"; False:C215; \
-			"Error git add"; $out+" "+$err)
-		
-	Else 
-		
-		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-		$cmd:="git commit -a -q -m "+Char:C90(34)+$message+Char:C90(34)
-		LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
-		
-		If (($out#"")\
-			 | ($err#""))
-			
-			$error:=New object:C1471(\
-				"success"; False:C215; \
-				"Error git commit"; $out+" "+$err)
-			
-		Else 
-			
-			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
-			
-			If ($err#"")
-				
-				$error:=New object:C1471(\
-					"success"; False:C215; \
-					"Error git push"; $err)
-				
-			Else 
-				
-				$error:=New object:C1471(\
-					"success"; True:C214; \
-					"git commit"; $out)
-				
-			End if 
-		End if 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function _getPublicID($password : Text)
-	
-	This:C1470.launch("xcrun altool --list-providers -u "+This:C1470.credentials.appleID+" -p "+$password)
 	
 	//MARK:[PRIVATE]
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
@@ -903,51 +744,6 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 			DOM CLOSE XML:C722($root)
 			
 		End if 
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function _getBuildTarget() : 4D:C1709.Folder
-	
-	var $o : Object
-	var $folder : 4D:C1709.Folder
-	
-	$o:=This:C1470.buildStatus.query("message = :1"; "Start copying files : @").pop()
-	
-	If ($o#Null:C1517)
-		
-		$folder:=File:C1566(Replace string:C233($o.message; "Start copying files : "; ""); fk platform path:K87:2).parent
-		
-		If ($folder.exists)
-			
-			return ($folder)
-			
-		Else 
-			
-			// TODO:ERROR
-			
-		End if 
-		
-	Else 
-		
-		// TODO:ERROR
-		
-	End if 
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function _getLib4D() : 4D:C1709.File
-	
-	var $file : 4D:C1709.File
-	
-	$file:=This:C1470.buildTarget.file("Libraries/lib4d-arm64.dylib")
-	
-	If ($file.exists)
-		
-		return $file
-		
-	Else 
-		
-		// NOT COMPILED FOR AMD
-		
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
