@@ -35,14 +35,16 @@ Else
 		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 		LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
 		
-		If (Length:C16($out+$err)>0)
+		
+		If ($err="@master -> master@")
+			
+			return True:C214
+			
+		Else 
 			
 			ALERT:C41(Current method name:C684+": Error git push: "+$out+" "+$err)
 			return 
 			
 		End if 
-		
-		return True:C214
-		
 	End if 
 End if 
