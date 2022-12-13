@@ -97,7 +97,7 @@ Function sign($path) : Boolean
 	End case 
 	
 	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
-	This:C1470.launch("codesign --verbose --deep --timestamp --options runtime --force --sign "+$identity+" "+This:C1470.quoted($path))
+	This:C1470.launch("codesign --sign "+$identity+" --verbose --deep --timestamp --force --options runtime "+This:C1470.quoted($path))
 	This:C1470.resultInErrorStream:=False:C215
 	
 	return This:C1470.success
