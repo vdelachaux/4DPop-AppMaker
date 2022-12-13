@@ -7,6 +7,7 @@ If (False:C215)
 End if 
 
 var $pathname : Text
+var $progress : Integer
 var $credentials : Object
 var $dmg; $file : 4D:C1709.File
 var $codesign : cs:C1710.codesign
@@ -26,11 +27,17 @@ End if
 
 If ($target#Null:C1517 && $target.exists)
 	
+	$progress:=Progress New
+	
 	$dmg:=File:C1566(Delete string:C232($target.path; Length:C16($target.path); 1)+".dmg")
+	
+	Progress SET TITLE($progress; "Creating: "+$dmg.fullName+"…")
 	
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
 	If ($hdutil.create($target))
+		
+		Progress SET TITLE($progress; "Signing: "+$dmg.fullName+"…")
 		
 		$file:=Folder:C1567(fk user preferences folder:K87:10).file("notarise.json")  // General file
 		
@@ -40,34 +47,40 @@ If ($target#Null:C1517 && $target.exists)
 		
 		If ($codesign.sign($dmg))
 			
-			$notarytool:=cs:C1710.notarytool.new($credentials.keychainProfile)
+			Progress SET TITLE($progress; "Notarize: "+$dmg.fullName+"…")
+			
+			$notarytool:=cs:C1710.notarytool.new($hdutil.target; $credentials.keychainProfile)
 			
 			If ($notarytool.submit($dmg.path))
 				
 				If ($notarytool.staple($dmg))
 					
-					If ($notarytool.ckeckWithGatekeeper($dmg; $credentials.certificate))
+					If ($notarytool.ckeckWithGatekeeper($dmg.path; $credentials.certificate))
 						
-						//ALERT("Successful notarization")
+						Progress QUIT($progress)
 						return True:C214
 						
 					End if 
 					
+					Progress QUIT($progress)
 					ALERT:C41(Current method name:C684+": ckeckWithGatekeeper failed")
 					return 
 					
 				End if 
 				
+				Progress QUIT($progress)
 				ALERT:C41(Current method name:C684+": staple failed")
 				return 
 				
 			End if 
 			
+			Progress QUIT($progress)
 			ALERT:C41(Current method name:C684+": submit failed:\r\r"+JSON Stringify:C1217($notarytool.outputStream))
 			return 
 			
 		End if 
 		
+		Progress QUIT($progress)
 		ALERT:C41(Current method name:C684+": sign failed")
 		return 
 		

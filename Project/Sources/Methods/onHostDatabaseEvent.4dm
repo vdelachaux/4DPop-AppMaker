@@ -1,4 +1,4 @@
-//%attributes = {}
+//%attributes = {"invisible":true}
 // ----------------------------------------------------
 // Method :  Host Database Event - (4DPop AppMaker)
 // ID[4537E73A0BBF411E90C9310E3043E4F8]

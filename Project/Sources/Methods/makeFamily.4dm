@@ -1,11 +1,13 @@
 //%attributes = {}
-#DECLARE($target : 4D:C1709.Folder)
+#DECLARE($target : 4D:C1709.Folder) : 4D:C1709.Folder
 
 If (False:C215)
 	C_OBJECT:C1216(makeFamily; $1)
+	C_OBJECT:C1216(makeFamily; $0)
 End if 
 
 var $pathname : Text
+var $progress : Integer
 var $component; $make : Object
 var $makeFile : 4D:C1709.File
 var $family; $src; $tgt : 4D:C1709.Folder
@@ -27,8 +29,12 @@ If ($target#Null:C1517 && $target.exists)
 	
 	If ($makeFile.exists)
 		
+		$progress:=Progress New
+		
 		$make:=JSON Parse:C1218($makeFile.getText())
 		$family:=$target.folder("4DPop-Family-"+cs:C1710.motor.new().branch)
+		
+		Progress SET TITLE($progress; "Creating: "+$family.fullName+"…")
 		
 		If ($family.exists)
 			
@@ -56,5 +62,10 @@ If ($target#Null:C1517 && $target.exists)
 				End if 
 			End if 
 		End for each 
+		
+		Progress QUIT($progress)
+		
+		return $family
+		
 	End if 
 End if 

@@ -1,4 +1,4 @@
-//%attributes = {}
+//%attributes = {"invisible":true}
 #DECLARE($component : Object; $commitMessage : Text) : Boolean
 
 If (False:C215)
@@ -13,7 +13,7 @@ SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
 SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
 
-If (Length:C16($out+$err)>0)
+If (Length:C16($out+$err)>0) && (Position:C15("warning: "; $err)=0)
 	
 	ALERT:C41(Current method name:C684+": Error git add: "+$out+" "+$err)
 	return 

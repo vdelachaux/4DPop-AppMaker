@@ -1,4 +1,4 @@
-//%attributes = {}
+//%attributes = {"invisible":true}
 C_TEXT:C284(<>Txt_value)
 
 If (False:C215)
