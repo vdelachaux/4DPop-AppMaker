@@ -201,7 +201,7 @@ Function run($withUI : Boolean)
 		var $codesign : cs:C1710.codesign
 		$codesign:=cs:C1710.codesign.new(This:C1470.credentials)
 		
-		If ($codesign.sign($build.lib4d))
+		If (True:C214)  //($codesign.sign($build.lib4d))
 			
 			var $hdutil : cs:C1710.hdutil
 			$hdutil:=cs:C1710.hdutil.new($build.lib4d.parent.parent.parent.file($build.lib4d.name+".dmg"))
@@ -215,8 +215,6 @@ Function run($withUI : Boolean)
 					
 					If ($notarytool.staple())
 						
-						$hdutil.target.delete()
-						
 						If ($notarytool.ckeckWithGatekeeper($build.lib4d.path; This:C1470.credentials.certificate))
 							
 							// Make a zip
@@ -227,11 +225,22 @@ Function run($withUI : Boolean)
 							$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
 							$hdutil.create($build.buildTarget)
 							
-							DISPLAY NOTIFICATION:C910(This:C1470.database.name; "Successfully notarized for : "+This:C1470.credentials.certificate)
+							// &  a zip
+							var $file : 4D:C1709.File
+							$file:=$hdutil.target.parent.file($hdutil.target.fullName+".zip")
+							$ditto:=cs:C1710.ditto.new($hdutil.target).archive($file)
 							
+							If (This:C1470.database.isComponent)
+								
+								DISPLAY NOTIFICATION:C910(This:C1470.database.name; "Successfully notarized for : "+This:C1470.credentials.certificate)
+								
+							End if 
 						End if 
 					End if 
 				End if 
+				
+				$hdutil.target.delete()
+				
 			End if 
 		End if 
 		

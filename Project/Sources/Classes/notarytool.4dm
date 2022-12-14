@@ -5,6 +5,7 @@ Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 	Super:C1705()
 	
 	This:C1470.responses:=New collection:C1472
+	This:C1470.notarisation:=Null:C1517
 	This:C1470.version:=This:C1470.getVersion()
 	This:C1470.available:=This:C1470.success
 	
@@ -78,26 +79,42 @@ Submit an archive to the Apple notary service.
 */
 Function submit() : Boolean
 	
-	If (This:C1470.available)
+	var $len; $pos : Integer
+	
+	If (Not:C34(This:C1470.available))
 		
-		This:C1470.setOutputType(Is object:K8:27)
+		return 
 		
-		This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted(This:C1470.target.path)\
-			+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
-			+" --output-format json --wait")
-		
-		This:C1470.setOutputType()
-		
-		This:C1470.responses.push(JSON Stringify:C1217(This:C1470.outputStream))
-		
-		If (This:C1470.success)
-			
-			This:C1470.success:=This:C1470.outputStream.status="Accepted"
-			
-		End if 
 	End if 
 	
-	return This:C1470.success
+	This:C1470.setOutputType(Is object:K8:27)
+	
+	This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted(This:C1470.target.path)\
+		+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
+		+" --output-format json --wait")
+	
+	This:C1470.setOutputType()
+	
+	This:C1470.responses.push(JSON Stringify:C1217(This:C1470.outputStream))
+	
+	If (This:C1470.success)
+		
+		This:C1470.success:=This:C1470.outputStream.status="Accepted"
+		
+	End if 
+	
+	If (This:C1470.success)
+		
+		This:C1470.log(This:C1470.outputStream.id)
+		
+		return True:C214
+		
+	Else 
+		
+		// Log the response
+		Folder:C1567(fk logs folder:K87:17; *).file("notarizing.json").setText(JSON Stringify:C1217(This:C1470.outputStream; *))
+		
+	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function ckeckWithGatekeeper($path : Text; $certificate : Text) : Boolean
@@ -106,7 +123,7 @@ Function ckeckWithGatekeeper($path : Text; $certificate : Text) : Boolean
 	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted($path))
 	This:C1470.resultInErrorStream:=False:C215
 	
-	This:C1470.responses.push(This:C1470.outputStream+This:C1470.errorStream)
+	This:C1470.responses.push(This:C1470.success ? This:C1470.outputStream : This:C1470.errorStream)
 	
 	If (This:C1470.success)
 		
@@ -132,10 +149,11 @@ origin=Developer ID Application: <certificate>
 	return This:C1470.success
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function staple() : Boolean
+Function staple($target : 4D:C1709.File) : Boolean
 	
-	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted(This:C1470.target.path))
-	This:C1470.responses.push(This:C1470.outputStream+This:C1470.errorStream)
+	$target:=$target || This:C1470.target
+	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted($target.path))
+	This:C1470.responses.push(This:C1470.success ? This:C1470.outputStream : This:C1470.errorStream)
 	
 	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
 	
@@ -195,13 +213,13 @@ Function info($id : Text; $keychainProfile : Text) : Object
 Retrieve notarization log for a single completed submission as JSON.
 $id is a Submission ID returned from a previous invocation of the submit subcommand.
 */
-Function log($id : Text; $keychainProfile : Text)
-	
-	//% xcrun notarytool log "REQUEST_ID" --keychain-profile "AC_PASSWORD" developer_log.json
+Function log($id : Text)
 	
 	If (This:C1470.available)
 		
-		//
+		This:C1470.launch("xcrun notarytool log "+$id\
+			+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
+			+" "+This:C1470.quoted(Folder:C1567(Folder:C1567(fk logs folder:K87:17; *).platformPath; fk platform path:K87:2).file("notarizing.json").path))
 		
 	End if 
 	

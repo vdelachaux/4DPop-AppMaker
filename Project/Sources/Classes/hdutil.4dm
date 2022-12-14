@@ -13,7 +13,48 @@ Class constructor($target : 4D:C1709.File; $content)
 Function create($content) : Boolean
 	
 	// TODO: Allow collection & more (File, Folder,…)
+	
 	This:C1470.content:=$content
+	
+	var $srcPath; $tgtPath : Text
+	
+	Case of 
+			//______________________________________________________
+		: (Value type:C1509(This:C1470.content)=Is text:K8:3)
+			
+			$srcPath:=This:C1470.content
+			
+			//______________________________________________________
+		: (Value type:C1509(This:C1470.content)=Is object:K8:27)
+			
+			$srcPath:=This:C1470.content.path
+			
+			//______________________________________________________
+		Else 
+			
+			// A "Case of" statement should never omit "Else"
+			
+			//______________________________________________________
+	End case 
+	
+	Case of 
+			//______________________________________________________
+		: (Value type:C1509(This:C1470.target)=Is text:K8:3)
+			
+			$tgtPath:=This:C1470.target
+			
+			//______________________________________________________
+		: (Value type:C1509(This:C1470.target)=Is object:K8:27)
+			
+			$tgtPath:=This:C1470.target.path
+			
+			//______________________________________________________
+		Else 
+			
+			// A "Case of" statement should never omit "Else"
+			
+			//______________________________________________________
+	End case 
 	
 	If ((This:C1470.target#Null:C1517) && This:C1470.target.exists)
 		
@@ -21,7 +62,7 @@ Function create($content) : Boolean
 		
 	End if 
 	
-	This:C1470.launch("hdiutil create -format UDBZ -plist -srcfolder "+This:C1470.quoted(This:C1470.content.path)+" "+This:C1470.quoted(This:C1470.target.path))
+	This:C1470.launch("hdiutil create -format UDBZ -plist -srcfolder "+This:C1470.quoted($srcPath)+" "+This:C1470.quoted($tgtPath))
 	
 	return (This:C1470.success)
 	

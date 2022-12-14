@@ -22,6 +22,10 @@ Class constructor($rc : Object; $tgt : 4D:C1709.File)
 	// As of Mac OS X 10.4, --rsrc is default behavior.
 	This:C1470.CONSTANTS.rsrc:=True:C214
 	
+	// When creating a PKZip archive, preserve resource forks and HFS meta-data in the
+	// subdirectory __MACOSX. PKZip extraction will automatically find these resources.
+	This:C1470.CONSTANTS.sequesterRsrc:=True:C214
+	
 	// Preserve extended attributes (requires --rsrc).
 	// As of Mac OS X 10.5, --extattr is the default.
 	This:C1470.CONSTANTS.extattr:=True:C214
@@ -63,6 +67,11 @@ Function _cmd($cmd : Text) : Text
 		
 		$cmd+="-k "  // Create or extract from a PKZip archive instead of the default CPIO.
 		
+		If (This:C1470.CONSTANTS.sequesterRsrc)
+			
+			$cmd+="--sequesterRsrc "  // Preserve resource forks and HFS meta-data in the subdirectory __MACOSX.
+			
+		End if 
 	End if 
 	
 	If ($create)

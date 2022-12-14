@@ -51,11 +51,17 @@ If ($target#Null:C1517 && $target.exists)
 			
 			$notarytool:=cs:C1710.notarytool.new($hdutil.target; $credentials.keychainProfile)
 			
-			If ($notarytool.submit($dmg.path))
+			If ($notarytool.submit())
 				
-				If ($notarytool.staple($dmg))
+				If ($notarytool.staple())
 					
 					If ($notarytool.ckeckWithGatekeeper($dmg.path; $credentials.certificate))
+						
+						
+						// Make a zip
+						var $ditto : cs:C1710.ditto
+						$ditto:=cs:C1710.ditto.new($dmg)
+						$ditto.archive($dmg.parent.file($dmg.fullName+".zip"))
 						
 						Progress QUIT($progress)
 						return True:C214

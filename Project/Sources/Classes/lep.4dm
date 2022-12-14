@@ -4,6 +4,7 @@ Class constructor
 	Super:C1705()
 	
 	This:C1470.home:=Folder:C1567(Split string:C1554(Folder:C1567(fk desktop folder:K87:19).path; "/").resize(3).join("/"))
+	This:C1470.history:=New collection:C1472
 	
 	This:C1470.reset()
 	
@@ -282,6 +283,9 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 			//……………………………………………………………………
 	End case 
 	
+	var $history : Text
+	$history:="% "+$command+"\n"
+	
 	LAUNCH EXTERNAL PROCESS:C811(This:C1470.command; $inputStream; $outputStream; $errorStream; $pid)
 	
 	This:C1470.success:=Bool:C1537(OK)
@@ -308,6 +312,8 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 	
 	If (Length:C16($errorStream)=0)
 		
+		$history+=" | "+Replace string:C233($t; "\n"; "\n | ")
+		
 		If (Not:C34(This:C1470.resultInErrorStream))
 			
 			// ⚠️ Some commands return the error in the output stream
@@ -327,7 +333,11 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 		This:C1470.errorStream:=This:C1470._cleanupStream($errorStream)
 		This:C1470._pushError(This:C1470.errorStream)
 		
+		$history+=" | "+Replace string:C233(This:C1470.errorStream; "\n"; "\n | ")
+		
 	End if 
+	
+	This:C1470.history.push($history)
 	
 	If (This:C1470.success)
 		
