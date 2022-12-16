@@ -51,9 +51,9 @@ If ($target#Null:C1517 && $target.exists)
 			
 			If (Bool:C1537($component.family))
 				
-				$src:=$target.folder($component.name).folder("Build/Components").file($component.name+".zip")
+				$src:=$target.folder($component.name).folder("Build/Components").files().query("extension = .zip").pop()
 				
-				If ($src.exists)
+				If ($src#Null:C1517)
 					
 					$tgt:=$src.copyTo($family)
 					
