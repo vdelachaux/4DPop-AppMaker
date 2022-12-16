@@ -227,36 +227,28 @@ Function run($withUI : Boolean) : Boolean
 					
 					If ($notarytool.submit())
 						
-						Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
-						Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
-						Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
-						
 						$success:=True:C214
 						
 					Else 
 						
-						Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
 						This:C1470._error($notarytool.lastError)
 						
 					End if 
 					
 				Else 
 					
-					Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
 					This:C1470._error($codesign.lastError)
 					
 				End if 
 				
 			Else 
 				
-				Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 				This:C1470._error($ditto.lastError)
 				
 			End if 
 			
 		Else 
 			
-			Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
 			This:C1470._error($codesign.lastError)
 			
 		End if 
@@ -264,6 +256,10 @@ Function run($withUI : Boolean) : Boolean
 		This:C1470._closeBarber()
 		
 	End if 
+	
+	Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 	
 	return $success
 	
