@@ -635,9 +635,8 @@ Function _openBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
 		
-		//CALL WORKER("$AppMakerBarber"; Formula(Open form window("Barber"; Controller form window+Form has no menu bar; Horizontally centered; Vertically centered; *)))
-		//CALL WORKER("$AppMakerBarber"; Formula(DIALOG("Barber")))
-		CALL WORKER:C1389("$AppMakerBarber"; "openBarber")
+		CALL WORKER:C1389("$AppMakerBarber"; Formula:C1597(Open form window:C675("Barber"; Controller form window:K39:17+Form has no menu bar:K39:18; Horizontally centered:K39:1; Vertically centered:K39:4; *)))
+		CALL WORKER:C1389("$AppMakerBarber"; Formula:C1597(DIALOG:C40("Barber")))
 		
 		If (Count parameters:C259>=1)
 			
