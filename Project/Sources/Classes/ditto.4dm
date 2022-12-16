@@ -42,7 +42,7 @@ Class constructor($rc : Object; $tgt : 4D:C1709.File)
 	This:C1470.CONSTANTS.password:=False:C215
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function archive($tgt : 4D:C1709.File)
+Function archive($tgt : 4D:C1709.File) : Boolean
 	
 	This:C1470.tgt:=$tgt || This:C1470.tgt
 	
@@ -50,12 +50,16 @@ Function archive($tgt : 4D:C1709.File)
 	
 	This:C1470.launch(This:C1470._cmd("ditto -c ")+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
 	
+	return This:C1470.success
+	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function extract($tgt : 4D:C1709.Folder)
+Function extract($tgt : 4D:C1709.Folder) : Boolean
 	
 	This:C1470.tgt:=$tgt || This:C1470.tgt
 	
 	This:C1470.launch(This:C1470._cmd("ditto ")+This:C1470.quoted(This:C1470.src.path)+" "+This:C1470.quoted(This:C1470.tgt.path))
+	
+	return This:C1470.success
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 Function _cmd($cmd : Text) : Text

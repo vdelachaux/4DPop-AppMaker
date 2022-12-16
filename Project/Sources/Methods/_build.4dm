@@ -79,21 +79,21 @@ If (Asserted:C1132(Is macOS:C1572))
 					
 					If ($success)
 						
-						// MARK:Copy to family folder
-						Progress SET TITLE($progress; "Family folder…")
-						$target:=makeFamily($target)
+						//// MARK:Copy to family folder
+						//Progress SET TITLE($progress; "Family folder…")
+						//$target:=makeFamily($target)
 						
-						If ($target#Null:C1517)
-							
-							// MARK:Make dmg & push to github
-							Progress SET TITLE($progress; "Family DMG…")
-							$success:=makeDMG($target)
-							
-						Else 
-							
-							ALERT:C41("makeFamily failed")
-							
-						End if 
+						//If ($target#Null)
+						
+						//// MARK:Make dmg & push to github
+						//Progress SET TITLE($progress; "Family DMG…")
+						//$success:=makeDMG($target)
+						
+						//Else 
+						
+						//ALERT("makeFamily failed")
+						
+						//End if 
 					End if 
 				End if 
 				

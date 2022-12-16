@@ -67,7 +67,7 @@ Class constructor()
 	This:C1470.warnings:=New collection:C1472
 	
 	// === === === === === === === === === === === === === === === === === === ===
-Function run($withUI : Boolean)
+Function run($withUI : Boolean) : Boolean
 	
 	This:C1470.withUI:=Count parameters:C259=0 ? Not:C34(This:C1470.motor.headless) : $withUI
 	
@@ -198,60 +198,70 @@ Function run($withUI : Boolean)
 		
 		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 		
+		$success:=False:C215
+		
+		// Sign the lib4d-arm64.dylib
 		var $codesign : cs:C1710.codesign
 		$codesign:=cs:C1710.codesign.new(This:C1470.credentials)
 		
-		If (True:C214)  //($codesign.sign($build.lib4d))
+		If ($codesign.sign($build.lib4d))
 			
-			var $hdutil : cs:C1710.hdutil
-			$hdutil:=cs:C1710.hdutil.new($build.lib4d.parent.parent.parent.file($build.lib4d.name+".dmg"))
+			// Deploy them as zip, signed, notarized, but not stapled.
+			var $ditto : cs:C1710.ditto
+			$ditto:=cs:C1710.ditto.new($build.buildTarget)
 			
-			If ($hdutil.create($build.lib4d))
+			If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+".zip")))
 				
-				var $notarytool : cs:C1710.notarytool
-				$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
-				
-				If ($notarytool.submit())
+				If ($codesign.sign($ditto.tgt))
 					
-					If ($notarytool.staple())
+					var $notarytool : cs:C1710.notarytool
+					$notarytool:=cs:C1710.notarytool.new($ditto.tgt; This:C1470.credentials.keychainProfile)
+					
+					If ($notarytool.submit())
 						
-						If ($notarytool.ckeckWithGatekeeper($build.lib4d.path; This:C1470.credentials.certificate))
-							
-							// Make a zip
-							var $ditto : cs:C1710.ditto
-							$ditto:=cs:C1710.ditto.new($build.buildTarget).archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+".zip"))
-							
-							// Make a dmg
-							$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
-							$hdutil.create($build.buildTarget)
-							
-							// &  a zip
-							var $file : 4D:C1709.File
-							$file:=$hdutil.target.parent.file($hdutil.target.fullName+".zip")
-							$ditto:=cs:C1710.ditto.new($hdutil.target).archive($file)
-							
-							If (This:C1470.database.isComponent)
-								
-								DISPLAY NOTIFICATION:C910(This:C1470.database.name; "Successfully notarized for : "+This:C1470.credentials.certificate)
-								
-							End if 
-						End if 
+						$success:=True:C214
+						
+					Else 
+						
+						Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+						This:C1470._error($notarytool.lastError)
+						
 					End if 
+					
+				Else 
+					
+					Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+					This:C1470._error($codesign.lastError)
+					
 				End if 
 				
-				$hdutil.target.delete()
+			Else 
+				
+				Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+				This:C1470._error($ditto.lastError)
 				
 			End if 
+			
+		Else 
+			
+			Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+			This:C1470._error($codesign.lastError)
+			
 		End if 
 		
-		If ($withUI && Not:C34($success))
+		This:C1470._closeBarber()
+		
+		If (This:C1470.database.isMatrix)
 			
-			ALERT:C41($build.lastError || $hdutil.lastError)
+			Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 			
 		End if 
+		
 	End if 
 	
-	This:C1470._closeBarber()
+	return $success
 	
 	// === === === === === === === === === === === === === === === === === === ===
 Function CommitAndPush($message : Text) : Object
