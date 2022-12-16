@@ -210,7 +210,7 @@ Function run($withUI : Boolean) : Boolean
 			var $ditto : cs:C1710.ditto
 			$ditto:=cs:C1710.ditto.new($build.buildTarget)
 			
-			If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+".zip")))
+			If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
 				
 				If ($codesign.sign($ditto.tgt))
 					

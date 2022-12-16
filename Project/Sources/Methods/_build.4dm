@@ -82,8 +82,10 @@ If (Asserted:C1132(Is macOS:C1572))
 						// MARK:Copy to family folder
 						Progress SET TITLE($progress; "Make Family folder…")
 						
-						$target:=makeFamily
+						// Local family folder
+						makeFamily($target)
 						
+						// Distribution folder
 						$target:=makeZipFamily($target)
 						
 						If ($target#Null:C1517)
@@ -91,6 +93,8 @@ If (Asserted:C1132(Is macOS:C1572))
 							// MARK:Make dmg & push to github
 							Progress SET TITLE($progress; "Make Family DMG…")
 							$success:=makeDMG($target)
+							
+							$target.delete(fk recursive:K87:7)
 							
 						Else 
 							
