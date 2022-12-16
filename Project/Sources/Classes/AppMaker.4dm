@@ -206,6 +206,14 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($codesign.sign($build.lib4d))
 			
+			// Delete older zip archives
+			var $file : 4D:C1709.File
+			For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
+				
+				$file.delete()
+				
+			End for each 
+			
 			// Deploy them as zip, signed, notarized, but not stapled.
 			var $ditto : cs:C1710.ditto
 			$ditto:=cs:C1710.ditto.new($build.buildTarget)

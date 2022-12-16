@@ -62,7 +62,7 @@ If (Asserted:C1132(Is macOS:C1572))
 						$cmd+=" --opening-mode interpreted"
 						$cmd+=" --user-param build"
 						$cmd+=" --dataless"
-						$cmd+=" --headless"
+						//$cmd+=" --headless"
 						
 						LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
 						
