@@ -23,7 +23,8 @@ Case of
 		
 		If ($userParameters="build")
 			
-			CALL WORKER:C1389("$build"; Formula:C1597(autoBuild))
+			//CALL WORKER("$build"; Formula(autoBuild))
+			CALL WORKER:C1389("$build"; "autoBuild")
 			
 		End if 
 		
