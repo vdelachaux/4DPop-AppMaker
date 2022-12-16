@@ -42,6 +42,9 @@ If (False:C215)  // Tools
 	C_OBJECT:C1216(makeFamily; $1)
 	C_OBJECT:C1216(makeFamily; $0)
 	
+	C_OBJECT:C1216(makeZipFamily; $1)
+	C_OBJECT:C1216(makeZipFamily; $0)
+	
 	C_OBJECT:C1216(makeDMG; $1)
 	C_BOOLEAN:C305(makeDMG; $0)
 	

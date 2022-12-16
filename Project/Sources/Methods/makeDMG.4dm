@@ -57,38 +57,28 @@ If ($target#Null:C1517 && $target.exists)
 					
 					If ($notarytool.ckeckWithGatekeeper($dmg.path; $credentials.certificate))
 						
-						
-						// Make a zip
-						var $ditto : cs:C1710.ditto
-						$ditto:=cs:C1710.ditto.new($dmg)
-						$ditto.archive($dmg.parent.file($dmg.fullName+".zip"))
-						
 						Progress QUIT($progress)
 						return True:C214
 						
 					End if 
 					
-					Progress QUIT($progress)
 					ALERT:C41(Current method name:C684+": ckeckWithGatekeeper failed")
-					return 
 					
 				End if 
 				
-				Progress QUIT($progress)
 				ALERT:C41(Current method name:C684+": staple failed")
-				return 
 				
 			End if 
 			
-			Progress QUIT($progress)
 			ALERT:C41(Current method name:C684+": submit failed:\r\r"+JSON Stringify:C1217($notarytool.outputStream))
-			return 
 			
 		End if 
 		
-		Progress QUIT($progress)
 		ALERT:C41(Current method name:C684+": sign failed")
-		return 
 		
 	End if 
+	
+	Progress QUIT($progress)
+	return 
+	
 End if 
