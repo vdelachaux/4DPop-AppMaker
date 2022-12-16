@@ -102,23 +102,14 @@ Function run($withUI : Boolean) : Boolean
 		
 		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
-		If (False:C215)
+		var $lastbuild : 4D:C1709.File
+		$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
+		$lastbuild.create()
+		
+		If ($lastbuild.getText()#This:C1470.motor.branch) | True:C214  // Always clear compiled code
 			
-			var $lastbuild : 4D:C1709.File
-			$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
-			$lastbuild.create()
-			
-			If ($lastbuild.getText()#This:C1470.motor.branch)
-				
-				This:C1470.database.clearCompiledCode()
-				$lastbuild.setText(This:C1470.motor.branch)
-				
-			End if 
-			
-		Else 
-			
-			// Always clear compiled code
 			This:C1470.database.clearCompiledCode()
+			$lastbuild.setText(This:C1470.motor.branch)
 			
 		End if 
 		
@@ -236,6 +227,10 @@ Function run($withUI : Boolean) : Boolean
 					
 					If ($notarytool.submit())
 						
+						Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+						Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+						Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+						
 						$success:=True:C214
 						
 					Else 
@@ -267,14 +262,6 @@ Function run($withUI : Boolean) : Boolean
 		End if 
 		
 		This:C1470._closeBarber()
-		
-		If (This:C1470.database.isMatrix)
-			
-			Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
-			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
-			Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
-			
-		End if 
 		
 	End if 
 	

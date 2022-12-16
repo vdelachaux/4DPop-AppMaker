@@ -46,19 +46,16 @@ If ($target#Null:C1517 && $target.exists)
 		
 		For each ($component; $make.components)
 			
-			If (Bool:C1537($component.family))
+			$src:=$target.folder($component.name).folder("Build/Components").folder($component.name+".4dbase")
+			
+			If ($src.exists)
 				
-				$src:=$target.folder($component.name).folder("Build/Components").folder($component.name+".4dbase")
+				$tgt:=$src.copyTo($family)
 				
-				If ($src.exists)
+				If ($tgt.folder("_gsdata_").exists)
 					
-					$tgt:=$src.copyTo($family)
+					$tgt.folder("_gsdata_").delete(fk recursive:K87:7)
 					
-					If ($tgt.folder("_gsdata_").exists)
-						
-						$tgt.folder("_gsdata_").delete(fk recursive:K87:7)
-						
-					End if 
 				End if 
 			End if 
 		End for each 
