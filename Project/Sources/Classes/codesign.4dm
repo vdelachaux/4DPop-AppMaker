@@ -21,7 +21,7 @@ Sign:
 */
 
 // === === === === === === === === === === === === === === === === === === === === === === ===
-Class constructor($credentials : Object)
+Class constructor($credentials : Object; $entitlement : 4D:C1709.File)
 	
 	Super:C1705()
 	
@@ -29,6 +29,8 @@ Class constructor($credentials : Object)
 	This:C1470.certificate:=$credentials.certificate ? String:C10($credentials.certificate) : Null:C1517
 	This:C1470.publicID:=$credentials.publicID ? String:C10($credentials.publicID) : Null:C1517
 	This:C1470.keychainProfile:=$credentials.keychainProfile ? String:C10($credentials.keychainProfile) : Null:C1517
+	
+	This:C1470.entitlements:=$entitlement ? $entitlement : File:C1566("📄")
 	
 	This:C1470.identity:=This:C1470.findIdentities().query("name = :1"; "Developer ID Application: "+This:C1470.certificate).pop()
 	This:C1470.success:=This:C1470.identity#Null:C1517
@@ -97,7 +99,17 @@ Function sign($path) : Boolean
 	End case 
 	
 	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
-	This:C1470.launch("codesign --sign "+$identity+" --verbose --deep --timestamp --force --options runtime "+This:C1470.quoted($path))
+	
+	If (This:C1470.entitlements.exists)
+		
+		This:C1470.launch("codesign --sign "+$identity+" --verbose --deep --timestamp --force --options runtime --entitlements "+This:C1470.quoted(This:C1470.entitlements.path)+" "+This:C1470.quoted($path))
+		
+	Else 
+		
+		This:C1470.launch("codesign --sign "+$identity+" --verbose --deep --timestamp --force --options runtime "+This:C1470.quoted($path))
+		
+	End if 
+	
 	This:C1470.resultInErrorStream:=False:C215
 	
 	return This:C1470.success

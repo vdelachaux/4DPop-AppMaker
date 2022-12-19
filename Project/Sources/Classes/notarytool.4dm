@@ -117,7 +117,7 @@ Function submit() : Boolean
 	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function ckeckWithGatekeeper($path : Text; $certificate : Text) : Boolean
+Function checkWithGatekeeper($path : Text; $certificate : Text) : Boolean
 	
 	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
 	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted($path))

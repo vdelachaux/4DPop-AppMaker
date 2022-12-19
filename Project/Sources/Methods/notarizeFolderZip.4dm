@@ -31,14 +31,14 @@ If (Bool:C1537(OK))
 			
 			If ($notarytool.staple())
 				
-				If ($notarytool.ckeckWithGatekeeper($src.path; $credentials.certificate))
+				If ($notarytool.checkWithGatekeeper($src.path; $credentials.certificate))
 					
 					ALERT:C41("Successful notarization")
 					return 
 					
 				End if 
 				
-				ALERT:C41("ckeckWithGatekeeper failed")
+				ALERT:C41("checkWithGatekeeper failed")
 				return 
 				
 			End if 

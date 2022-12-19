@@ -53,6 +53,8 @@ Class constructor()
 		End if 
 	End if 
 	
+	This:C1470.entitlementsFile:=Folder:C1567(Folder:C1567(fk resources folder:K87:11).platformPath; fk platform path:K87:2).file("Components.entitlements")
+	
 	// Initialize the progress accessor
 	If (Storage:C1525.progress=Null:C1517)
 		
@@ -200,34 +202,50 @@ Function run($withUI : Boolean) : Boolean
 		
 		$success:=False:C215
 		
-		// Sign the lib4d-arm64.dylib
+		// Sign, notarize & staple the lib4d-arm64.dylib
 		var $codesign : cs:C1710.codesign
-		$codesign:=cs:C1710.codesign.new(This:C1470.credentials)
+		$codesign:=cs:C1710.codesign.new(This:C1470.credentials; This:C1470.entitlementsFile)
 		
 		If ($codesign.sign($build.lib4d))
 			
-			// Delete older zip archives
-			var $file : 4D:C1709.File
-			For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
-				
-				$file.delete()
-				
-			End for each 
+			var $dmg : 4D:C1709.File
+			$dmg:=$build.lib4d.parent.file($build.lib4d.name+".dmg")
 			
-			// Deploy them as zip, signed, notarized, but not stapled.
-			var $ditto : cs:C1710.ditto
-			$ditto:=cs:C1710.ditto.new($build.buildTarget)
+			var $hdutil : cs:C1710.hdutil
+			$hdutil:=cs:C1710.hdutil.new($dmg)
 			
-			If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
+			If ($hdutil.create($build.lib4d))
 				
-				If ($codesign.sign($ditto.tgt))
+				var $notarytool : cs:C1710.notarytool
+				$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+				
+				If ($notarytool.submit())
 					
-					var $notarytool : cs:C1710.notarytool
-					$notarytool:=cs:C1710.notarytool.new($ditto.tgt; This:C1470.credentials.keychainProfile)
-					
-					If ($notarytool.submit())
+					If ($notarytool.staple())
 						
-						$success:=True:C214
+						// Delete older zip archives
+						var $file : 4D:C1709.File
+						For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
+							
+							$file.delete()
+							
+						End for each 
+						
+						$hdutil.target.delete()
+						
+						// Make a zip archive
+						var $ditto : cs:C1710.ditto
+						$ditto:=cs:C1710.ditto.new($build.buildTarget)
+						
+						If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
+							
+							$success:=True:C214
+							
+						Else 
+							
+							This:C1470._error($ditto.lastError)
+							
+						End if 
 						
 					Else 
 						
@@ -237,15 +255,45 @@ Function run($withUI : Boolean) : Boolean
 					
 				Else 
 					
-					This:C1470._error($codesign.lastError)
+					This:C1470._error($notarytool.lastError)
 					
 				End if 
 				
 			Else 
 				
-				This:C1470._error($ditto.lastError)
+				This:C1470._error($hdutil.lastError)
 				
 			End if 
+			
+			//var $notarytool : cs.notarytool
+			//$notarytool:=cs.notarytool.new($build.lib4d; This.credentials.keychainProfile)
+			//If ($notarytool.submit())
+			//// Delete older zip archives
+			//var $file : 4D.File
+			//For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
+			//$file.delete()
+			//End for each 
+			//// Deploy them as zip, signed, notarized, but not stapled.
+			//var $ditto : cs.ditto
+			//$ditto:=cs.ditto.new($build.buildTarget)
+			//If ($ditto.archive(File($build.buildTarget.parent.path+$build.buildTarget.name+" "+This.motor.branch+".zip")))
+			//If ($codesign.sign($ditto.tgt))
+			//var $notarytool : cs.notarytool
+			//$notarytool:=cs.notarytool.new($ditto.tgt; This.credentials.keychainProfile)
+			//If ($notarytool.submit())
+			//$success:=True
+			//Else 
+			//This._error($notarytool.lastError)
+			//End if 
+			//Else 
+			//This._error($codesign.lastError)
+			//End if 
+			//Else 
+			//This._error($ditto.lastError)
+			//End if 
+			//Else 
+			//This._error($notarytool.lastError)
+			//End if 
 			
 		Else 
 			
@@ -258,6 +306,7 @@ Function run($withUI : Boolean) : Boolean
 	End if 
 	
 	Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 	

@@ -55,14 +55,14 @@ If ($target#Null:C1517 && $target.exists)
 				
 				If ($notarytool.staple())
 					
-					If ($notarytool.ckeckWithGatekeeper($dmg.path; $credentials.certificate))
+					If ($notarytool.checkWithGatekeeper($dmg.path; $credentials.certificate))
 						
 						Progress QUIT($progress)
 						return True:C214
 						
 					End if 
 					
-					ALERT:C41(Current method name:C684+": ckeckWithGatekeeper failed")
+					ALERT:C41(Current method name:C684+": checkWithGatekeeper failed")
 					
 				End if 
 				

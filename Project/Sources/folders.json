@@ -3,7 +3,7 @@
 		"methods": [
 			"_o_APP_MAKER_GET_PROJECTS",
 			"_o_APP_MAKER_Get_target_path",
-			"_o_appMaker_INIT",
+			"_o_AppMaker_INIT",
 			"_o_database",
 			"_o_doc_File",
 			"_o_doc_Folder",
@@ -24,19 +24,8 @@
 			"popAppMakerRun"
 		]
 	},
-	"(_TEMPO)": {
-		"classes": [
-			"App",
-			"Console",
-			"SignApp",
-			"TM_Build"
-		]
-	},
-	"(database)": {
-		"methods": [
-			"(COMPILER_database)"
-		]
-	},
+	"(_TEMPO)": {},
+	"(database)": {},
 	"(env)": {},
 	"00_dev": {
 		"methods": [
