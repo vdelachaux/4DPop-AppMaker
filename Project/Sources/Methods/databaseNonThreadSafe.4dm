@@ -18,9 +18,6 @@ Case of
 		
 		Use ($signal)
 			
-			$signal.isProject:=Bool:C1537(Get database parameter:C643(Is host database a project:K37:99))
-			$signal.isBinary:=Not:C34($signal.isProject)
-			
 			$c:=New collection:C1472
 			ARRAY TEXT:C222($textArray; 0x0000)
 			COMPONENT LIST:C1001($textArray)

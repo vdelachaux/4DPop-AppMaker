@@ -83,10 +83,10 @@ If (Asserted:C1132(Is macOS:C1572))
 						Progress SET TITLE($progress; "Make Family folder…")
 						
 						// Local family folder
-						makeFamily($target)
+						$target:=makeFamily($target)
 						
 						// Distribution folder
-						$target:=makeZipFamily($target)
+						//$target:=makeZipFamily($target)
 						
 						If ($target#Null:C1517)
 							

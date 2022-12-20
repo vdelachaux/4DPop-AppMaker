@@ -6,7 +6,7 @@ Class constructor($full : Boolean)
 	This:C1470.userName:=Current system user:C484
 	This:C1470.systemInfos:=Get system info:C1571
 	
-	This:C1470.homeFolder:=Folder:C1567(fk home folder:K87:24)
+	This:C1470.homeFolder:=Folder:C1567(fk desktop folder:K87:19).parent  //Folder(‘k87;24‘)
 	This:C1470.desktopFolder:=Folder:C1567(fk desktop folder:K87:19)
 	This:C1470.documentsFolder:=Folder:C1567(fk documents folder:K87:21)
 	This:C1470.systemFolder:=Folder:C1567(fk system folder:K87:13)

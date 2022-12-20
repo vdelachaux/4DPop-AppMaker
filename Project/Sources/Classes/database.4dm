@@ -103,11 +103,13 @@ Class constructor($full : Boolean)
 		
 		This:C1470.isProject:=True:C214
 		This:C1470.isBinary:=False:C215
-		This:C1470.components:=New collection:C1472
-		This:C1470.plugins:=New collection:C1472
 		
 		return 
 		
+	Else 
+		
+		This:C1470.isProject:=This:C1470.structureFile.extension=".4DProject"
+		This:C1470.isBinary:=Not:C34(This:C1470.isProject)
 	End if 
 	
 	$full:=Count parameters:C259>=1 ? $full : False:C215
@@ -119,8 +121,6 @@ Class constructor($full : Boolean)
 		CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 		$signal.wait()
 		
-		This:C1470.isProject:=$signal.isProject
-		This:C1470.isBinary:=$signal.isBinary
 		This:C1470.components:=$signal.components.copy()
 		This:C1470.plugins:=$signal.plugins.copy()
 		
@@ -143,6 +143,12 @@ Class constructor($full : Boolean)
 				
 				//––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 		End case 
+		
+	Else 
+		
+		This:C1470.components:=New collection:C1472
+		This:C1470.plugins:=New collection:C1472
+		
 	End if 
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 

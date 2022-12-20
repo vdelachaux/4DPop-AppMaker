@@ -108,7 +108,7 @@ Function run($withUI : Boolean) : Boolean
 		$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
 		$lastbuild.create()
 		
-		If ($lastbuild.getText()#This:C1470.motor.branch) | True:C214  // Always clear compiled code
+		If ($lastbuild.getText()#This:C1470.motor.branch)  //| True  // Always clear compiled code
 			
 			This:C1470.database.clearCompiledCode()
 			$lastbuild.setText(This:C1470.motor.branch)
@@ -146,7 +146,7 @@ Function run($withUI : Boolean) : Boolean
 		
 	End if 
 	
-	If (Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
+	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
 		
 		$success:=This:C1470._deleteMacContent($build.buildTarget)
 		
@@ -158,7 +158,7 @@ Function run($withUI : Boolean) : Boolean
 		
 	End if 
 	
-	If ($prefs.copy#Null:C1517)
+	If ($success && ($prefs.copy#Null:C1517))
 		
 		If (Value type:C1509($prefs.copy.array.item)#Is collection:K8:32)
 			
@@ -174,7 +174,7 @@ Function run($withUI : Boolean) : Boolean
 		
 	End if 
 	
-	If ($prefs.delete#Null:C1517)
+	If ($success && ($prefs.delete#Null:C1517))
 		
 		If (Value type:C1509($prefs.delete.array.item)#Is collection:K8:32)
 			
@@ -198,117 +198,23 @@ Function run($withUI : Boolean) : Boolean
 	
 	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && ($build.lib4d#Null:C1517))
 		
-		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
-		
-		$success:=False:C215
-		
-		// Sign, notarize & staple the lib4d-arm64.dylib
-		var $codesign : cs:C1710.codesign
-		$codesign:=cs:C1710.codesign.new(This:C1470.credentials; This:C1470.entitlementsFile)
-		
-		If ($codesign.sign($build.lib4d))
-			
-			var $dmg : 4D:C1709.File
-			$dmg:=$build.lib4d.parent.file($build.lib4d.name+".dmg")
-			
-			var $hdutil : cs:C1710.hdutil
-			$hdutil:=cs:C1710.hdutil.new($dmg)
-			
-			If ($hdutil.create($build.lib4d))
-				
-				var $notarytool : cs:C1710.notarytool
-				$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
-				
-				If ($notarytool.submit())
-					
-					If ($notarytool.staple())
-						
-						// Delete older zip archives
-						var $file : 4D:C1709.File
-						For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
-							
-							$file.delete()
-							
-						End for each 
-						
-						$hdutil.target.delete()
-						
-						// Make a zip archive
-						var $ditto : cs:C1710.ditto
-						$ditto:=cs:C1710.ditto.new($build.buildTarget)
-						
-						If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
-							
-							$success:=True:C214
-							
-						Else 
-							
-							This:C1470._error($ditto.lastError)
-							
-						End if 
-						
-					Else 
-						
-						This:C1470._error($notarytool.lastError)
-						
-					End if 
-					
-				Else 
-					
-					This:C1470._error($notarytool.lastError)
-					
-				End if 
-				
-			Else 
-				
-				This:C1470._error($hdutil.lastError)
-				
-			End if 
-			
-			//var $notarytool : cs.notarytool
-			//$notarytool:=cs.notarytool.new($build.lib4d; This.credentials.keychainProfile)
-			//If ($notarytool.submit())
-			//// Delete older zip archives
-			//var $file : 4D.File
-			//For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
-			//$file.delete()
-			//End for each 
-			//// Deploy them as zip, signed, notarized, but not stapled.
-			//var $ditto : cs.ditto
-			//$ditto:=cs.ditto.new($build.buildTarget)
-			//If ($ditto.archive(File($build.buildTarget.parent.path+$build.buildTarget.name+" "+This.motor.branch+".zip")))
-			//If ($codesign.sign($ditto.tgt))
-			//var $notarytool : cs.notarytool
-			//$notarytool:=cs.notarytool.new($ditto.tgt; This.credentials.keychainProfile)
-			//If ($notarytool.submit())
-			//$success:=True
-			//Else 
-			//This._error($notarytool.lastError)
-			//End if 
-			//Else 
-			//This._error($codesign.lastError)
-			//End if 
-			//Else 
-			//This._error($ditto.lastError)
-			//End if 
-			//Else 
-			//This._error($notarytool.lastError)
-			//End if 
-			
-		Else 
-			
-			This:C1470._error($codesign.lastError)
-			
-		End if 
-		
-		This:C1470._closeBarber()
+		$success:=This:C1470._notarize($build)
 		
 	End if 
 	
-	Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+	If ($success)
+		
+		If (This:C1470.database.databaseFolder.folder(".git").exists)
+			
+			// Commit & push on github
+			
+			
+			
+			
+		End if 
+	End if 
+	
+	This:C1470._closeBarber()
 	
 	return $success
 	
@@ -366,6 +272,88 @@ Function CommitAndPush($message : Text) : Object
 	return $error
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _notarize($build : cs:C1710.build) : Boolean
+	
+	var $success : Boolean
+	var $file : 4D:C1709.File
+	var $codesign : cs:C1710.codesign
+	var $ditto : cs:C1710.ditto
+	var $hdutil : cs:C1710.hdutil
+	var $notarytool : cs:C1710.notarytool
+	
+	This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
+	
+	// Sign the lib4d-arm64.dylib
+	$codesign:=cs:C1710.codesign.new(This:C1470.credentials; This:C1470.entitlementsFile)
+	
+	If ($codesign.sign($build.lib4d))
+		
+		// Notarize & staple the lib4d-arm64.dylib
+		$hdutil:=cs:C1710.hdutil.new($build.lib4d.parent.file($build.lib4d.name+".dmg"))
+		
+		If ($hdutil.create($build.lib4d))
+			
+			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+			
+			If ($notarytool.submit())
+				
+				// Staple the lib4d-arm64.dylib
+				If ($notarytool.staple())
+					
+					// Delete older zip archives
+					For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
+						
+						$file.delete()
+						
+					End for each 
+					
+					$hdutil.target.delete()
+					
+					// Make a zip archive
+					$ditto:=cs:C1710.ditto.new($build.buildTarget)
+					
+					If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
+						
+						$success:=True:C214
+						
+					Else 
+						
+						This:C1470._error($ditto.lastError)
+						
+					End if 
+					
+				Else 
+					
+					This:C1470._error($notarytool.lastError)
+					
+				End if 
+				
+			Else 
+				
+				This:C1470._error($notarytool.lastError)
+				
+			End if 
+			
+		Else 
+			
+			This:C1470._error($hdutil.lastError)
+			
+		End if 
+		
+	Else 
+		
+		This:C1470._error($codesign.lastError)
+		
+	End if 
+	
+	Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+	
+	return $success
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 	// Delete help files and the non necessary resources for the final user
 Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 	
@@ -737,7 +725,6 @@ Function _displayError($error : Text)
 		End use 
 		
 		BEEP:C151
-		
 		DELAY PROCESS:C323(Current process:C322; 100)
 		
 		Use (Storage:C1525.progress)
