@@ -17,6 +17,18 @@ If (Asserted:C1132(Is macOS:C1572))
 		
 		If ($exe.exists)
 			
+			// Get the the builder branch
+			var $o : Object
+			$o:=Folder:C1567(DOCUMENT; fk platform path:K87:2).file("Contents/Info.plist").getAppInfo()
+			
+			ARRAY LONGINT:C221($pos; 0x0000)
+			ARRAY LONGINT:C221($len; 0x0000)
+			
+			$commitMessage:=Match regex:C1019("(?mi-s)build\\s(.*)\\."; $o.CFBundleShortVersionString; 1; $pos; $len)\
+				 ? "Compilation "+Substring:C12($o.CFBundleShortVersionString; $pos{1}; $len{1})\
+				 : "Compilation "+cs:C1710.motor.new().branch
+			
+			// Select the target folder
 			$pathname:=Select folder:C670("select the component folder"; 8859)
 			
 			If (Bool:C1537(OK))
@@ -40,8 +52,6 @@ If (Asserted:C1132(Is macOS:C1572))
 				If ($makeFile.exists)
 					
 					$make:=JSON Parse:C1218($makeFile.getText())
-					
-					$commitMessage:="Compilation "+cs:C1710.motor.new().branch
 					
 					For each ($component; $make.components)
 						
