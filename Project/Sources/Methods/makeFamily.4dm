@@ -32,7 +32,7 @@ If ($target#Null:C1517 && $target.exists)
 		$progress:=Progress New
 		
 		$make:=JSON Parse:C1218($makeFile.getText())
-		$family:=$target.folder("4DPop Family "+cs:C1710.motor.new().branch)
+		$family:=$target.folder("4DPop-Family-"+cs:C1710.motor.new().branch)
 		
 		Progress SET TITLE($progress; "Creating: "+$family.fullName+"…")
 		

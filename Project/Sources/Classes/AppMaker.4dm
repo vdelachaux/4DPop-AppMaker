@@ -202,74 +202,46 @@ Function run($withUI : Boolean) : Boolean
 		
 	End if 
 	
-	If ($success)
-		
-		If (This:C1470.database.databaseFolder.folder(".git").exists)
-			
-			// Commit & push on github
-			
-			
-			
-			
-		End if 
-	End if 
-	
 	This:C1470._closeBarber()
 	
 	return $success
 	
 	// === === === === === === === === === === === === === === === === === === ===
-Function CommitAndPush($message : Text) : Object
+Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 	
-	var $cmd; $err; $in; $out; $path : Text
-	var $error : Object
+	var $err; $in; $out : Text
 	
-	$path:=Get 4D folder:C485(Database folder:K5:14; *)
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
 	
-	If (($out#"")\
-		 | ($err#""))
+	If (Length:C16($out+$err)>0) && (Position:C15("warning: "; $err)=0)
 		
-		$error:=New object:C1471(\
-			"success"; False:C215; \
-			"Error git add"; $out+" "+$err)
+		return 
 		
 	Else 
 		
-		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
-		$cmd:="git commit -a -q -m "+Char:C90(34)+$message+Char:C90(34)
-		LAUNCH EXTERNAL PROCESS:C811($cmd; $in; $out; $err)
+		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
+		LAUNCH EXTERNAL PROCESS:C811("git commit -a -q -m "+Char:C90(34)+$commitMessage+Char:C90(34); $in; $out; $err)
 		
-		If (($out#"")\
-			 | ($err#""))
+		If (Length:C16($out+$err)>0 && (Position:C15("warning: "; $err)=0)
 			
-			$error:=New object:C1471(\
-				"success"; False:C215; \
-				"Error git commit"; $out+" "+$err)
+			return 
 			
 		Else 
 			
-			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $path)
+			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
 			
-			If ($err#"")
+			If ($err="@master -> master@")
 				
-				$error:=New object:C1471(\
-					"success"; False:C215; \
-					"Error git push"; $err)
-				
-			Else 
-				
-				$error:=New object:C1471(\
-					"success"; True:C214; \
-					"git commit"; $out)
+				return True:C214
 				
 			End if 
 		End if 
 	End if 
-	
-	return $error
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _notarize($build : cs:C1710.build) : Boolean

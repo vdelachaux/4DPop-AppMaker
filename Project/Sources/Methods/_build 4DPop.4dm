@@ -24,9 +24,12 @@ If (Asserted:C1132(Is macOS:C1572))
 			ARRAY LONGINT:C221($pos; 0x0000)
 			ARRAY LONGINT:C221($len; 0x0000)
 			
-			$commitMessage:=Match regex:C1019("(?mi-s)build\\s(.*)\\."; $o.CFBundleShortVersionString; 1; $pos; $len)\
-				 ? "Compilation "+Substring:C12($o.CFBundleShortVersionString; $pos{1}; $len{1})\
-				 : "Compilation "+cs:C1710.motor.new().branch
+			var $branch : Text
+			$branch:=Match regex:C1019("(?mi-s)build\\s(.*)\\."; $o.CFBundleShortVersionString; 1; $pos; $len)\
+				 ? Substring:C12($o.CFBundleShortVersionString; $pos{1}; $len{1})\
+				 : cs:C1710.motor.new().branch
+			
+			$commitMessage:="Compilation "+$branch
 			
 			// Select the target folder
 			$pathname:=Select folder:C670("select the component folder"; 8859)
@@ -92,31 +95,58 @@ If (Asserted:C1132(Is macOS:C1572))
 						// MARK:Copy to family folder
 						Progress SET TITLE($progress; "Make Family folder…")
 						
-						// Local family folder
-						$target:=makeFamily($target)
+						var $family; $src; $tgt : 4D:C1709.Folder
+						$family:=$target.folder("4DPop-Family-"+$branch)
 						
-						// Distribution folder
-						//$target:=makeZipFamily($target)
+						Progress SET TITLE($progress; "Creating: "+$family.fullName+"…")
 						
-						If ($target#Null:C1517)
+						If ($family.exists)
 							
-							// MARK:Make dmg & push to github
-							Progress SET TITLE($progress; "Make Family DMG…")
-							$success:=makeDMG($target)
-							
-							$target.delete(fk recursive:K87:7)
-							
-						Else 
-							
-							ALERT:C41("makeFamily failed")
+							$family.delete(fk recursive:K87:7)
 							
 						End if 
+						
+						$family.create()
+						
+						For each ($component; $make.components)
+							
+							$src:=$target.folder($component.name).folder("Build/Components").folder($component.name+".4dbase")
+							
+							If ($src.exists)
+								
+								$tgt:=$src.copyTo($family)
+								
+							End if 
+						End for each 
+						
+						// MARK:Make dmg & push to github
+						Progress SET TITLE($progress; "Make Family DMG…")
+						
+						$success:=makeDMG($family)
+						
+						If (Not:C34($success))
+							
+							ALERT:C41("makeDMG failed")
+							
+						End if 
+						
+						
+					Else 
+						
+						ALERT:C41("Faied to commit: "+$component.name)
+						
 					End if 
+					
+				Else 
+					
+					ALERT:C41("Missing file: "+$makeFile.fullName)
+					
 				End if 
 				
 				Progress QUIT($progress)
 				
 			End if 
+			
 		End if 
 	End if 
 	

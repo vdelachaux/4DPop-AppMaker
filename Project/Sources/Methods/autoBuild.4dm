@@ -1,8 +1,11 @@
 //%attributes = {"invisible":true,"preemptive":"incapable"}
-// Build
 var $AppMaker : cs:C1710.AppMaker
-$AppMaker:=cs:C1710.AppMaker.new()
-$AppMaker.run()
 
-// Then quit
-QUIT 4D:C291
+// Build
+$AppMaker:=cs:C1710.AppMaker.new()
+
+If ($AppMaker.run())
+	
+	QUIT 4D:C291
+	
+End if 
