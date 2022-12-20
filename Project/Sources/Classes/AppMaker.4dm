@@ -225,7 +225,7 @@ Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 		LAUNCH EXTERNAL PROCESS:C811("git commit -a -q -m "+Char:C90(34)+$commitMessage+Char:C90(34); $in; $out; $err)
 		
-		If (Length:C16($out+$err)>0 && (Position:C15("warning: "; $err)=0)
+		If (Length:C16($out+$err)>0 && (Position:C15("warning: "; $err)=0))
 			
 			return 
 			
