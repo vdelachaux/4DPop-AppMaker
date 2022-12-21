@@ -77,9 +77,8 @@ Function run($withUI : Boolean) : Boolean
 	
 	FLUSH CACHE:C297
 	
-	var $build : cs:C1710.build
-	$build:=cs:C1710.build.new(This:C1470.buildAppFile; This:C1470.credentials)
-	This:C1470.applicationName:=$build.settings.BuildApplicationName
+	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile; This:C1470.credentials)
+	This:C1470.applicationName:=This:C1470.build.settings.BuildApplicationName
 	
 	// Load preferences
 	var $prefs : Object
@@ -119,7 +118,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($success)
 			
-			$success:=$build.run()
+			$success:=This:C1470.build.run()
 			
 			If (Not:C34($success))
 				
@@ -136,7 +135,7 @@ Function run($withUI : Boolean) : Boolean
 	
 	If ($success)
 		
-		$success:=cs:C1710.lep.new().unlockDirectory($build.buildTarget).success
+		$success:=cs:C1710.lep.new().unlockDirectory(This:C1470.build.buildTarget).success
 		
 	End if 
 	
@@ -148,13 +147,13 @@ Function run($withUI : Boolean) : Boolean
 	
 	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
 		
-		$success:=This:C1470._deleteMacContent($build.buildTarget)
+		$success:=This:C1470._deleteMacContent(This:C1470.build.buildTarget)
 		
 	End if 
 	
 	If ($success && Bool:C1537($prefs.options.removeDevResources))
 		
-		$success:=This:C1470._deleteResources($build.buildTarget)
+		$success:=This:C1470._deleteResources(This:C1470.build.buildTarget)
 		
 	End if 
 	
@@ -170,7 +169,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470._copy($build.buildTarget; $prefs.copy.array.item.extract("$"))
+		This:C1470._copy(This:C1470.build.buildTarget; $prefs.copy.array.item.extract("$"))
 		
 	End if 
 	
@@ -186,7 +185,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470._delete($build.buildTarget; $prefs.delete.array.item.extract("$"))
+		This:C1470._delete(This:C1470.build.buildTarget; $prefs.delete.array.item.extract("$"))
 		
 	End if 
 	
@@ -196,9 +195,9 @@ Function run($withUI : Boolean) : Boolean
 		
 	End if 
 	
-	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && ($build.lib4d#Null:C1517))
+	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && (This:C1470.build.lib4d#Null:C1517))
 		
-		$success:=This:C1470._notarize($build)
+		$success:=This:C1470._notarize(This:C1470.build)
 		
 	End if 
 	
@@ -259,7 +258,7 @@ Function _sign($target) : Boolean
 			
 			$commandLine:="'"+$scriptFile.path+"' '"
 			$commandLine+=This:C1470.credentials.certificate+"' '"
-			$commandLine+=$target.path+"' '"
+			$commandLine+=This:C1470.build.buildTarget.path+"' '"
 			$commandLine+=$entitlementsFile.path+"'"
 			
 			$worker:=4D:C1709.SystemWorker.new($commandLine)
@@ -309,52 +308,52 @@ Function _notarize($build : cs:C1710.build) : Boolean
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
-	This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
-	
-	//// Sign the lib4d-arm64.dylib
-	//$codesign:=cs.codesign.new(This.credentials; This.entitlementsFile)
-	//If ($codesign.sign($build.lib4d))
-	
-	// Sign teh component
-	If (This:C1470._sign($build.buildTarget))
+	If (False:C215)
 		
-		// Notarize & staple the lib4d-arm64.dylib
-		//$hdutil:=cs.hdutil.new($build.lib4d.parent.file($build.lib4d.name+".dmg"))
-		//If ($hdutil.create($build.lib4d))
+		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 		
-		// Notarize the component
-		$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
+		// Sign the lib4d-arm64.dylib
+		$codesign:=cs:C1710.codesign.new(This:C1470.credentials; This:C1470.entitlementsFile)
 		
-		//If ($hdutil.create($build.lib4d))
-		
-		If ($hdutil.create($build.buildTarget))
+		If ($codesign.sign(This:C1470.build.lib4d))
 			
-			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+			// Notarize & staple the lib4d-arm64.dylib
+			$hdutil:=cs:C1710.hdutil.new(This:C1470.build.lib4d.parent.file(This:C1470.build.lib4d.name+".dmg"))
 			
-			If ($notarytool.submit())
+			If ($hdutil.create(This:C1470.build.lib4d))
 				
-				// Staple
-				If ($notarytool.staple())
+				$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+				
+				If ($notarytool.submit())
 					
-					// Delete older zip archives
-					For each ($file; $build.buildTarget.parent.files().query("extension = .zip"))
+					// Staple
+					If ($notarytool.staple())
 						
-						$file.delete()
+						// Delete older zip archives
+						For each ($file; This:C1470.build.buildTarget.parent.files().query("extension = .zip"))
+							
+							$file.delete()
+							
+						End for each 
 						
-					End for each 
-					
-					$hdutil.target.delete()
-					
-					// Make a zip archive
-					$ditto:=cs:C1710.ditto.new($build.buildTarget)
-					
-					If ($ditto.archive(File:C1566($build.buildTarget.parent.path+$build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
+						$hdutil.target.delete()
 						
-						$success:=True:C214
+						// Make a zip archive
+						$ditto:=cs:C1710.ditto.new(This:C1470.build.buildTarget)
+						
+						If ($ditto.archive(File:C1566(This:C1470.build.buildTarget.parent.path+This:C1470.build.buildTarget.name+" "+This:C1470.motor.branch+".zip")))
+							
+							$success:=True:C214
+							
+						Else 
+							
+							This:C1470._error($ditto.lastError)
+							
+						End if 
 						
 					Else 
 						
-						This:C1470._error($ditto.lastError)
+						This:C1470._error($notarytool.lastError)
 						
 					End if 
 					
@@ -366,28 +365,35 @@ Function _notarize($build : cs:C1710.build) : Boolean
 				
 			Else 
 				
-				This:C1470._error($notarytool.lastError)
+				This:C1470._error($hdutil.lastError)
 				
 			End if 
 			
+			Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+			
 		Else 
 			
-			This:C1470._error($hdutil.lastError)
+			This:C1470._error($codesign.lastError)
 			
 		End if 
 		
+		
 	Else 
 		
-		//This._error($codesign.lastError)
+		This:C1470._callBarber("✍️ Signature"; Barber shop:K42:35)
 		
-		This:C1470._error("Signature failed.")
+		// Sign the component
+		$success:=This:C1470._sign(This:C1470.build.buildTarget)
 		
+		If (Not:C34($success))
+			
+			This:C1470._error("Signature failed.")
+			
+		End if 
 	End if 
-	
-	//Folder(fk logs folder).file("codesign.log").setText($codesign.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 	
 	return $success
 	
@@ -417,7 +423,7 @@ Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 		
 		For each ($path; $xml.toObject().item.extract("$"))
 			
-			$path:=$target.path+$path
+			$path:=This:C1470.build.buildTarget.path+$path
 			
 			If ($path="@/")
 				
@@ -448,7 +454,7 @@ Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		For each ($file; $target.files(fk recursive:K87:7).query("name = :1"; ".@"))
+		For each ($file; This:C1470.build.buildTarget.files(fk recursive:K87:7).query("name = :1"; ".@"))
 			
 			$file.delete()
 			
@@ -577,7 +583,7 @@ Function _delete($target : 4D:C1709.Folder; $items : Collection)
 		
 		If ($item="@/")
 			
-			$tgt:=$target.folder($item)
+			$tgt:=This:C1470.build.buildTarget.folder($item)
 			
 			If ($tgt.exists)
 				
@@ -591,7 +597,7 @@ Function _delete($target : 4D:C1709.Folder; $items : Collection)
 			
 		Else 
 			
-			$tgt:=$target.file($item)
+			$tgt:=This:C1470.build.buildTarget.file($item)
 			
 			If ($tgt.exists)
 				
@@ -631,12 +637,12 @@ Function _copy($target : 4D:C1709.Folder; $items : Collection)
 		If ($item="@/")
 			
 			$src:=This:C1470.database.databaseFolder.folder($item)
-			$tgt:=$target.folder($item).parent
+			$tgt:=This:C1470.build.buildTarget.folder($item).parent
 			
 		Else 
 			
 			$src:=This:C1470.database.databaseFolder.file($item)
-			$tgt:=$target.file($item).parent
+			$tgt:=This:C1470.build.buildTarget.file($item).parent
 			
 		End if 
 		
