@@ -244,6 +244,62 @@ Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 	End if 
 	
 	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+Function _sign($target) : Boolean
+	
+	var $commandLine : Text
+	var $entitlementsFile; $scriptFile : 4D:C1709.File
+	var $worker : 4D:C1709.SystemWorker
+	
+	$scriptFile:=Folder:C1567(Application file:C491; fk platform path:K87:2).file("Contents/Resources/SignApp.sh")
+	$entitlementsFile:=Folder:C1567(Application file:C491; fk platform path:K87:2).file("Contents/Resources/4D.entitlements")
+	
+	If ($scriptFile.exists && $entitlementsFile.exists)
+		
+		If (This:C1470.credentials.certificate#"")
+			
+			$commandLine:="'"+$scriptFile.path+"' '"
+			$commandLine+=This:C1470.credentials.certificate+"' '"
+			$commandLine+=$target.path+"' '"
+			$commandLine+=$entitlementsFile.path+"'"
+			
+			$worker:=4D:C1709.SystemWorker.new($commandLine)
+			$worker.wait(120)
+			
+			If ($worker.terminated)
+				
+				If ($worker.exitCode=0)
+					
+					return True:C214
+					
+				Else 
+					
+					This:C1470._error("Signature error: "+$worker.response)
+					return 
+					
+				End if 
+				
+			Else 
+				
+				This:C1470._error("Signature timeout.")
+				return 
+				
+			End if 
+			
+		Else 
+			
+			This:C1470._error("No certificate defined.")
+			return 
+			
+		End if 
+		
+	Else 
+		
+		This:C1470._error("Signature files are missing.")
+		return 
+		
+	End if 
+	
+	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
 Function _notarize($build : cs:C1710.build) : Boolean
 	
 	var $success : Boolean
@@ -255,21 +311,29 @@ Function _notarize($build : cs:C1710.build) : Boolean
 	
 	This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 	
-	// Sign the lib4d-arm64.dylib
-	$codesign:=cs:C1710.codesign.new(This:C1470.credentials; This:C1470.entitlementsFile)
+	//// Sign the lib4d-arm64.dylib
+	//$codesign:=cs.codesign.new(This.credentials; This.entitlementsFile)
+	//If ($codesign.sign($build.lib4d))
 	
-	If ($codesign.sign($build.lib4d))
+	// Sign teh component
+	If (This:C1470._sign($build.buildTarget))
 		
 		// Notarize & staple the lib4d-arm64.dylib
-		$hdutil:=cs:C1710.hdutil.new($build.lib4d.parent.file($build.lib4d.name+".dmg"))
+		//$hdutil:=cs.hdutil.new($build.lib4d.parent.file($build.lib4d.name+".dmg"))
+		//If ($hdutil.create($build.lib4d))
 		
-		If ($hdutil.create($build.lib4d))
+		// Notarize the component
+		$hdutil:=cs:C1710.hdutil.new($build.buildTarget.parent.file($build.buildTarget.name+".dmg"))
+		
+		//If ($hdutil.create($build.lib4d))
+		
+		If ($hdutil.create($build.buildTarget))
 			
 			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
 			
 			If ($notarytool.submit())
 				
-				// Staple the lib4d-arm64.dylib
+				// Staple
 				If ($notarytool.staple())
 					
 					// Delete older zip archives
@@ -314,11 +378,13 @@ Function _notarize($build : cs:C1710.build) : Boolean
 		
 	Else 
 		
-		This:C1470._error($codesign.lastError)
+		//This._error($codesign.lastError)
+		
+		This:C1470._error("Signature failed.")
 		
 	End if 
 	
-	Folder:C1567(fk logs folder:K87:17).file("codesign.log").setText($codesign.history.join("\n"))
+	//Folder(fk logs folder).file("codesign.log").setText($codesign.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))

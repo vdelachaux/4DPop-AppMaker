@@ -45,7 +45,7 @@
       <LastDataPathLookup>ByAppName</LastDataPathLookup>
     </RuntimeVL>
     <SignApplication>
-      <MacSignature>True</MacSignature>
+      <MacSignature>False</MacSignature>
       <MacCertificate>Vincent de Lachaux (DYRKW64QA9)</MacCertificate>
       <AdHocSign>True</AdHocSign></SignApplication>
     <ArrayExcludedModuleName>
