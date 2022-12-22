@@ -25,9 +25,17 @@ If (Asserted:C1132(Is macOS:C1572))
 			ARRAY LONGINT:C221($len; 0x0000)
 			
 			var $branch : Text
-			$branch:=Match regex:C1019("(?mi-s)build\\s(.*)\\."; $o.CFBundleShortVersionString; 1; $pos; $len)\
-				 ? Substring:C12($o.CFBundleShortVersionString; $pos{1}; $len{1})\
-				 : cs:C1710.motor.new().branch
+			If ($o.CFBundleShortVersionString="0.0@")
+				
+				$branch:="main"
+				
+			Else 
+				
+				$branch:=Match regex:C1019("(?mi-s)build\\s(.*)\\."; $o.CFBundleShortVersionString; 1; $pos; $len)\
+					 ? Substring:C12($o.CFBundleShortVersionString; $pos{1}; $len{1})\
+					 : cs:C1710.motor.new().branch
+				
+			End if 
 			
 			$commitMessage:="Compilation "+$branch
 			
