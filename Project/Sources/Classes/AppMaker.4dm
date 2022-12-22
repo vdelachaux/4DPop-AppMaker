@@ -388,11 +388,87 @@ Function _notarize($build : cs:C1710.build) : Boolean
 		// Sign the component
 		$success:=This:C1470._sign(This:C1470.build.buildTarget)
 		
-		If (Not:C34($success))
+		If ($success)
 			
-			This:C1470._error("Signature failed.")
+			This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
+			
+			// Notarize & staple the lib4d-arm64.dylib
+			//$hdutil:=cs.hdutil.new(This.build.lib4d.parent.file(This.build.lib4d.name+".dmg"))
+			
+			var $dmg : 4D:C1709.File
+			$dmg:=File:C1566(This:C1470.build.buildTarget.parent.path+This:C1470.build.buildTarget.name+".dmg")
+			$hdutil:=cs:C1710.hdutil.new($dmg)
+			
+			//If ($hdutil.create(This.build.lib4d))
+			If ($hdutil.create(This:C1470.build.buildTarget))
+				
+				$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+				
+				If ($notarytool.submit())
+					
+					// Staple
+					
+					//Get the staple log
+					//var $log : 4D.File
+					//$log:=Folder(fk logs folder).file("notarizing.json")
+					//If ($log.exists)
+					//$notarytool.setEnvironnementVariable("directory"; This.build.buildTarget.parent.platformPath)
+					//var $o : Object
+					//For each ($o; JSON Parse($log.getText()).ticketContents)
+					//$notarytool.staple($o.path)
+					//End for each 
+					//End if 
+					
+					If ($notarytool.staple())
+						
+						//// Delete older zip archives
+						//For each ($file; This.build.buildTarget.parent.files().query("extension = .zip"))
+						
+						//$file.delete()
+						
+						//End for each 
+						
+						////$hdutil.target.delete()
+						//$ditto:=cs.ditto.new($dmg)
+						//$ditto.archive(File($dmg.parent.path+$dmg.name+".zip"))
+						
+						//// Make a zip archive
+						//$ditto:=cs.ditto.new(This.build.buildTarget)
+						
+						//If ($ditto.archive(File(This.build.buildTarget.parent.path+This.build.buildTarget.name+" "+This.motor.branch+".zip")))
+						
+						$success:=True:C214
+						
+						//Else 
+						
+						//This._error($ditto.lastError)
+						
+						//End if 
+						
+					Else 
+						
+						This:C1470._error($notarytool.lastError)
+						
+					End if 
+					
+				Else 
+					
+					This:C1470._error($notarytool.lastError)
+					
+				End if 
+				
+			Else 
+				
+				This:C1470._error($hdutil.lastError)
+				
+			End if 
+			
+			Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+			//Folder(fk logs folder).file("ditto.log").setText($ditto.history.join("\n"))
 			
 		End if 
+		
 	End if 
 	
 	return $success

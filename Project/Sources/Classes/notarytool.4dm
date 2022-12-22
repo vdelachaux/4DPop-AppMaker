@@ -4,8 +4,6 @@ Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 	
 	Super:C1705()
 	
-	This:C1470.responses:=New collection:C1472
-	This:C1470.notarisation:=Null:C1517
 	This:C1470.version:=This:C1470.getVersion()
 	This:C1470.available:=This:C1470.success
 	
@@ -79,7 +77,7 @@ Submit an archive to the Apple notary service.
 */
 Function submit() : Boolean
 	
-	var $len; $pos : Integer
+	var $cmd : Text
 	
 	If (Not:C34(This:C1470.available))
 		
@@ -87,19 +85,20 @@ Function submit() : Boolean
 		
 	End if 
 	
+	$cmd:="xcrun notarytool submit"
+	$cmd+=" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)
+	$cmd+=" "+This:C1470.quoted(This:C1470.target.path)
+	$cmd+=" --wait"
+	$cmd+=" --timeout 1h"
+	$cmd+=" --output-format json"
+	
 	This:C1470.setOutputType(Is object:K8:27)
-	
-	This:C1470.launch("xcrun notarytool submit "+This:C1470.quoted(This:C1470.target.path)\
-		+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
-		+" --output-format json --wait")
-	
+	This:C1470.launch($cmd)
 	This:C1470.setOutputType()
-	
-	This:C1470.responses.push(JSON Stringify:C1217(This:C1470.outputStream))
 	
 	If (This:C1470.success)
 		
-		This:C1470.success:=This:C1470.outputStream.status="Accepted"
+		This:C1470.success:=String:C10(This:C1470.outputStream.status)="Accepted"
 		
 	End if 
 	
@@ -116,50 +115,93 @@ Function submit() : Boolean
 		
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === === === === === ===
-Function checkWithGatekeeper($path : Text; $certificate : Text) : Boolean
+	//=== === === === === === === === === === === === === === === === === === === === === === ===
+Function staple($target) : Boolean
 	
-	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
-	This:C1470.launch("spctl --assess --type install -vvvv "+This:C1470.quoted($path))
-	This:C1470.resultInErrorStream:=False:C215
+	var $cmd : Text
 	
-	This:C1470.responses.push(This:C1470.success ? This:C1470.outputStream : This:C1470.errorStream)
+	$cmd:="xcrun stapler staple "
 	
-	If (This:C1470.success)
+	If (Count parameters:C259>0)
 		
-/*
-<file>: accepted
-source=Notarized Developer ID
-origin=Developer ID Application: <certificate>
-*/
+		Case of 
+				
+				//______________________________________________________
+			: (Value type:C1509($target)=Is text:K8:3)
+				
+				$cmd+=This:C1470.quoted($target)
+				
+				//______________________________________________________
+			: (Value type:C1509($target)=Is object:K8:27) && (OB Instance of:C1731($target; 4D:C1709.File))
+				
+				$cmd+=This:C1470.quoted($target.path)
+				
+				//______________________________________________________
+			Else 
+				
+				This:C1470._pushError("Type of parameter not managed")
+				return 
+				
+				//______________________________________________________
+		End case 
 		
-		ARRAY LONGINT:C221($len; 0)
-		ARRAY LONGINT:C221($pos; 0)
-		If (Match regex:C1019("(?mi-s): accepted\\nsource=Notarized Developer ID\\norigin=Developer ID Application: ([^$]*)$"; This:C1470.outputStream; 1; $pos; $len))
-			
-			This:C1470.success:=Substring:C12(This:C1470.outputStream; $pos{1}; $len{1})=$certificate
-			
-		Else 
-			
-			This:C1470.success:=False:C215
-			
-		End if 
+	Else 
+		
+		$cmd+=This:C1470.quoted(This:C1470.target.path)
+		
 	End if 
 	
-	return This:C1470.success
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function staple($target : 4D:C1709.File) : Boolean
-	
-	$target:=$target || This:C1470.target
-	This:C1470.launch("xcrun stapler staple "+This:C1470.quoted($target.path))
-	This:C1470.responses.push(This:C1470.success ? This:C1470.outputStream : This:C1470.errorStream)
+	This:C1470.launch($cmd)
 	
 	This:C1470.success:=Match regex:C1019("(?mi-s)The staple and validate action worked!"; This:C1470.outputStream; 1)
 	
 	If (Not:C34(This:C1470.success))
 		
 		This:C1470._pushError(This:C1470.outputStream)
+		
+	End if 
+	
+	return This:C1470.success
+	
+	// === === === === === === === === === === === === === === === === === === === === === === ===
+Function checkWithGatekeeper($target) : Boolean
+	
+	var $cmd : Text
+	
+	$cmd:="spctl"
+	$cmd+=" --assess"
+	$cmd+=" --type install"
+	$cmd+=" -vvvv"
+	$cmd+=" "
+	
+	Case of 
+			
+			//______________________________________________________
+		: (Value type:C1509($target)=Is text:K8:3)
+			
+			$cmd+=This:C1470.quoted($target)
+			
+			//______________________________________________________
+		: (Value type:C1509($target)=Is object:K8:27) && (OB Instance of:C1731($target; 4D:C1709.File))
+			
+			$cmd+=This:C1470.quoted($target.path)
+			
+			//______________________________________________________
+		Else 
+			
+			This:C1470._pushError("Type of parameter not managed")
+			return 
+			
+			//______________________________________________________
+	End case 
+	
+	This:C1470.resultInErrorStream:=True:C214  // ⚠️ RESULT IS ON ERROR STREAM
+	This:C1470.launch($cmd)
+	This:C1470.resultInErrorStream:=False:C215
+	
+	If (This:C1470.success)
+		
+		This:C1470.success:=Match regex:C1019("(?mi-s):accepted\\nsource=Notarized Developer ID\\n"; This:C1470.outputStream; 1)
 		
 	End if 
 	

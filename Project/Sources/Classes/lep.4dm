@@ -66,10 +66,10 @@ Function setCharSet($charset : Text)->$this : cs:C1710.lep
 	$this:=This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function setOutputType($outputType : Integer)->$this : cs:C1710.lep
+Function setOutputType($outputType : Integer) : cs:C1710.lep
 	
 	This:C1470.outputType:=$outputType=0 ? Is text:K8:3 : $outputType
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setEnvironnementVariable($variables; $value : Text)->$this : cs:C1710.lep

@@ -29,7 +29,7 @@ If ($target#Null:C1517 && $target.exists)
 	
 	$progress:=Progress New
 	
-	$dmg:=File:C1566(Delete string:C232($target.path; Length:C16($target.path); 1)+".dmg")
+	$dmg:=Folder:C1567($target.parent.path+$target.name+".dmg")
 	
 	Progress SET TITLE($progress; "Creating: "+$dmg.fullName+"…")
 	
@@ -55,7 +55,7 @@ If ($target#Null:C1517 && $target.exists)
 				
 				If ($notarytool.staple())
 					
-					If ($notarytool.checkWithGatekeeper($dmg.path; $credentials.certificate))
+					If ($notarytool.checkWithGatekeeper($dmg.path))  //; $credentials.certificate))
 						
 						Progress QUIT($progress)
 						return True:C214

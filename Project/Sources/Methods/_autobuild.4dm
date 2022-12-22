@@ -6,7 +6,7 @@ $AppMaker:=cs:C1710.AppMaker.new()
 
 If ($AppMaker.run())
 	
-	makeDMG($AppMaker.build.buildTarget)
+	//makeDMG($AppMaker.build.buildTarget)
 	
 End if 
 

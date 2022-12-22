@@ -62,7 +62,7 @@ Function create($content) : Boolean
 		
 	End if 
 	
-	This:C1470.launch("hdiutil create -format UDBZ -plist -srcfolder "+This:C1470.quoted($srcPath)+" "+This:C1470.quoted($tgtPath))
+	This:C1470.launch("hdiutil create -srcfolder "+This:C1470.quoted($srcPath)+" -format UDBZ "+This:C1470.quoted($tgtPath))
 	
 	return (This:C1470.success)
 	
