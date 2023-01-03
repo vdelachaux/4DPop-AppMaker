@@ -23,8 +23,13 @@ Case of
 		
 		If ($userParameters="build")
 			
+			// If (Get application info.headless)
+			//$real:=New process("autoBuild"; 0)
+			// Else
 			//CALL WORKER("$build"; Formula(autoBuild))
-			CALL WORKER:C1389("$build"; "autoBuild")
+			// End if
+			
+			CALL WORKER:C1389("$build"; Formula:C1597(autoBuild))
 			
 		End if 
 		
