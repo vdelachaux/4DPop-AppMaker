@@ -794,9 +794,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 		
 		//CALL WORKER("$AppMakerBarber"; Formula(Open form window("Barber"; Controller form window+Form has no menu bar; Horizontally centered; Vertically centered; *)))
 		//CALL WORKER("$AppMakerBarber"; Formula(DIALOG("Barber")))
-		
-		CALL WORKER:C1389(1; Formula:C1597(Open form window:C675("Barber"; Controller form window:K39:17+Form has no menu bar:K39:18; Horizontally centered:K39:1; Vertically centered:K39:4; *)))
-		CALL WORKER:C1389(1; Formula:C1597(DIALOG:C40("Barber")))
+		CALL WORKER:C1389("$AppMakerBarber"; Formula:C1597(_barber))
 		
 		If (Count parameters:C259>=1)
 			
@@ -856,7 +854,7 @@ Function _displayError($error : Text)
 			
 		End use 
 		
-		//KILL WORKER("$AppMakerBarber")
+		KILL WORKER:C1390("$AppMakerBarber")
 		
 	End if 
 	
@@ -871,6 +869,6 @@ Function _closeBarber()
 			
 		End use 
 		
-		//KILL WORKER("$AppMakerBarber")
+		KILL WORKER:C1390("$AppMakerBarber")
 		
 	End if 

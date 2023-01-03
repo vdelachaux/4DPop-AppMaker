@@ -78,6 +78,7 @@
 	},
 	"Private": {
 		"methods": [
+			"_barber",
 			"APP_MAKER_Go_to_page",
 			"APP_MAKER_HANDLER",
 			"APP_MAKER_Load_page",
