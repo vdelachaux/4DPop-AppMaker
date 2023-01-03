@@ -1,4 +1,4 @@
-//%attributes = {"invisible":true,"shared":true}
+//%attributes = {"invisible":true,"shared":true,"preemptive":"incapable"}
 // ----------------------------------------------------
 // Project method : popAppMakerRun
 // ID[B150A0DC18B342C8A555BD1CD36B43F4]

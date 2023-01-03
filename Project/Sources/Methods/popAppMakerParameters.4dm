@@ -1,4 +1,4 @@
-//%attributes = {"invisible":true,"shared":true}
+//%attributes = {"invisible":true,"shared":true,"preemptive":"incapable"}
 // ----------------------------------------------------
 // Method : popAppMakerParameters
 // Created 29/05/08 by vdl
