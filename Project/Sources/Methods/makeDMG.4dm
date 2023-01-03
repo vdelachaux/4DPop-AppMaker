@@ -29,7 +29,7 @@ If ($target#Null:C1517 && $target.exists)
 	
 	$progress:=Progress New
 	
-	$dmg:=Folder:C1567($target.parent.path+$target.name+".dmg")
+	$dmg:=File:C1566($target.parent.path+$target.name+".dmg")
 	
 	Progress SET TITLE($progress; "Creating: "+$dmg.fullName+"…")
 	
@@ -55,7 +55,7 @@ If ($target#Null:C1517 && $target.exists)
 				
 				If ($notarytool.staple())
 					
-					If ($notarytool.checkWithGatekeeper($dmg.path))  //; $credentials.certificate))
+					If ($notarytool.checkWithGatekeeper($dmg))
 						
 						Progress QUIT($progress)
 						return True:C214
@@ -63,21 +63,30 @@ If ($target#Null:C1517 && $target.exists)
 					End if 
 					
 					ALERT:C41(Current method name:C684+": checkWithGatekeeper failed")
+					Progress QUIT($progress)
+					return 
 					
 				End if 
 				
 				ALERT:C41(Current method name:C684+": staple failed")
+				Progress QUIT($progress)
+				return 
 				
 			End if 
 			
 			ALERT:C41(Current method name:C684+": submit failed:\r\r"+JSON Stringify:C1217($notarytool.outputStream))
+			Progress QUIT($progress)
+			return 
 			
 		End if 
 		
 		ALERT:C41(Current method name:C684+": sign failed")
+		Progress QUIT($progress)
+		return 
 		
 	End if 
 	
+	ALERT:C41(Current method name:C684+": cretae dmg failed")
 	Progress QUIT($progress)
 	return 
 	

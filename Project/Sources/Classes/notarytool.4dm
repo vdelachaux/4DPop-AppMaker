@@ -201,7 +201,7 @@ Function checkWithGatekeeper($target) : Boolean
 	
 	If (This:C1470.success)
 		
-		This:C1470.success:=Match regex:C1019("(?mi-s):accepted\\nsource=Notarized Developer ID\\n"; This:C1470.outputStream; 1)
+		This:C1470.success:=Match regex:C1019("(?mi-s): accepted\\nsource=Notarized Developer ID\\n"; This:C1470.outputStream; 1)
 		
 	End if 
 	
