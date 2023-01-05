@@ -10,6 +10,11 @@ Class constructor
 	This:C1470.infos:=Get application info:C1599
 	This:C1470.os:=Get system info:C1571
 	
+	This:C1470._count:=Num:C11(This:C1470._count)+1
+	
+	// Make a singleton
+	cs:C1710.singleton.new(This:C1470)
+	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function get root() : 4D:C1709.Folder
 	

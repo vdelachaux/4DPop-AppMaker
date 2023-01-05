@@ -28,6 +28,9 @@ Class constructor($full : Boolean)
 	
 	This:C1470.updateEnvironmentValues(True:C214)
 	
+	// Make a singleton
+	cs:C1710.singleton.new(This:C1470)
+	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==>
 Function get macos() : Boolean
 	
@@ -59,60 +62,64 @@ Function updateEnvironmentValues($system : Boolean)
 	
 	var $value : Text
 	
-	If ($system)  // To update the  volumes
+	Use (This:C1470)
 		
-		// ⚠️ time-consuming
-		This:C1470.systemInfos:=Get system info:C1571
+		If ($system)  // To update the  volumes
+			
+			// ⚠️ time-consuming
+			This:C1470.systemInfos:=Get system info:C1571
+			
+		End if 
 		
-	End if 
-	
-	GET SYSTEM FORMAT:C994(Currency symbol:K60:3; $value)
-	This:C1470.currencySymbol:=$value
-	
-	GET SYSTEM FORMAT:C994(Decimal separator:K60:1; $value)
-	This:C1470.decimalSeparator:=$value
-	
-	GET SYSTEM FORMAT:C994(Thousand separator:K60:2; $value)
-	This:C1470.thousandSeparator:=$value
-	
-	GET SYSTEM FORMAT:C994(Date separator:K60:10; $value)
-	This:C1470.dateSeparator:=$value
-	
-	GET SYSTEM FORMAT:C994(Short date day position:K60:12; $value)
-	This:C1470.dateDayPosition:=Num:C11($value)
-	
-	GET SYSTEM FORMAT:C994(Short date month position:K60:13; $value)
-	This:C1470.dateMonthPosition:=Num:C11($value)
-	
-	GET SYSTEM FORMAT:C994(Short date year position:K60:14; $value)
-	This:C1470.dateYearPosition:=Num:C11($value)
-	
-	GET SYSTEM FORMAT:C994(System date long pattern:K60:9; $value)
-	This:C1470.dateLongPattern:=$value
-	
-	GET SYSTEM FORMAT:C994(System date medium pattern:K60:8; $value)
-	This:C1470.dateMediumPattern:=$value
-	
-	GET SYSTEM FORMAT:C994(System date short pattern:K60:7; $value)
-	This:C1470.dateShortPattern:=$value
-	
-	GET SYSTEM FORMAT:C994(Time separator:K60:11; $value)
-	This:C1470.timeSeparator:=$value
-	
-	GET SYSTEM FORMAT:C994(System time AM label:K60:15; $value)
-	This:C1470.timeAMLabel:=$value
-	
-	GET SYSTEM FORMAT:C994(System time PM label:K60:16; $value)
-	This:C1470.timePMLabel:=$value
-	
-	GET SYSTEM FORMAT:C994(System time long pattern:K60:6; $value)
-	This:C1470.timeLongPattern:=$value
-	
-	GET SYSTEM FORMAT:C994(System time medium pattern:K60:5; $value)
-	This:C1470.timeMediumPattern:=$value
-	
-	GET SYSTEM FORMAT:C994(System time short pattern:K60:4; $value)
-	This:C1470.timeShortPattern:=$value
+		GET SYSTEM FORMAT:C994(Currency symbol:K60:3; $value)
+		This:C1470.currencySymbol:=$value
+		
+		GET SYSTEM FORMAT:C994(Decimal separator:K60:1; $value)
+		This:C1470.decimalSeparator:=$value
+		
+		GET SYSTEM FORMAT:C994(Thousand separator:K60:2; $value)
+		This:C1470.thousandSeparator:=$value
+		
+		GET SYSTEM FORMAT:C994(Date separator:K60:10; $value)
+		This:C1470.dateSeparator:=$value
+		
+		GET SYSTEM FORMAT:C994(Short date day position:K60:12; $value)
+		This:C1470.dateDayPosition:=Num:C11($value)
+		
+		GET SYSTEM FORMAT:C994(Short date month position:K60:13; $value)
+		This:C1470.dateMonthPosition:=Num:C11($value)
+		
+		GET SYSTEM FORMAT:C994(Short date year position:K60:14; $value)
+		This:C1470.dateYearPosition:=Num:C11($value)
+		
+		GET SYSTEM FORMAT:C994(System date long pattern:K60:9; $value)
+		This:C1470.dateLongPattern:=$value
+		
+		GET SYSTEM FORMAT:C994(System date medium pattern:K60:8; $value)
+		This:C1470.dateMediumPattern:=$value
+		
+		GET SYSTEM FORMAT:C994(System date short pattern:K60:7; $value)
+		This:C1470.dateShortPattern:=$value
+		
+		GET SYSTEM FORMAT:C994(Time separator:K60:11; $value)
+		This:C1470.timeSeparator:=$value
+		
+		GET SYSTEM FORMAT:C994(System time AM label:K60:15; $value)
+		This:C1470.timeAMLabel:=$value
+		
+		GET SYSTEM FORMAT:C994(System time PM label:K60:16; $value)
+		This:C1470.timePMLabel:=$value
+		
+		GET SYSTEM FORMAT:C994(System time long pattern:K60:6; $value)
+		This:C1470.timeLongPattern:=$value
+		
+		GET SYSTEM FORMAT:C994(System time medium pattern:K60:5; $value)
+		This:C1470.timeMediumPattern:=$value
+		
+		GET SYSTEM FORMAT:C994(System time short pattern:K60:4; $value)
+		This:C1470.timeShortPattern:=$value
+		
+	End use 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function getScreenInfos()
@@ -123,11 +130,15 @@ Function getScreenInfos()
 	CALL WORKER:C1389("$nonThreadSafe"; "envScreens"; $signal)
 	$signal.wait()
 	
-	This:C1470.screens:=$signal.screens.copy()
-	This:C1470.mainScreenID:=$signal.mainScreenID
-	This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
-	This:C1470.menuBarHeight:=$signal.menuBarHeight
-	This:C1470.toolBarHeight:=$signal.toolBarHeight
+	Use (This:C1470)
+		
+		This:C1470.screens:=$signal.screens.copy()
+		This:C1470.mainScreenID:=$signal.mainScreenID
+		This:C1470.mainScreen:=This:C1470.screens[This:C1470.mainScreenID-1]
+		This:C1470.menuBarHeight:=$signal.menuBarHeight
+		This:C1470.toolBarHeight:=$signal.toolBarHeight
+		
+	End use 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function library($path : Text; $create : Boolean) : Object

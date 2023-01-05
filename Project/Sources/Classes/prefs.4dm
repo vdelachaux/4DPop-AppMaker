@@ -24,31 +24,10 @@ Class constructor($file : 4D:C1709.File; $rootElement : Text)
 	// === === === === === === === === === === === === === === === === === === ===
 Function load() : Object
 	
-	var $root : Text
-	
-	//If (This.reference#Null)
-	
-	//return True
-	
-	//End if 
-	
-	////$root:=DOM Parse XML variable(String(This.content)) //NOT COMPILABLE
-	//var $t : Text
-	//$t:=This.content
-	//$root:=DOM Parse XML variable($t)
-	//This.success:=Bool(OK)
-	
-	//If (This.success)
-	
-	//This.reference:=$root
-	
-	//End if 
-	
-	//return This.success
-	
-	var $xml : cs:C1710.xml
-	$xml:=cs:C1710.xml.new(This:C1470.file)
 	var $o : Object
+	var $xml : cs:C1710.xml
+	
+	$xml:=cs:C1710.xml.new(This:C1470.file)
 	$o:=$xml.toObject()
 	$xml.close()
 	

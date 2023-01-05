@@ -6,6 +6,6 @@
 // ----------------------------------------------------
 #DECLARE($ptr : Pointer; $cmd : Text)
 
-var AppMaker : cs:C1710.AppMaker
-AppMaker:=cs:C1710.AppMaker.new()
-AppMaker.run()
+var $AppMaker : cs:C1710.AppMaker
+$AppMaker:=cs:C1710.AppMaker.new()
+$AppMaker.run()
