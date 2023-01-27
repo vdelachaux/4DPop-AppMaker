@@ -120,6 +120,11 @@ Function get newConnectionsAllowed() : Boolean
 	
 	return This:C1470.infos.newConnectionsAllowed
 	
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function get sdi() : Boolean
+	
+	return Is macOS:C1572 ? True:C214 : Bool:C1537(This:C1470.infos.SDIMode)
+	
 	//MARK:-THREAD SAFE
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
