@@ -7,9 +7,9 @@ EXECUTE METHOD:C1007("quickOpenPushAction"; *; New object:C1471(\
 "name"; "4DPop AppMaker Run"; \
 "shortcut"; "build"; \
 "icon"; $icon; \
-"formula"; Formula:C1597(popAppMakerRun)))
+"formula"; Formula:C1597(4DPopAppMakerRun)))
 
 EXECUTE METHOD:C1007("quickOpenPushAction"; *; New object:C1471(\
 "name"; "4DPop AppMaker Settings"; \
 "icon"; $icon; \
-"formula"; Formula:C1597(popAppMakerParameters)))
+"formula"; Formula:C1597(4DPopAppMakerSettings)))

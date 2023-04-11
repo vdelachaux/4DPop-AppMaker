@@ -1,6 +1,6 @@
 //%attributes = {"invisible":true,"shared":true,"preemptive":"incapable"}
 // ----------------------------------------------------
-// Method : popAppMakerParameters
+// Method : 4DPopAppMakerSettings
 // Created 29/05/08 by vdl
 // ----------------------------------------------------
 // Description
@@ -8,4 +8,4 @@
 // ----------------------------------------------------
 #DECLARE($ptr : Pointer)
 
-APP_MAKER_HANDLER
+APP MAKER HANDLER

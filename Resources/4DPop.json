@@ -1,0 +1,18 @@
+{
+  "name": "AppMaker",
+  "picture": "4DPop.png",
+  "default": "4DPopAppMakerRun",
+  "tool": [
+    {
+      "name": ":xliff:4DPop_run",
+      "method": "4DPopAppMakerRun"
+    },
+    {
+      "name": "-"
+    },
+    {
+      "name": ":xliff:4DPop_parameters",
+      "method": "4DPopAppMakerSettings"
+    }
+  ]
+}

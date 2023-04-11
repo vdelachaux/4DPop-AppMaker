@@ -30,7 +30,7 @@ Case of
 			
 		End if 
 		
-		APP_MAKER_HANDLER("_run")
+		APP MAKER HANDLER("_run")
 		
 		//______________________________________________________
 	Else 

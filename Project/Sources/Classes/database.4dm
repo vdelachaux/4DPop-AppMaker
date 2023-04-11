@@ -152,7 +152,7 @@ Class constructor($full : Boolean)
 	End if 
 	
 	// Make a singleton
-	cs:C1710.singleton.new(This:C1470)
+	//cs.singleton.new(This)
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get mode() : Text

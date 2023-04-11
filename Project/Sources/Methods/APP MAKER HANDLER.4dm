@@ -1,6 +1,6 @@
 //%attributes = {}
 // ----------------------------------------------------
-// Method :  APP_MAKER_HANDLER
+// Method :  APP MAKER HANDLER
 // Created 30/05/08 by Vincent de Lachaux
 // ----------------------------------------------------
 // Description
@@ -8,10 +8,6 @@
 // ----------------------------------------------------
 // Declarations
 #DECLARE($action : Text)
-
-If (False:C215)
-	C_TEXT:C284(APP_MAKER_HANDLER; $1)
-End if 
 
 var $success : Boolean
 var $data : Object
@@ -41,8 +37,8 @@ Case of
 		//================================================================================
 	: ($action="_open")  // Display the main dialog
 		
-		APP_MAKER_HANDLER("_declarations")
-		APP_MAKER_HANDLER("_init")
+		APP MAKER HANDLER("_declarations")
+		APP MAKER HANDLER("_init")
 		
 		$data:=New object:C1471(\
 			"process"; Current process:C322; \
@@ -71,7 +67,7 @@ Case of
 		
 		Storage:C1525.preferences.save()
 		
-		APP_MAKER_HANDLER("_deinit")
+		APP MAKER HANDLER("_deinit")
 		
 		//================================================================================
 	: ($action="_declarations")

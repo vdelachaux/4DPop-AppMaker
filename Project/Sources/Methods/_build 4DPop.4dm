@@ -52,7 +52,7 @@ If (Asserted:C1132(Is macOS:C1572))
 					
 					// Build me
 					Progress SET TITLE($progress; "Build "+Folder:C1567(fk database folder:K87:14).name+"…")
-					popAppMakerRun
+					4DPopAppMakerRun
 					
 				End if 
 				
