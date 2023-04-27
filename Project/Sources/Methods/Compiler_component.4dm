@@ -7,11 +7,6 @@ var AppMaker : cs:C1710.AppMaker
 
 If (False:C215)  // Public
 	
-	C_POINTER:C301(4DPopAppMakerRun; $1)
-	C_TEXT:C284(4DPopAppMakerRun; $2)
-	
-	C_POINTER:C301(4DPopAppMakerSettings; $1)
-	
 	C_TEXT:C284(AppMaker_RunProject; $1)
 	
 End if 

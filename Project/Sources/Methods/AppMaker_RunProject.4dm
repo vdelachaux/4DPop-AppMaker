@@ -1,4 +1,4 @@
-//%attributes = {"invisible":true,"shared":true}
+//%attributes = {}
 // ----------------------------------------------------
 // Project method : AppMaker_RunProject
 // Database: 4DPop AppMaker
@@ -41,7 +41,7 @@ Else
 End if 
 
 // ----------------------------------------------------
-4DPopAppMakerRun($Ptr_nil; $Txt_project)
+//4DPopAppMakerRun($Ptr_nil; $Txt_project)
 
 // ----------------------------------------------------
 // Return

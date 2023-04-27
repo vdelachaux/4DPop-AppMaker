@@ -17,16 +17,12 @@
 			"COMPILER_o_"
 		]
 	},
-	"_Public": {
-		"methods": [
-			"4DPopAppMakerRun",
-			"4DPopAppMakerSettings"
-		]
-	},
+	"- #️⃣ API": {},
+	"(_Public)": {},
 	"(_TEMPO)": {},
 	"(database)": {},
 	"(env)": {},
-	"00_dev": {
+	"# 🚧 DEV": {
 		"methods": [
 			"AppMaker_RunProject",
 			"Compiler_dev",
@@ -34,29 +30,7 @@
 			"testBefore"
 		]
 	},
-	"Classes": {
-		"classes": [
-			"AppMaker",
-			"build"
-		]
-	},
-	"Component": {
-		"groups": [
-			"Classes",
-			"Forms",
-			"Private"
-		],
-		"methods": [
-			"Compiler_component"
-		]
-	},
-	"Forms": {
-		"forms": [
-			"Barber",
-			"Editor"
-		]
-	},
-	"Libraries": {
+	"♻️ LIBRAIRIES": {
 		"methods": [
 			"COMPILER_env",
 			"databaseNonThreadSafe",
@@ -77,6 +51,44 @@
 			"xml"
 		]
 	},
+	"⚙️ MACROS": {},
+	"📦 COMPONENT": {
+		"groups": [
+			"Classes",
+			"Forms",
+			"Private"
+		],
+		"methods": [
+			"Compiler_component"
+		]
+	},
+	"🛠️ Tools": {
+		"methods": [
+			"Compiler_tools",
+			"git",
+			"xml_noError"
+		]
+	},
+	"4️⃣ 4DPop": {
+		"methods": [
+			"_4DPopAppMaker",
+			"COMPILER_4DPop",
+			"run",
+			"settings"
+		]
+	},
+	"Classes": {
+		"classes": [
+			"AppMaker",
+			"build"
+		]
+	},
+	"Forms": {
+		"forms": [
+			"Barber",
+			"Editor"
+		]
+	},
 	"Private": {
 		"methods": [
 			"_barber",
@@ -92,15 +104,9 @@
 			"quickOpenActions"
 		]
 	},
-	"Tools": {
-		"methods": [
-			"Compiler_tools",
-			"git",
-			"xml_noError"
-		]
-	},
 	"trash": {
 		"groups": [
+			"(_Public)",
 			"(_TEMPO)",
 			"(database)",
 			"(env)"
