@@ -792,7 +792,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
 		
-		// FIXME:Even if the formula calls non-preemptive code, CALL WORKER creates a preemptive process.
+		// ⚠️ :Even if the formula calls non-preemptive code, CALL WORKER creates a preemptive process.
 		//CALL WORKER("$AppMakerBarber"; Formula(Open form window("Barber"; Controller form window+Form has no menu bar; Horizontally centered; Vertically centered; *)))
 		//CALL WORKER("$AppMakerBarber"; Formula(DIALOG("Barber")))
 		CALL WORKER:C1389("$AppMakerBarber"; Formula:C1597(_barber))

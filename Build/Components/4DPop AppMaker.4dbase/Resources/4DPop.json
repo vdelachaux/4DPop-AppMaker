@@ -3,7 +3,7 @@
   "media": "4DPop.png",
   "handler": "_4DPopAppMaker",
   "default": "run",
-  "tool": [
+  "tools": [
     {
       "name": ":xliff:4DPop_run",
       "method": "run"
