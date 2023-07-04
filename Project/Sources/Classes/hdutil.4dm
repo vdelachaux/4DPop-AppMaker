@@ -96,6 +96,7 @@ Function attach() : Boolean
 	return (This:C1470.success)
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
+	/// Detach (unmount) disk image from system
 Function detach() : Boolean
 	
 /*
