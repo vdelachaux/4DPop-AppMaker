@@ -12,6 +12,7 @@ Class constructor($target : 4D:C1709.File; $content)
 	This:C1470.disk:=Null:C1517
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
+	/// Create a disk image image
 Function create($content) : Boolean
 	
 	// TODO: Allow collection & more (File, Folder,…)
@@ -69,7 +70,45 @@ Function create($content) : Boolean
 	return (This:C1470.success)
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
+	/// Atach (mount) disk image
 Function attach() : Boolean
+	
+/*
+hdiutil attach <image>
+Device options:
+    -readonlyforce read-only
+    -kernelattempt to attach the image in-kernel
+	
+Mount options:
+    -mount required|optional|suppressedmount volumes?
+    -nomountsame as -mount suppressed
+    -mountpoint <path>mount at <path> instead of inside /Volumes
+    -mountroot <path>mount volumes on <path>/<volname>
+    -mountrandom <path>mount volumes on <path>/<random>
+	
+Processing options (defaults per framework preferences):
+    -[no]verify(do not) verify image checksums
+    -[no]autofsck(do not) perform automatic filesystem checks
+    -[no]autoopen(do not) open root of new mounts
+	
+Common options:
+    -encryption <crypto method>
+        AES-128 - 128-bit AES encryption (recommended)
+        AES-256 - 256-bit AES encryption (more secure, but slower)
+    -stdinpass
+    -agentpass
+    -recover <keychain-file>
+    -imagekey <key>=<value>
+    -drivekey <key>=<value>
+    -shadow <shadowfile>
+    -insecurehttp
+    -cacert <file | dir>
+    -plist
+    -puppetstrings
+    -verbose
+    -debug
+    -quiet
+*/
 	
 	If (This:C1470._target())
 		
@@ -104,6 +143,14 @@ hdiutil detach <devname>
 	
 Note: you can specify a mount point (e.g. /Volumes/MyDisk)
       instead of a dev node (e.g. /dev/disk1)
+	
+Options:
+    -forceforcibly detach
+	
+Common options:
+    -verbose
+    -debug
+    -quiet
 */
 	
 	If (This:C1470._disk())
