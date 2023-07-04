@@ -16,7 +16,7 @@ Class constructor($rc : Object; $tgt : 4D:C1709.File)
 	This:C1470.CONSTANTS.PKZip:=True:C214
 	
 	// When creating an archive, embed the parent directory name src in dst_archive.
-	This:C1470.CONSTANTS.keepParent:=True:C214
+	This:C1470.CONSTANTS.keepParent:=False:C215
 	
 	// Preserve resource forks and HFS meta-data.
 	// As of Mac OS X 10.4, --rsrc is default behavior.

@@ -1,3 +1,5 @@
+property disk : 4D:C1709.Folder
+
 Class extends lep
 
 // === === === === === === === === === === === === === === === === === === === === === === ===
@@ -76,7 +78,7 @@ Function attach() : Boolean
 		If (This:C1470.success)
 			
 			var $pos; $len : Integer
-			This:C1470.success:=Match regex:C1019("(?i-ms)\\t+(/\\H*)*$"; This:C1470.outputStream; 1; $pos; $len)
+			This:C1470.success:=Match regex:C1019("(?mi-s)(/Volumes/[^$]*)"; This:C1470.outputStream; 1; $pos; $len)
 			
 			If (This:C1470.success)
 				
@@ -96,9 +98,16 @@ Function attach() : Boolean
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function detach() : Boolean
 	
+/*
+hdiutil detach <devname>
+	
+Note: you can specify a mount point (e.g. /Volumes/MyDisk)
+      instead of a dev node (e.g. /dev/disk1)
+*/
+	
 	If (This:C1470._disk())
 		
-		This:C1470.launch("hdiutil detach "+This:C1470.disk.path)
+		This:C1470.launch("hdiutil detach "+This:C1470.quoted(Delete string:C232(This:C1470.disk.path; Length:C16(This:C1470.disk.path); 1)))
 		
 	End if 
 	
