@@ -1,19 +1,18 @@
 //%attributes = {}
 var $cmd; $pathname : Text
 var $credentials : Object
-var $file; $zip : 4D:C1709.File
+var $target; $zip : 4D:C1709.File
 var $src : 4D:C1709.Folder
 var $lep : cs:C1710.lep
 var $notarytool : cs:C1710.notarytool
 
-$pathname:=Select folder:C670("select a folder"; 8858)
+$pathname:=Select document:C905(8858; ".4dbase"; "Select a component to notarize"; Package selection:K24:9)
 
 If (Bool:C1537(OK))
 	
-	$file:=Folder:C1567(fk user preferences folder:K87:10).file("notarise.json")  // General file
-	$credentials:=JSON Parse:C1218($file.getText())
+	$credentials:=JSON Parse:C1218(Folder:C1567(fk user preferences folder:K87:10).file("notarise.json").getText())  // General file
 	
-	$src:=Folder:C1567($pathname; fk platform path:K87:2)
+	$src:=Folder:C1567(DOCUMENT; fk platform path:K87:2)
 	$zip:=File:C1566(Delete string:C232($src.path; Length:C16($src.path); 1)+".zip")
 	$zip.delete()
 	
@@ -29,9 +28,13 @@ If (Bool:C1537(OK))
 		
 		If ($notarytool.submit())
 			
-			If ($notarytool.staple())
+			$target:=$src.file("Libraries/lib4d-arm64.dylib")
+			
+			If ($notarytool.staple($target))
 				
 				If ($notarytool.checkWithGatekeeper($src.path))  //; $credentials.certificate))
+					
+					//If ($notarytool.checkWithGatekeeper($target.path))  //; $credentials.certificate))
 					
 					ALERT:C41("Successful notarization")
 					return 

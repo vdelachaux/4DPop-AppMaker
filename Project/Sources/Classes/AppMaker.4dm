@@ -1,3 +1,12 @@
+property env : cs:C1710.env
+property database : cs:C1710.database
+property motor : cs:C1710.motor
+property prefs : cs:C1710.prefs
+property build : cs:C1710.build
+property preferencesFile; buildAppFile; entitlementsFile : 4D:C1709.File
+property credentials : Object
+property errors; warnings : Collection
+
 Class constructor()
 	
 	var $file : 4D:C1709.File
@@ -30,9 +39,6 @@ Class constructor()
 			This:C1470.credentials:=JSON Parse:C1218($file.getText())
 			
 		End if 
-		
-		This:C1470.codesign:=cs:C1710.codesign.new(This:C1470.credentials)
-		
 	End if 
 	
 	// Preferences
@@ -65,10 +71,10 @@ Class constructor()
 		End use 
 	End if 
 	
-	This:C1470.errors:=New collection:C1472
-	This:C1470.warnings:=New collection:C1472
+	This:C1470.errors:=[]
+	This:C1470.warnings:=[]
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function run($withUI : Boolean) : Boolean
 	
 	This:C1470.withUI:=Count parameters:C259=0 ? Not:C34(This:C1470.motor.headless) : $withUI
@@ -87,18 +93,21 @@ Function run($withUI : Boolean) : Boolean
 	var $success : Boolean
 	$success:=True:C214
 	
+	// Mark:Execute before build method
 	If ($prefs.methods.before#Null:C1517)
 		
-		$success:=This:C1470._executeMethod($prefs.methods.before)
+		$success:=This:C1470.executeMethod($prefs.methods.before)
 		
 	End if 
 	
+	// Mark:Update info.plist
 	If ($success && ($prefs["info.plist"]#Null:C1517))
 		
-		$success:=This:C1470._updateInfoPlist($prefs["info.plist"])
+		$success:=This:C1470.updateInfoPlist($prefs["info.plist"])
 		
 	End if 
 	
+	// Mark:Compilation & generation
 	If ($success)
 		
 		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
@@ -107,7 +116,7 @@ Function run($withUI : Boolean) : Boolean
 		$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
 		$lastbuild.create()
 		
-		If ($lastbuild.getText()#This:C1470.motor.branch)  //| True  // Always clear compiled code
+		If ($lastbuild.getText()#This:C1470.motor.branch)
 			
 			This:C1470.database.clearCompiledCode()
 			$lastbuild.setText(This:C1470.motor.branch)
@@ -133,30 +142,35 @@ Function run($withUI : Boolean) : Boolean
 		End if 
 	End if 
 	
+	// Mark:Make sure the target directory is writable
 	If ($success)
 		
 		$success:=cs:C1710.lep.new().unlockDirectory(This:C1470.build.buildTarget).success
 		
 	End if 
 	
+	// Mark:Increment bundle version
 	If ($success && Bool:C1537($prefs.options.increment_version))
 		
-		$success:=This:C1470._incrementBundleVersion()
+		$success:=This:C1470.incrementBundleVersion()
 		
 	End if 
 	
+	// Mark:Delete macOS content
 	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
 		
-		$success:=This:C1470._deleteMacContent(This:C1470.build.buildTarget)
+		$success:=This:C1470.deleteMacContent(This:C1470.build.buildTarget)
 		
 	End if 
 	
+	// Mark:Delete dev resources
 	If ($success && Bool:C1537($prefs.options.removeDevResources))
 		
-		$success:=This:C1470._deleteResources(This:C1470.build.buildTarget)
+		$success:=This:C1470.deleteResources(This:C1470.build.buildTarget)
 		
 	End if 
 	
+	// Mark:Copy items into the target
 	If ($success && ($prefs.copy#Null:C1517))
 		
 		If (Value type:C1509($prefs.copy.array.item)#Is collection:K8:32)
@@ -169,10 +183,11 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470._copy(This:C1470.build.buildTarget; $prefs.copy.array.item.extract("$"))
+		This:C1470.copy(This:C1470.build.buildTarget; $prefs.copy.array.item.extract("$"))
 		
 	End if 
 	
+	// Mark:Delete items from the target
 	If ($success && ($prefs.delete#Null:C1517))
 		
 		If (Value type:C1509($prefs.delete.array.item)#Is collection:K8:32)
@@ -185,25 +200,27 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470._delete(This:C1470.build.buildTarget; $prefs.delete.array.item.extract("$"))
+		This:C1470.delete(This:C1470.build.buildTarget; $prefs.delete.array.item.extract("$"))
 		
 	End if 
 	
+	// Mark:Execute post-build method
 	If ($success && Bool:C1537($prefs.methods.after))
 		
-		$success:=This:C1470._executeMethod($prefs.methods.after)
+		$success:=This:C1470.executeMethod($prefs.methods.after)
 		
 	End if 
 	
+	// Mark:Sign & notarize
 	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && (This:C1470.build.lib4d#Null:C1517))
 		
 		// Sign the component
-		$success:=This:C1470._sign()
+		$success:=This:C1470.sign()
 		
 		If ($success)
 			
 			// Notarize & staple
-			$success:=This:C1470._notarize()
+			$success:=This:C1470.notarize()
 			
 		End if 
 	End if 
@@ -212,12 +229,13 @@ Function run($withUI : Boolean) : Boolean
 	
 	return $success
 	
-	// === === === === === === === === === === === === === === === === === === ===
-Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
+	// MARK:-
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function CommitAndPush($stapled : Object; $commitMessage : Text) : Boolean
 	
 	var $err; $in; $out : Text
 	
-	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $stapled.folder)
 	SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 	LAUNCH EXTERNAL PROCESS:C811("git add --all"; $in; $out; $err)
 	
@@ -227,7 +245,7 @@ Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 		
 	Else 
 		
-		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $stapled.folder)
 		SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 		LAUNCH EXTERNAL PROCESS:C811("git commit -a -q -m "+Char:C90(34)+$commitMessage+Char:C90(34); $in; $out; $err)
 		
@@ -237,7 +255,7 @@ Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 			
 		Else 
 			
-			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $component.folder)
+			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_CURRENT_DIRECTORY"; $stapled.folder)
 			SET ENVIRONMENT VARIABLE:C812("_4D_OPTION_HIDE_CONSOLE"; "true")
 			LAUNCH EXTERNAL PROCESS:C811("git push"; $in; $out; $err)
 			
@@ -249,8 +267,8 @@ Function CommitAndPush($component : Object; $commitMessage : Text) : Boolean
 		End if 
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _sign($target : 4D:C1709.File) : Boolean
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function sign($target : 4D:C1709.File) : Boolean
 	
 	var $commandLine : Text
 	var $entitlementsFile; $scriptFile : 4D:C1709.File
@@ -261,6 +279,7 @@ Function _sign($target : 4D:C1709.File) : Boolean
 	
 	$target:=$target || This:C1470.build.buildTarget
 	
+	// Get 4D signature script and entitlements
 	$4D:=Folder:C1567(Application file:C491; fk platform path:K87:2)
 	$scriptFile:=$4D.file("Contents/Resources/SignApp.sh")
 	$entitlementsFile:=$4D.file("Contents/Resources/4D.entitlements")
@@ -269,6 +288,7 @@ Function _sign($target : 4D:C1709.File) : Boolean
 		
 		If (This:C1470.credentials.certificate#"")
 			
+			// Run the signature script
 			$commandLine:="'"+$scriptFile.path+"' '"
 			$commandLine+=This:C1470.credentials.certificate+"' '"
 			$commandLine+=$target.path+"' '"
@@ -311,52 +331,71 @@ Function _sign($target : 4D:C1709.File) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Notarize & staple the lib4d-arm64.dylib
-Function _notarize() : Boolean
+Function notarize() : Boolean
 	
 	var $success : Boolean
-	var $dmg : 4D:C1709.File
+	var $dmg; $zip : 4D:C1709.File
+	var $root; $stapled : 4D:C1709.Folder
+	var $ditto : cs:C1710.ditto
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
-	var $root : 4D:C1709.Folder
 	$root:=This:C1470.build.buildTarget.parent.parent
 	
+	// Create a dmg
 	$dmg:=$root.file(This:C1470.build.buildTarget.name+".dmg")
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
 	If ($hdutil.create(This:C1470.build.buildTarget))
 		
-		// Sign dmg
-		If (This:C1470._sign($dmg))
+		// Sign the dmg (not mandatory, but preferable)
+		If (This:C1470.sign($dmg))
 			
 			This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 			
+			// Send the dmg for notarization
 			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
 			
 			If ($notarytool.submit())
 				
 				If ($notarytool.staple($dmg))
 					
+					// Mount the virtual disk
 					If ($hdutil.attach())
 						
-						var $ditto : cs:C1710.ditto
-						var $zip : 4D:C1709.File
+						// Get the stapled element
+						$stapled:=$hdutil.disk.folders().pop()
 						
-						$zip:=$root.file(This:C1470.build.buildTarget.name+".zip")
+						// Replace the original component
+						$stapled.copyTo($dmg.parent.folder("Components"); fk overwrite:K87:5)
+						
+						// Create an archive to preserve the stapple ticket
+						$zip:=$root.file(This:C1470.build.buildTarget.name+".4dbase.zip")
 						$zip.delete()
 						
-						$ditto:=cs:C1710.ditto.new($hdutil.disk.folders().pop(); $zip)
-						$success:=$ditto.archive()
+						$ditto:=cs:C1710.ditto.new($stapled; $zip; {keepParent: False:C215})
 						
-						If ($success)
+						If ($ditto.archive())
 							
+							$success:=True:C214
+							
+							// Delete dmg file
 							$dmg.delete()
+							
+						Else 
+							
+							This:C1470._error($ditto.lastError)
 							
 						End if 
 						
+						// Unmount the virtual disk
 						$hdutil.detach()
+						
+					Else 
+						
+						This:C1470._error($hdutil.lastError)
 						
 					End if 
 					
@@ -380,14 +419,16 @@ Function _notarize() : Boolean
 		
 	End if 
 	
+	// Keep a log of all operations
 	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
 	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
 	
 	return $success
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Delete help files and the non necessary resources for the final user
-Function _deleteResources($target : 4D:C1709.Folder) : Boolean
+Function deleteResources($target : 4D:C1709.Folder) : Boolean
 	
 	var $path : Text
 	var $file : 4D:C1709.File
@@ -430,8 +471,8 @@ Function _deleteResources($target : 4D:C1709.Folder) : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function deleteMacContent($target : 4D:C1709.Folder) : Boolean
 	
 	var $file : 4D:C1709.File
 	
@@ -451,8 +492,8 @@ Function _deleteMacContent($target : 4D:C1709.Folder) : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _incrementBundleVersion() : Boolean
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function incrementBundleVersion() : Boolean
 	
 	var $template : Text
 	
@@ -480,8 +521,8 @@ Function _incrementBundleVersion() : Boolean
 	
 	return True:C214
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _executeMethod($method : Text) : Boolean
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function executeMethod($method : Text) : Boolean
 	
 	var $success : Boolean
 	
@@ -502,29 +543,28 @@ Function _executeMethod($method : Text) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _updateInfoPlist($infos : Object) : Boolean
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
+Function updateInfoPlist($infos : Object) : Boolean
 	
-	var $json : Text
+	var $template : Text
 	
 	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparations")+"…")
 	
 	If (Not:C34(This:C1470.database.plistFile.exists))
 		
 		// Create a default from template
-		$json:=File:C1566("/RESOURCES/InfoPlist.template").getText()
-		$json:=Replace string:C233($json; "{name}"; This:C1470.applicationName)
-		$json:=Replace string:C233($json; "{version}"; This:C1470.motor.branch)
-		$json:=Replace string:C233($json; "{build}"; "1")
-		$json:=Replace string:C233($json; "{copyright}"; "©"+String:C10(Year of:C25(Current date:C33)))
-		This:C1470.database.plistFile.setText($json)
+		$template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
+		$template:=Replace string:C233($template; "{name}"; This:C1470.applicationName)
+		$template:=Replace string:C233($template; "{version}"; This:C1470.motor.branch)
+		$template:=Replace string:C233($template; "{build}"; "1")
+		$template:=Replace string:C233($template; "{copyright}"; "©"+String:C10(Year of:C25(Current date:C33)))
+		This:C1470.database.plistFile.setText($template)
 		
 	End if 
 	
 	If (This:C1470.database.plistFile.exists)
 		
 		This:C1470.plist:=This:C1470.database.plistFile.getAppInfo()
-		
 		This:C1470.plist.CFBundleName:=This:C1470.applicationName
 		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)
 		This:C1470.plist.CFBundleGetInfoString:=This:C1470.motor.branch
@@ -542,19 +582,8 @@ Function _updateInfoPlist($infos : Object) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _error($error : Text)
-	
-	This:C1470.errors.push($error)
-	This:C1470._displayError($error)
-	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _warning($error : Text)
-	
-	This:C1470.warnings.push($error)
-	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- 
-Function _delete($target : 4D:C1709.Folder; $items : Collection)
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function delete($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
 	var $tgt : Object
@@ -608,8 +637,8 @@ Function _delete($target : 4D:C1709.Folder; $items : Collection)
 		
 	End for each 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
-Function _copy($target : 4D:C1709.Folder; $items : Collection)
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
+Function copy($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
 	var $src; $tgt : Object
@@ -654,7 +683,19 @@ Function _copy($target : 4D:C1709.Folder; $items : Collection)
 		
 	End for each 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// MARK:-
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
+Function _error($error : Text)
+	
+	This:C1470.errors.push($error)
+	This:C1470._displayError($error)
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+Function _warning($error : Text)
+	
+	This:C1470.warnings.push($error)
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function _wait($delay : Integer) : Boolean
 	
 	If (Count parameters:C259=0)
@@ -673,7 +714,7 @@ Function _wait($delay : Integer) : Boolean
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function _initBarber() : cs:C1710.AppMaker
 	
 	Use (Storage:C1525.progress)
@@ -686,20 +727,21 @@ Function _initBarber() : cs:C1710.AppMaker
 	
 	If (This:C1470.withUI)
 		
+		// Bringing 4D to the forefront
 		If (Is macOS:C1572)
 			
 			LAUNCH EXTERNAL PROCESS:C811("osascript -e 'tell app \""+Application file:C491+"\" to activate'")
 			
 		Else 
 			
-			// TODO:On windows
+			LAUNCH EXTERNAL PROCESS:C811("Powershell.exe (New-Object -ComObject WScript.Shell).AppActivate((get-process 4D).id)")
 			
 		End if 
 	End if 
 	
 	return This:C1470
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function _openBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -707,6 +749,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 		// ⚠️ :Even if the formula calls non-preemptive code, CALL WORKER creates a preemptive process.
 		//CALL WORKER("$AppMakerBarber"; Formula(Open form window("Barber"; Controller form window+Form has no menu bar; Horizontally centered; Vertically centered; *)))
 		//CALL WORKER("$AppMakerBarber"; Formula(DIALOG("Barber")))
+		// We therefore need to use a method that is declared as not thread-safe
 		CALL WORKER:C1389("$AppMakerBarber"; Formula:C1597(_barber))
 		
 		If (Count parameters:C259>=1)
@@ -724,7 +767,7 @@ Function _openBarber($title : Text; $indicator : Integer)
 		End if 
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function _callBarber($title : Text; $indicator : Integer)
 	
 	If (This:C1470.withUI)
@@ -747,7 +790,7 @@ Function _callBarber($title : Text; $indicator : Integer)
 		End use 
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function _displayError($error : Text)
 	
 	If (This:C1470.withUI)
@@ -771,7 +814,7 @@ Function _displayError($error : Text)
 		
 	End if 
 	
-	// --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---  
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function _closeBarber()
 	
 	If (This:C1470.withUI)

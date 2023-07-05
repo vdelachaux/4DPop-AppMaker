@@ -37,7 +37,7 @@ Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 Function getVersion() : Text
 	
 	This:C1470.launch("xcrun notarytool --version")
-	return (This:C1470.success ? This:C1470.outputStream : "")
+	return This:C1470.success ? This:C1470.outputStream : ""
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 /*
@@ -77,7 +77,7 @@ Submit an archive to the Apple notary service.
 */
 Function submit() : Boolean
 	
-	var $cmd : Text
+	var $cmd; $key : Text
 	
 	If (Not:C34(This:C1470.available))
 		
@@ -98,7 +98,13 @@ Function submit() : Boolean
 	
 	If (This:C1470.success)
 		
-		This:C1470.success:=String:C10(This:C1470.outputStream.status)="Accepted"
+		For each ($key; This:C1470.outputStream)
+			
+			This:C1470[$key]:=This:C1470.outputStream[$key]
+			
+		End for each 
+		
+		This:C1470.success:=String:C10(This:C1470.status)="Accepted"
 		
 	End if 
 	
@@ -111,7 +117,7 @@ Function submit() : Boolean
 	Else 
 		
 		// Log the response
-		Folder:C1567(fk logs folder:K87:17; *).file("notarizing.json").setText(JSON Stringify:C1217(This:C1470.outputStream; *))
+		Folder:C1567(fk logs folder:K87:17; *).file("ticket.json").setText(JSON Stringify:C1217(This:C1470.outputStream; *))
 		
 	End if 
 	
@@ -261,7 +267,7 @@ Function log($id : Text)
 		
 		This:C1470.launch("xcrun notarytool log "+$id\
 			+" --keychain-profile "+This:C1470.quoted(This:C1470.keychainProfile)\
-			+" "+This:C1470.quoted(Folder:C1567(Folder:C1567(fk logs folder:K87:17; *).platformPath; fk platform path:K87:2).file("notarizing.json").path))
+			+" "+This:C1470.quoted(Folder:C1567(Folder:C1567(fk logs folder:K87:17; *).platformPath; fk platform path:K87:2).file("ticket.json").path))
 		
 	End if 
 	

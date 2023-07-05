@@ -1,22 +1,26 @@
+property src : Object  // Could be a File or a Folder
+property tgt : 4D:C1709.File
+property CONSTANTS : Object
+
 Class extends lep
 
 // https:// Ss64.com/osx/ditto.html
 
-Class constructor($rc : Object; $tgt : 4D:C1709.File)
+Class constructor($rc : Object; $tgt : 4D:C1709.File; $options : Object)
 	
 	Super:C1705()
 	
 	This:C1470.src:=$rc
 	This:C1470.tgt:=$tgt
 	
-	This:C1470.CONSTANTS:=New object:C1471
+	This:C1470.CONSTANTS:={}
 	
 	// Create or extract from a PKZip archive instead of the default CPIO.
 	// PKZip archives should be stored in filenames ending in .zip.
 	This:C1470.CONSTANTS.PKZip:=True:C214
 	
 	// When creating an archive, embed the parent directory name src in dst_archive.
-	This:C1470.CONSTANTS.keepParent:=False:C215
+	This:C1470.CONSTANTS.keepParent:=True:C214
 	
 	// Preserve resource forks and HFS meta-data.
 	// As of Mac OS X 10.4, --rsrc is default behavior.
@@ -40,6 +44,16 @@ Class constructor($rc : Object; $tgt : 4D:C1709.File)
 	
 	// Allow ditto to prompt for a password to use to extract the contents of a password-encrypted ZIP archive
 	This:C1470.CONSTANTS.password:=False:C215
+	
+	If ($options#Null:C1517)
+		
+		var $key : Text
+		For each ($key; $options)
+			
+			This:C1470.CONSTANTS[$key]:=$options[$key]
+			
+		End for each 
+	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function archive($tgt : 4D:C1709.File) : Boolean

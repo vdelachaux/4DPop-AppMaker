@@ -15,6 +15,122 @@ Class constructor($target : 4D:C1709.File; $content)
 	/// Create a disk image image
 Function create($content) : Boolean
 	
+/*
+hdiutil create <sizespec> <imagepath>
+Size specifiers:
+    -size < ?? | ??b | ??k | ??m | ??g | ??t | ??p | ??e >
+    -sectors <count>
+    -megabytes <count>
+	
+Image options:
+    -library <MKDrivers>
+    -layout <layout>[GPTSPUD or per -fs]
+MBRSPUD - Single partition - Master Boot Record Partition Map
+SPUD - Single partition - Apple Partition Map
+UNIVERSAL CD - CD/DVD
+NONE - No partition map
+GPTSPUD - Single partition - GUID Partition Map
+SPCD - Single partition - CD/DVD
+UNIVERSAL HD - Hard disk
+ISOCD - Single partition - CD/DVD with ISO data
+    -partitionType <partitionType>[per -fs]
+    -align <sector alignment>[8 sectors]
+    -ov
+	
+Filesystem options:
+    -fs <filesystem>
+UDF - Universal Disk Format (UDF)
+MS-DOS FAT12 - MS-DOS (FAT12)
+MS-DOS - MS-DOS (FAT)
+MS-DOS FAT16 - MS-DOS (FAT16)
+MS-DOS FAT32 - MS-DOS (FAT32)
+HFS+ - Mac OS Extended
+Case-sensitive HFS+ - Mac OS Extended (Case-sensitive)
+Case-sensitive Journaled HFS+ - Mac OS Extended (Case-sensitive, Journaled)
+Journaled HFS+ - Mac OS Extended (Journaled)
+ExFAT - ExFAT
+Case-sensitive APFS - APFS (Case-sensitive)
+APFS - APFS
+   -volname <volumename>["untitled"]
+   -stretch < ?? | ?b | ??k | ??m | ??g | ??t | ??p | ??e > (HFS+)
+	
+New Blank Image options:
+    -type <image type>[UDIF]
+SPARSEBUNDLE - sparse bundle disk image
+SPARSE - sparse disk image
+UDIF - read/write disk image
+UDTO - DVD/CD master
+   -[no]spotlightdo (not) create a Spotlight™ index
+	
+Image from Folder options:
+   -srcfolder <source folder>
+   -[no]spotlightdo (not) create a Spotlight™ index
+   -[no]anyownersdo (not) attempt to preserve owners
+   -[no]skipunreadabledo (not) skip unreadable objects [no]
+   -[no]atomicdo (not) copy to temp location and then rename [yes]
+   -srcowners on|off|any|auto [auto]
+   onenable owners on source
+   offdisable owners on source
+   anyleave owners state on source unchanged
+   autoenable owners if source is a volume
+   -format <image type>[UDZO]
+UDRO - read-only
+UDCO - compressed (ADC)
+UDZO - compressed
+UDBZ - compressed (bzip2), deprecated
+ULFO - compressed (lzfse)
+ULMO - compressed (lzma)
+UFBI - entire device
+IPOD - iPod image
+UDSB - sparsebundle
+UDSP - sparse
+UDRW - read/write
+UDTO - DVD/CD master
+UNIV - hybrid image (HFS+/ISO/UDF)
+SPARSEBUNDLE - sparse bundle disk image
+SPARSE - sparse disk image
+UDIF - read/write disk image
+UDTO - DVD/CD master
+	
+Image from Device options:
+Note: Filesystem options (-fs, -volname, -stretch) ignored with -srcdevice
+   -srcdevice <source dev node, e.g. disk1, disk2s1>
+   -format <image type>[UDZO]
+UDRO - read-only
+UDCO - compressed (ADC)
+UDZO - compressed
+UDBZ - compressed (bzip2), deprecated
+ULFO - compressed (lzfse)
+ULMO - compressed (lzma)
+UFBI - entire device
+IPOD - iPod image
+UDSB - sparsebundle
+UDSP - sparse
+UDRW - read/write
+UDTO - DVD/CD master
+    -segmentSize < ?? | ??b | ??k | ??m | ??g | ??t | ??p | ??e > (deprecated)
+                 (sectors, bytes, KiB, MiB, GiB, TiB, PiB, EiB)
+	
+Attach options:
+   -attachattach image after creation
+	
+Common options:
+    -encryption <crypto method>
+    AES-128 - 128-bit AES encryption (recommended)
+    AES-256 - 256-bit AES encryption (more secure, but slower)
+    -stdinpass
+    -agentpass
+    -certificate <path-to-cert-file>
+    -pubkey <public-key-hash>[,pkh2,...]
+    -imagekey <key>=<value>
+    -tgtimagekey <key>=<value>
+    -plist
+    -puppetstrings
+    -verbose
+    -debug
+    -quiet
+*/
+	
 	// TODO: Allow collection & more (File, Folder,…)
 	
 	This:C1470.content:=$content

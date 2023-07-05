@@ -6,7 +6,7 @@
     <key>NSHumanReadableCopyright</key>
     <string>©vdl 2009-2023</string>
     <key>CFBundleVersion</key>
-    <string>533</string>
+    <string>544</string>
     <key>CFBundleDisplayName</key>
     <string>4DPop AppMaker</string>
     <key>CFBundleShortVersionString</key>
@@ -14,7 +14,7 @@
     <key>CFBundleGetInfoString</key>
     <string>20R2</string>
     <key>CFBundleLongVersionString</key>
-    <string>20R2 (532)</string>
+    <string>20R2 (543)</string>
     <key>CFBundleName</key>
     <string>4DPop AppMaker</string>
   </dict>
