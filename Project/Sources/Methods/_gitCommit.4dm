@@ -2,9 +2,9 @@
 #DECLARE($component : Object; $commitMessage : Text) : Boolean
 
 If (False:C215)
-	C_OBJECT:C1216(gitCommit; $1)
-	C_TEXT:C284(gitCommit; $2)
-	C_BOOLEAN:C305(gitCommit; $0)
+	C_OBJECT:C1216(_gitCommit; $1)
+	C_TEXT:C284(_gitCommit; $2)
+	C_BOOLEAN:C305(_gitCommit; $0)
 End if 
 
 var $err; $in; $out : Text
