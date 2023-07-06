@@ -683,6 +683,158 @@ Function copy($target : 4D:C1709.Folder; $items : Collection)
 		
 	End for each 
 	
+	// MARK:-Tools
+Function makeFamily($target : 4D:C1709.Folder) : Boolean
+	
+	var $familyName; $pathname : Text
+	var $success : Boolean
+	var $i : Integer
+	var $component; $make : Object
+	var $dmg; $makeFile : 4D:C1709.File
+	var $family; $src; $tgt : 4D:C1709.Folder
+	var $hdutil : cs:C1710.hdutil
+	var $notarytool : cs:C1710.notarytool
+	
+	If (Count parameters:C259=0)
+		
+		$pathname:=Select folder:C670("Select the family folder"; 8858)
+		
+		If (Bool:C1537(OK))
+			
+			$target:=Folder:C1567($pathname; fk platform path:K87:2)
+			
+		End if 
+	End if 
+	
+	If ($target=Null:C1517) || Not:C34($target.exists)
+		
+		return 
+		
+	End if 
+	
+	$makeFile:=$target.file("make.json")
+	
+	If (Not:C34($makeFile.exists))
+		
+		ALERT:C41("Missing file \"make.json+\"")
+		return 
+		
+	End if 
+	
+	This:C1470.withUI:=True:C214  // Allow barber
+	
+	This:C1470._initBarber()._openBarber("Starting…")
+	
+	$make:=JSON Parse:C1218($makeFile.getText())
+	
+	$familyName:="4DPop-Family-"+This:C1470.motor.branch
+	$family:=$target.folder($familyName)
+	
+	If ($family.exists)
+		
+		$family.delete(fk recursive:K87:7)
+		
+	End if 
+	
+	$family:=$family.folder("Components")
+	
+	$family.create()
+	
+	// Make a copy of all family items
+	This:C1470._callBarber("1️⃣ Copy of all family items"; Progress bar:K42:34)
+	
+	For each ($component; $make.components)
+		
+		If (Not:C34($component.family))
+			
+			continue
+			
+		End if 
+		
+		$src:=$target.folder($component.name).folder("Build/Components").folder($component.name+".4dbase")
+		
+		If (Not:C34($src.exists))
+			
+			// Try with a github-compliant name
+			$src:=$target.folder(Replace string:C233($component.name; " "; "-")).folder("Build/Components").folder($component.name+".4dbase")
+			
+		End if 
+		
+		If ($src.exists)
+			
+			$tgt:=$src.copyTo($family)
+			
+		End if 
+		
+		Use (Storage:C1525.progress)
+			
+			$i+=1
+			Storage:C1525.progress.value+=Round:C94(100/$i; 0)
+			
+		End use 
+	End for each 
+	
+	// Create a dmg
+	This:C1470._callBarber("2️⃣ Create the dmg"; Barber shop:K42:35)
+	
+	$dmg:=File:C1566($target.folder($familyName).path+$familyName+".dmg")
+	$hdutil:=cs:C1710.hdutil.new($dmg)
+	
+	$success:=$hdutil.create($family)
+	
+	If (Not:C34($success))
+		
+		TRACE:C157
+		
+	End if 
+	
+	// Sign the dmg (not mandatory, but preferable)
+	This:C1470._callBarber("3️⃣ Sign the dmg (not mandatory, but preferable)"; Barber shop:K42:35)
+	
+	$success:=This:C1470.sign($dmg)
+	
+	If (Not:C34($success))
+		
+		TRACE:C157
+		
+	End if 
+	
+	// Send the dmg for notarization
+	This:C1470._callBarber("4️⃣ Send the dmg for notarization"; Barber shop:K42:35)
+	$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+	
+	$success:=$notarytool.submit()
+	
+	If (Not:C34($success))
+		
+		TRACE:C157
+		
+	End if 
+	
+	// Staple
+	This:C1470._callBarber("5️⃣ Staple"; Barber shop:K42:35)
+	$success:=$notarytool.staple($dmg)
+	
+	If (Not:C34($success))
+		
+		TRACE:C157
+		
+	End if 
+	
+	// Mount the virtual disk
+	This:C1470._callBarber("6️⃣ Mount the virtual disk"; Barber shop:K42:35)
+	$success:=$hdutil.attach()
+	
+	If (Not:C34($success))
+		
+		TRACE:C157
+		
+	End if 
+	
+	This:C1470._closeBarber()
+	
+	return $success
+	
 	// MARK:-
 	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function _error($error : Text)
