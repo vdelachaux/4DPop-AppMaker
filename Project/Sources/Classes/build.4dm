@@ -1,7 +1,12 @@
+property settings : Object
+property buildStatus : Collection
+property buildAppSettingsFile; lib4d : 4D:C1709.File
+property buildTarget : 4D:C1709.Folder
+
 Class extends lep
 
 //=== === === === === === === === === === === === === === === === === === === === === === ===
-Class constructor($settings; $credentials : Object)
+Class constructor($settings)  //; $credentials : Object)
 	
 	Super:C1705()
 	
@@ -38,11 +43,11 @@ Class constructor($settings; $credentials : Object)
 	
 	// Notarization settings
 	//FIXME: Usefull ?
-	This:C1470.credentials:=$credentials
+	//This.credentials:=$credentials
 	
 	This:C1470.lib4d:=File:C1566("⛔️")
 	This:C1470.buildStatus:=Null:C1517
-	This:C1470.requestUID:=Null:C1517
+	//This.requestUID:=Null
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get destinationFolder() : 4D:C1709.Folder

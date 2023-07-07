@@ -83,7 +83,7 @@ Function run($withUI : Boolean) : Boolean
 	
 	FLUSH CACHE:C297
 	
-	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile; This:C1470.credentials)
+	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile)  //; This.credentials)
 	This:C1470.applicationName:=This:C1470.build.settings.BuildApplicationName
 	
 	// Load preferences
@@ -219,9 +219,22 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($success)
 			
-			// Notarize & staple
-			$success:=This:C1470.notarize()
-			
+			Case of 
+					
+					//______________________________________________________
+					
+				: (This:C1470.build.buildTarget.parent.name="Components")
+					
+					$success:=This:C1470.notarizelib4D()
+					
+					//______________________________________________________
+				Else 
+					
+					// Notarize & staple
+					$success:=This:C1470.notarize()
+					
+					//______________________________________________________
+			End case 
 		End if 
 	End if 
 	
@@ -332,7 +345,83 @@ Function sign($target : 4D:C1709.File) : Boolean
 	End if 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
-	// Notarize & staple the lib4d-arm64.dylib
+	// Notarize & staple the lib
+Function notarizelib4D() : Boolean
+	
+	var $dmg; $zip : 4D:C1709.File
+	var $root; $stapled; $target : 4D:C1709.Folder
+	var $ditto : cs:C1710.ditto
+	var $hdutil : cs:C1710.hdutil
+	var $notarytool : cs:C1710.notarytool
+	
+	If (This:C1470.build.lib4d.exists)
+		
+		$target:=This:C1470.build.buildTarget
+		$root:=$target.parent.parent
+		
+		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
+		
+		// Create a dmg
+		$dmg:=$root.file($target.name+".dmg")
+		$hdutil:=cs:C1710.hdutil.new($dmg)
+		
+		If ($hdutil.create(This:C1470.build.lib4d))
+			
+			// Send the dmg for notarization
+			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+			
+			If ($notarytool.submit())
+				
+				If ($notarytool.staple($hdutil.target))
+					
+					// Mount the virtual disk
+					If ($hdutil.attach())
+						
+						// Get the stapled lib
+						$stapled:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
+						
+						// Replace the original into the component
+						$stapled.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
+						
+						// Create an archive to preserve the stapple ticket
+						$zip:=$root.file($target.name+".4dbase.zip")
+						$zip.delete()
+						
+						$ditto:=cs:C1710.ditto.new($target; $zip; {keepParent: False:C215})
+						
+						If ($ditto.archive())
+							
+							// Delete dmg file
+							$dmg.delete()
+							
+							return True:C214
+							
+						Else 
+							
+							This:C1470._error($ditto.lastError)
+							
+						End if 
+						
+						Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+						
+						// Unmount the virtual disk
+						$hdutil.detach()
+						
+					End if 
+				End if 
+			End if 
+			
+			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+			
+		End if 
+		
+		Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+		
+	End if 
+	
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === ===
+	// Notarize & staple the target
 Function notarize() : Boolean
 	
 	var $success : Boolean
