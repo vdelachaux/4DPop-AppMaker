@@ -4,6 +4,7 @@
 [![license](https://img.shields.io/github/license/vdelachaux/4DPop-AppMaker)](LICENSE)
 [![release](https://img.shields.io/github/v/release/vdelachaux/4DPop-AppMaker?include_prereleases)](https://github.com/vdelachaux/4DPop-AppMaker/releases/latest)
 ![](https://img.shields.io/badge/macOS-notarized-green)
+[![Build](https://github.com/vdelachaux/4DPop-AppMaker/actions/workflows/build.yml/badge.svg)](https://github.com/vdelachaux/4DPop-AppMaker/actions/workflows/build.yml)
 
 
 
