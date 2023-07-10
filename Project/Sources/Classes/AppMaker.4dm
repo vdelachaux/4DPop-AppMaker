@@ -219,9 +219,33 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($success)
 			
-			// Notarize & staple
-			$success:=This:C1470.notarize()
+			var $root : 4D:C1709.Folder
+			$root:=This:C1470.build.buildTarget.parent.parent
 			
+			Case of 
+					
+					//______________________________________________________
+					
+				: (True:C214)  //component- Create a sfae zip
+					
+					// Create an archive to preserve the stapple ticket
+					var $zip : 4D:C1709.File
+					$zip:=$root.file(This:C1470.build.buildTarget.name+"_test.4dbase.zip")
+					$zip.delete()
+					
+					var $ditto : cs:C1710.ditto
+					$ditto:=cs:C1710.ditto.new(This:C1470.build.buildTarget; $zip)  //; {keepParent: False})
+					
+					$success:=$ditto.archive()
+					
+					//______________________________________________________
+				Else 
+					
+					// Notarize & staple
+					$success:=This:C1470.notarize()
+					
+					//______________________________________________________
+			End case 
 		End if 
 	End if 
 	
