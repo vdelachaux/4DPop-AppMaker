@@ -4,6 +4,7 @@ property motor : cs:C1710.motor
 property prefs : cs:C1710.prefs
 property build : cs:C1710.build
 property preferencesFile; buildAppFile; entitlementsFile : 4D:C1709.File
+property target : 4D:C1709.Folder
 property credentials : Object
 property errors; warnings : Collection
 
@@ -73,6 +74,11 @@ Class constructor()
 	
 	This:C1470.errors:=[]
 	This:C1470.warnings:=[]
+	
+	// <== <== <== <== <== <== <== <==  <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <==
+Function get target() : 4D:C1709.Folder
+	
+	return This:C1470.build.buildTarget
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function run($withUI : Boolean) : Boolean
@@ -145,7 +151,7 @@ Function run($withUI : Boolean) : Boolean
 	// Mark:Make sure the target directory is writable
 	If ($success)
 		
-		$success:=cs:C1710.lep.new().unlockDirectory(This:C1470.build.buildTarget).success
+		$success:=cs:C1710.lep.new().unlockDirectory(This:C1470.target).success
 		
 	End if 
 	
@@ -159,14 +165,14 @@ Function run($withUI : Boolean) : Boolean
 	// Mark:Delete macOS content
 	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.delete_mac_content))
 		
-		$success:=This:C1470.deleteMacContent(This:C1470.build.buildTarget)
+		$success:=This:C1470.deleteMacContent(This:C1470.target)
 		
 	End if 
 	
 	// Mark:Delete dev resources
 	If ($success && Bool:C1537($prefs.options.removeDevResources))
 		
-		$success:=This:C1470.deleteResources(This:C1470.build.buildTarget)
+		$success:=This:C1470.deleteResources(This:C1470.target)
 		
 	End if 
 	
@@ -183,7 +189,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470.copy(This:C1470.build.buildTarget; $prefs.copy.array.item.extract("$"))
+		This:C1470.copy(This:C1470.target; $prefs.copy.array.item.extract("$"))
 		
 	End if 
 	
@@ -200,7 +206,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470.delete(This:C1470.build.buildTarget; $prefs.delete.array.item.extract("$"))
+		This:C1470.delete(This:C1470.target; $prefs.delete.array.item.extract("$"))
 		
 	End if 
 	
@@ -223,7 +229,7 @@ Function run($withUI : Boolean) : Boolean
 					
 					//______________________________________________________
 					
-				: (This:C1470.build.buildTarget.parent.name="Components")
+				: (This:C1470.target.parent.name="Components")
 					
 					$success:=This:C1470.notarizelib4D()
 					
@@ -290,7 +296,7 @@ Function sign($target : 4D:C1709.File) : Boolean
 	
 	This:C1470._callBarber("✍️ Signature"; Barber shop:K42:35)
 	
-	$target:=$target || This:C1470.build.buildTarget
+	$target:=$target || This:C1470.target
 	
 	// Get 4D signature script and entitlements
 	$4D:=Folder:C1567(Application file:C491; fk platform path:K87:2)
@@ -348,20 +354,21 @@ Function sign($target : 4D:C1709.File) : Boolean
 	// Notarize & staple the lib
 Function notarizelib4D() : Boolean
 	
+	var $success : Boolean
 	var $dmg; $zip : 4D:C1709.File
-	var $root; $stapled; $target : 4D:C1709.Folder
+	var $root; $lib; $target : 4D:C1709.Folder
 	var $ditto : cs:C1710.ditto
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
 	If (This:C1470.build.lib4d.exists)
 		
-		$target:=This:C1470.build.buildTarget
+		$target:=This:C1470.target
 		$root:=$target.parent.parent
 		
 		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 		
-		// Create a dmg
+		// Archive the library in a DMG
 		$dmg:=$root.file($target.name+".dmg")
 		$hdutil:=cs:C1710.hdutil.new($dmg)
 		
@@ -378,10 +385,10 @@ Function notarizelib4D() : Boolean
 					If ($hdutil.attach())
 						
 						// Get the stapled lib
-						$stapled:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
+						$lib:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
 						
 						// Replace the original into the component
-						$stapled.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
+						$lib.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
 						
 						// Create an archive to preserve the stapple ticket
 						$zip:=$root.file($target.name+".4dbase.zip")
@@ -391,10 +398,10 @@ Function notarizelib4D() : Boolean
 						
 						If ($ditto.archive())
 							
+							$success:=True:C214
+							
 							// Delete dmg file
 							$dmg.delete()
-							
-							return True:C214
 							
 						Else 
 							
@@ -419,6 +426,7 @@ Function notarizelib4D() : Boolean
 		
 	End if 
 	
+	return $success
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Notarize & staple the target
@@ -431,13 +439,13 @@ Function notarize() : Boolean
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
-	$root:=This:C1470.build.buildTarget.parent.parent
+	$root:=This:C1470.target.parent.parent
 	
 	// Create a dmg
-	$dmg:=$root.file(This:C1470.build.buildTarget.name+".dmg")
+	$dmg:=$root.file(This:C1470.target.name+".dmg")
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
-	If ($hdutil.create(This:C1470.build.buildTarget))
+	If ($hdutil.create(This:C1470.target))
 		
 		// Sign the dmg (not mandatory, but preferable)
 		If (This:C1470.sign($dmg))
@@ -461,7 +469,7 @@ Function notarize() : Boolean
 						$stapled.copyTo($dmg.parent.folder("Components"); fk overwrite:K87:5)
 						
 						// Create an archive to preserve the stapple ticket
-						$zip:=$root.file(This:C1470.build.buildTarget.name+".4dbase.zip")
+						$zip:=$root.file(This:C1470.target.name+".4dbase.zip")
 						$zip.delete()
 						
 						$ditto:=cs:C1710.ditto.new($stapled; $zip; {keepParent: False:C215})
@@ -541,7 +549,7 @@ Function deleteResources($target : 4D:C1709.Folder) : Boolean
 		
 		For each ($path; $xml.toObject().item.extract("$"))
 			
-			$path:=This:C1470.build.buildTarget.path+$path
+			$path:=This:C1470.target.path+$path
 			
 			If ($path="@/")
 				
@@ -572,7 +580,7 @@ Function deleteMacContent($target : 4D:C1709.Folder) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		For each ($file; This:C1470.build.buildTarget.files(fk recursive:K87:7).query("name = :1"; ".@"))
+		For each ($file; This:C1470.target.files(fk recursive:K87:7).query("name = :1"; ".@"))
 			
 			$file.delete()
 			
@@ -689,7 +697,7 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 		
 		If ($item="@/")
 			
-			$tgt:=This:C1470.build.buildTarget.folder($item)
+			$tgt:=This:C1470.target.folder($item)
 			
 			If ($tgt.exists)
 				
@@ -703,7 +711,7 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 			
 		Else 
 			
-			$tgt:=This:C1470.build.buildTarget.file($item)
+			$tgt:=This:C1470.target.file($item)
 			
 			If ($tgt.exists)
 				
@@ -743,12 +751,12 @@ Function copy($target : 4D:C1709.Folder; $items : Collection)
 		If ($item="@/")
 			
 			$src:=This:C1470.database.databaseFolder.folder($item)
-			$tgt:=This:C1470.build.buildTarget.folder($item).parent
+			$tgt:=This:C1470.target.folder($item).parent
 			
 		Else 
 			
 			$src:=This:C1470.database.databaseFolder.file($item)
-			$tgt:=This:C1470.build.buildTarget.file($item).parent
+			$tgt:=This:C1470.target.file($item).parent
 			
 		End if 
 		
@@ -834,6 +842,8 @@ Function makeFamily($target : 4D:C1709.Folder) : Boolean
 	
 	For each ($component; $make.components)
 		
+		$i+=1
+		
 		If (Not:C34($component.family))
 			
 			continue
@@ -857,8 +867,7 @@ Function makeFamily($target : 4D:C1709.Folder) : Boolean
 		
 		Use (Storage:C1525.progress)
 			
-			$i+=1
-			Storage:C1525.progress.value+=Round:C94(100/$i; 0)
+			Storage:C1525.progress.value+=Round:C94((100*$i)/$make.components.length; 0)
 			
 		End use 
 	End for each 

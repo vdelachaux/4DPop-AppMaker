@@ -126,7 +126,7 @@ Function staple($target) : Boolean
 	
 	var $cmd : Text
 	
-	$cmd:="xcrun stapler staple "
+	$cmd:="xcrun stapler staple -v "
 	
 	If (Count parameters:C259>0)
 		

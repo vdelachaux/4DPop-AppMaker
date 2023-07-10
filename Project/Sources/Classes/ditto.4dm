@@ -4,7 +4,7 @@ property CONSTANTS : Object
 
 Class extends lep
 
-// https:// Ss64.com/osx/ditto.html
+// https://Ss64.com/osx/ditto.html
 
 Class constructor($rc : Object; $tgt : 4D:C1709.File; $options : Object)
 	
