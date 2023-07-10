@@ -251,11 +251,13 @@ Function run($withUI : Boolean) : Boolean
 						var $hdutil : cs:C1710.hdutil
 						var $notarytool : cs:C1710.notarytool
 						
-						$root:=This:C1470.build.buildTarget.parent.parent
+						var $target : Object
+						$target:=This:C1470.build.buildTarget
+						$root:=$target.parent.parent
 						
 						This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 						
-						$dmg:=$root.file(This:C1470.build.buildTarget.name+".dmg")
+						$dmg:=$root.file($target.name+".dmg")
 						$hdutil:=cs:C1710.hdutil.new($dmg)
 						$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
 						
@@ -274,22 +276,37 @@ Function run($withUI : Boolean) : Boolean
 								
 								If ($notarytool.staple($hdutil.target))
 									
-									// Create an archive to preserve the stapple ticket
-									$zip:=$root.file(This:C1470.build.buildTarget.name+"_Test.4dbase.zip")
-									$zip.delete()
-									
-									$ditto:=cs:C1710.ditto.new(This:C1470.build.buildTarget; $zip; {keepParent: False:C215})
-									
-									If ($ditto.archive())
+									// Mount the virtual disk
+									If ($hdutil.attach())
 										
-										$success:=True:C214
+										// Get the stapled element
+										$stapled:=$hdutil.disk.file($lib4D.fullName)
 										
-										// Delete dmg file
-										$dmg.delete()
+										// Replace the original component
+										$stapled.copyTo($target.folder("Components"); fk overwrite:K87:5)
 										
-									Else 
 										
-										This:C1470._error($ditto.lastError)
+										// Create an archive to preserve the stapple ticket
+										$zip:=$root.file($target.name+"_Test.4dbase.zip")
+										$zip.delete()
+										
+										$ditto:=cs:C1710.ditto.new($target; $zip; {keepParent: False:C215})
+										
+										If ($ditto.archive())
+											
+											$success:=True:C214
+											
+											// Delete dmg file
+											$dmg.delete()
+											
+										Else 
+											
+											This:C1470._error($ditto.lastError)
+											
+										End if 
+										
+										// Unmount the virtual disk
+										$hdutil.detach()
 										
 									End if 
 								End if 
