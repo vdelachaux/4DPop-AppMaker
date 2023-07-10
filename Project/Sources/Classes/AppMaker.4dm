@@ -83,7 +83,7 @@ Function run($withUI : Boolean) : Boolean
 	
 	FLUSH CACHE:C297
 	
-	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile; This:C1470.credentials)
+	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile)  //; This.credentials)
 	This:C1470.applicationName:=This:C1470.build.settings.BuildApplicationName
 	
 	// Load preferences
@@ -226,17 +226,82 @@ Function run($withUI : Boolean) : Boolean
 					
 					//______________________________________________________
 					
-				: (True:C214)  //component- Create a sfae zip
+				: (This:C1470.build.buildTarget.parent.name="Components")  // Component- Create a safe zip
 					
-					// Create an archive to preserve the stapple ticket
-					var $zip : 4D:C1709.File
-					$zip:=$root.file(This:C1470.build.buildTarget.name+"_test.4dbase.zip")
-					$zip.delete()
+					//Supprimer la signature pour partir d’une base saine :
+					//codesign --remove-signature lib4d-arm64.dylib
 					
-					var $ditto : cs:C1710.ditto
-					$ditto:=cs:C1710.ditto.new(This:C1470.build.buildTarget; $zip)  //; {keepParent: False})
 					
-					$success:=$ditto.archive()
+					
+					//Signer la librairie avec ton certificat Apple :
+					//codesign --verbose --deep --timestamp --force --sign "Developer ID Application: 
+					//Roland Lannuzel (XXXXXXXXXX)" lib4d-arm64.dylib
+					
+					
+					//Créer un dmg pour y mettre la librairie signée :
+					//hdiutil create -format UDBZ -plist -srcfolder lib4d-arm64.dylib lib4d-arm64.dmg
+					var $lib4D : 4D:C1709.File
+					$lib4D:=This:C1470.build.lib4d
+					If ($lib4D.exists)
+						
+						var $success : Boolean
+						var $dmg; $zip : 4D:C1709.File
+						var $root; $stapled : 4D:C1709.Folder
+						var $ditto : cs:C1710.ditto
+						var $hdutil : cs:C1710.hdutil
+						var $notarytool : cs:C1710.notarytool
+						
+						$root:=This:C1470.build.buildTarget.parent.parent
+						
+						This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
+						
+						$dmg:=$root.file(This:C1470.build.buildTarget.name+".dmg")
+						$hdutil:=cs:C1710.hdutil.new($dmg)
+						$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+						
+						If ($hdutil.create($lib4D))
+							
+							//Envoyer le dmg à Apple pour notarization :
+							//xcrun altool --notarize-app --username roland.lannuzel@4d.com --password 
+							//"XXXXXXXXX" --primary-bundle-id lib4d-arm64 --file lib4d-arm64.dmg
+							
+							
+							If ($notarytool.submit())
+								
+								//Attendre quelques secondes / minutes et vérifier le statut de la demande de 
+								//notarizaton :
+								//xcrun stapler staple lib4d-arm64.dmg
+								
+								If ($notarytool.staple($hdutil.target))
+									
+									// Create an archive to preserve the stapple ticket
+									$zip:=$root.file(This:C1470.build.buildTarget.name+"_Test.4dbase.zip")
+									$zip.delete()
+									
+									$ditto:=cs:C1710.ditto.new(This:C1470.build.buildTarget; $zip; {keepParent: False:C215})
+									
+									If ($ditto.archive())
+										
+										$success:=True:C214
+										
+										// Delete dmg file
+										$dmg.delete()
+										
+									Else 
+										
+										This:C1470._error($ditto.lastError)
+										
+									End if 
+								End if 
+							End if 
+						End if 
+						
+						// Keep a log of all operations
+						Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+						Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+						//Folder(fk logs folder).file("ditto.log").setText($ditto.history.join("\n"))
+						
+					End if 
 					
 					//______________________________________________________
 				Else 
