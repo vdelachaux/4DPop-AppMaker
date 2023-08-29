@@ -16,7 +16,7 @@ End if
 var $node; $root; $t : Text
 var $notSet; $set : Picture
 var $expanded; $isOn; $loaded : Boolean
-var $i; $page; $ref; $sublist; $uid : Integer
+var $i; $ref; $sublist; $uid : Integer
 var $ƒ : Object
 var $xml : cs:C1710.xml
 

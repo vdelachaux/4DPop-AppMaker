@@ -14,8 +14,8 @@ var $goUp; $bottom; $number; $height; $i; $left : Integer
 var $optimalHeight; $optimalWidth; $ref; $right; $sublist : Integer
 var $top; $width; $indx; $pos : Integer
 var $Ptr_column_1; $Ptr_column_2; $Ptr_column_3 : Pointer
-var $node; $t; $name; $os; $databaseFolderPathname; $t : Text
-var $type; $node; $xpath : Text
+var $node; $name; $os; $databaseFolderPathname; $t : Text
+var $type; $xpath : Text
 var $notSet : Picture
 
 // ----------------------------------------------------
