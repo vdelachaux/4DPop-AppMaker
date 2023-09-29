@@ -1,3 +1,6 @@
+property target : 4D:C1709.File
+property keychainProfile : Text
+
 Class extends lep
 
 Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
@@ -7,22 +10,25 @@ Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 	This:C1470.version:=This:C1470.getVersion()
 	This:C1470.available:=This:C1470.success
 	
+	This:C1470.keychainProfile:=Null:C1517
+	This:C1470.target:=Null:C1517
+	
 	If (This:C1470.available)
 		
 		This:C1470.target:=$target
 		This:C1470.keychainProfile:=$keychainProfile ? $keychainProfile : Null:C1517
 		
-		This:C1470.success:=(This:C1470.target.exists) & (This:C1470.keychainProfile#Null:C1517)
-		
-		If (Not:C34(This:C1470.target.exists))
-			
-			This:C1470._pushError(This:C1470.target.path+" not found!")
-			
-		End if 
-		
 		If (This:C1470.keychainProfile=Null:C1517)
 			
 			This:C1470._pushError("Keychain profile not provided")
+			
+		End if 
+		
+		This:C1470.success:=(This:C1470.target#Null:C1517) & (This:C1470.target.exists) && (This:C1470.keychainProfile#Null:C1517)
+		
+		If (Not:C34(This:C1470.target.exists))
+			
+			This:C1470._pushError("target: "+String:C10(This:C1470.target.path)+" not found!")
 			
 		End if 
 		

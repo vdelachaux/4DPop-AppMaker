@@ -31,17 +31,17 @@
 		]
 	},
 	"♻️ LIBRAIRIES": {
+		"groups": [
+			"database",
+			"env"
+		],
 		"methods": [
-			"COMPILER_env",
-			"databaseNonThreadSafe",
-			"envScreens",
 			"noERROR"
 		],
 		"classes": [
+			"_classCore",
 			"codesign",
-			"database",
 			"ditto",
-			"env",
 			"hdutil",
 			"lep",
 			"motor",
@@ -81,6 +81,24 @@
 		"classes": [
 			"AppMaker",
 			"build"
+		]
+	},
+	"database": {
+		"methods": [
+			"COMPILER_database",
+			"databaseNonThreadSafe"
+		],
+		"classes": [
+			"database"
+		]
+	},
+	"env": {
+		"methods": [
+			"COMPILER_env",
+			"envScreens"
+		],
+		"classes": [
+			"env"
 		]
 	},
 	"Forms": {

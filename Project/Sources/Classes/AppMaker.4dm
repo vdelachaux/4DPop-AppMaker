@@ -409,7 +409,7 @@ Function notarizelib4D() : Boolean
 							
 						End if 
 						
-						Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+						Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history.join("\n"))
 						
 						// Unmount the virtual disk
 						$hdutil.detach()
@@ -418,11 +418,11 @@ Function notarizelib4D() : Boolean
 				End if 
 			End if 
 			
-			Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
+			Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history.join("\n"))
 			
 		End if 
 		
-		Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
+		Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history.join("\n"))
 		
 	End if 
 	
@@ -517,9 +517,9 @@ Function notarize() : Boolean
 	End if 
 	
 	// Keep a log of all operations
-	Folder:C1567(fk logs folder:K87:17).file("hdutil.log").setText($hdutil.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("notarytool.log").setText($notarytool.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17).file("ditto.log").setText($ditto.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history.join("\n"))
 	
 	return $success
 	

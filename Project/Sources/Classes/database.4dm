@@ -1,6 +1,8 @@
 //USE: databaseNonThreadSafe
 //USE: noERROR
 
+Class extends _classCore
+
 Class constructor($full : Boolean)
 	
 	var $pathname : Text
@@ -30,6 +32,8 @@ Class constructor($full : Boolean)
 		
 		This:C1470.name:=$pathname
 		This:C1470.isDataless:=False:C215
+		
+		This:C1470.databaseFolder:=Folder:C1567(fk remote database folder:K87:9).folder("4D/Components")
 		
 	Else 
 		
@@ -89,8 +93,11 @@ Class constructor($full : Boolean)
 		If (Not:C34($file.exists))
 			
 			// Create a default file
-			$file.setText(Replace string:C233(File:C1566("/RESOURCES/BuildApp.xml").getText(); "{BuildApplicationName}"; This:C1470.name))
-			
+			If (File:C1566("/RESOURCES/BuildApp.xml").exists)
+				
+				$file.setText(Replace string:C233(File:C1566("/RESOURCES/BuildApp.xml").getText(); "{BuildApplicationName}"; This:C1470.name))
+				
+			End if 
 		End if 
 		
 		This:C1470.buildAppSettingsFile:=$file
@@ -114,12 +121,15 @@ Class constructor($full : Boolean)
 	
 	$full:=Count parameters:C259>=1 ? $full : False:C215
 	
+	//%W-550.2
 	If ($full)
 		
 		// Non-thread-safe commands are delegated to the application process
 		$signal:=New signal:C1641("database")
 		CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 		$signal.wait()
+		
+		KILL WORKER:C1390("$nonThreadSafe")
 		
 		This:C1470.components:=$signal.components.copy()
 		This:C1470.plugins:=$signal.plugins.copy()
@@ -150,17 +160,18 @@ Class constructor($full : Boolean)
 		This:C1470.plugins:=New collection:C1472
 		
 	End if 
+	//%W+550.2
 	
-	// Make a singleton
-	//cs.singleton.new(This)
+	// Make a _singleton
+	This:C1470.Singletonize(This:C1470)
 	
-	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
+	// <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <==
 Function get mode() : Text
 	
 	return Bool:C1537(This:C1470.isCompiled) ? "compiled" : "interpreted"
 	
 	//MARK:-
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// ⚠️ Only test tables that are available via REST.
 Function isDataEmpty() : Boolean
 	
@@ -183,13 +194,14 @@ Function isDataEmpty() : Boolean
 	
 	return $empty
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function isMethodAvailable($name : Text) : Boolean
 	
 	var $signal : 4D:C1709.Signal
 	
 	$signal:=New signal:C1641("database")
 	
+	//%W-550.2
 	Use ($signal)
 		
 		$signal.action:="methodAvailable"
@@ -201,32 +213,56 @@ Function isMethodAvailable($name : Text) : Boolean
 	$signal.wait()
 	
 	return $signal.available
+	//%W+550.2
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function isComponentAvailable($name : Text) : Boolean
 	
-	return This:C1470.components.indexOf($name)#-1
+	return This:C1470.components.includes($name)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function isPluginAvailable($name : Text) : Boolean
 	
-	return This:C1470.plugins.indexOf($name)#-1
+	return This:C1470.plugins.includes($name)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Check if the database folder is writable
-Function isWritable()->$writable : Boolean
+Function isWritable() : Boolean
 	
+	var $writable : Boolean
 	var $methodCalledOnError : Text
 	var $file : 4D:C1709.File
 	
 	$methodCalledOnError:=Method called on error:C704
-	ON ERR CALL:C155("noError")
+	ON ERR CALL:C155(Formula:C1597(noERROR).source)
 	$file:=This:C1470.databaseFolder.file("._")
 	$writable:=$file.create()
 	$file.delete()
 	ON ERR CALL:C155($methodCalledOnError)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	return $writable
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function deleteGeometry()
+	
+	var $folder : 4D:C1709.Folder
+	
+	$folder:=This:C1470.userPreferencesFolder.folder("4D Window Bounds v"+Delete string:C232(Application version:C493; 3; 2))
+	
+	If ($folder.exists)
+		
+		$folder:=This:C1470.isMatrix\
+			 ? $folder.folders().query("fullName = :1"; "[projectForm]").pop()\
+			 : $folder.folders().query("fullName = :1"; File:C1566(Structure file:C489; fk platform path:K87:2).name).pop()
+		
+		If ($folder#Null:C1517) && ($folder.exists)
+			
+			$folder.delete(fk recursive:K87:7)
+			
+		End if 
+	End if 
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function compile($options : Object) : Boolean
 	
 	var $compile; $error : Object
@@ -241,11 +277,15 @@ Function compile($options : Object) : Boolean
 		
 	End if 
 	
-	This:C1470.errors:=$compile.errors.query("isError = :1"; True:C214)
+	Use (This:C1470[""].errors)
+		
+		This:C1470[""].errors:=$compile.errors.query("isError = :1"; True:C214).copy(ck shared:K85:29; This:C1470[""].errors)
+		
+	End use 
 	
 	return $compile.success
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function clearCompiledCode()
 	
 	var $folder : 4D:C1709.Folder
@@ -282,7 +322,7 @@ Function clearCompiledCode()
 		End for each 
 	End if 
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function methods($filter : Text) : Collection
 	
 	var $signal : 4D:C1709.Signal
@@ -290,6 +330,7 @@ Function methods($filter : Text) : Collection
 	// Non-thread-safe commands are delegated to the application process
 	$signal:=New signal:C1641("database")
 	
+	//%W-550.2
 	Use ($signal)
 		
 		$signal.action:="methods"
@@ -301,8 +342,9 @@ Function methods($filter : Text) : Collection
 	$signal.wait()
 	
 	return $signal.methods.copy()
+	//%W+550.2
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setUserParam($userParam)
 	
 	var $signal : 4D:C1709.Signal
@@ -338,14 +380,16 @@ Function setUserParam($userParam)
 	
 	Use ($signal)
 		
+		//%W-550.2
 		$signal.userParam:=$userParam
+		//%W+550.2
 		
 	End use 
 	
 	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function restart($options; $message : Text)
 	
 	var $signal : 4D:C1709.Signal
@@ -353,6 +397,7 @@ Function restart($options; $message : Text)
 	// Non-thread-safe commands are delegated to the application process
 	$signal:=New signal:C1641("database")
 	
+	//%W-550.2
 	Use ($signal)
 		
 		$signal.action:="restart"
@@ -370,21 +415,22 @@ Function restart($options; $message : Text)
 			
 		End if 
 	End use 
+	//%W+550.2
 	
 	CALL WORKER:C1389("$nonThreadSafe"; "databaseNonThreadSafe"; $signal)
 	$signal.wait()
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function restartCompiled($userParam) : Object
 	
 	return This:C1470._restart(True:C214; $userParam)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function restartInterpreted($userParam) : Object
 	
 	return This:C1470._restart(False:C215; $userParam)
 	
-	// === === === === === === === === === === === === === === === === === === ===
+	// *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
 Function _restart($compiled : Boolean; $userParam) : Object
 	
 	var $signal : 4D:C1709.Signal
@@ -392,6 +438,7 @@ Function _restart($compiled : Boolean; $userParam) : Object
 	// Non-thread-safe commands are delegated to the application process
 	$signal:=New signal:C1641("database")
 	
+	//%W-550.2
 	Use ($signal)
 		
 		$signal.action:="_restart"
@@ -409,3 +456,39 @@ Function _restart($compiled : Boolean; $userParam) : Object
 	$signal.wait()
 	
 	return $signal.result
+	//%W+550.2
+	
+	//MARK:-[PROCESSES]
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function getRunningUserProcesses() : Collection
+	
+	var $c : Collection
+	
+	$c:=Get process activity:C1495(Processes only:K5:35).processes
+	
+	return $c.query("state >= :1 & type > 0"; Executing:K13:4)
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function isProcessRunning($name : Text) : Boolean
+	
+	return This:C1470.getRunningUserProcesses().query("name = :1"; $name).pop()#Null:C1517
+	
+	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function isProcessExists($name : Text; $bringToFront : Boolean) : Boolean
+	
+	var $process : Object
+	
+	$process:=This:C1470.getRunningUserProcesses().query("name = :1"; $name).pop()
+	
+	If ($process#Null:C1517)
+		
+		If ($bringToFront)
+			
+			SHOW PROCESS:C325($process.number)
+			BRING TO FRONT:C326($process.number)
+			
+		End if 
+		
+		return True:C214
+		
+	End if 
