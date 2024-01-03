@@ -118,14 +118,25 @@ Function run($withUI : Boolean) : Boolean
 		
 		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
-		var $lastbuild : 4D:C1709.File
-		$lastbuild:=This:C1470.database.databaseFolder.file("lastbuild")
-		$lastbuild.create()
+		var $project : 4D:C1709.File
+		$project:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
 		
-		If ($lastbuild.getText()#This:C1470.motor.branch)
+		var $o : Object
+		$o:=JSON Parse:C1218($project.getText())
+		
+		If ($o.$4DPopAppMakerToolVersion#This:C1470.motor.branch)
 			
 			This:C1470.database.clearCompiledCode()
-			$lastbuild.setText(This:C1470.motor.branch)
+			
+			$o.$4DPopAppMakerToolVersion:=This:C1470.motor.branch
+			$project.setText(JSON Stringify:C1217($o; *))
+			
+		End if 
+		
+		// Delete old file if any
+		If (File:C1566("/PACKAGE/lastbuild"; *).exists)
+			
+			File:C1566("/PACKAGE/lastbuild"; *).delete()
 			
 		End if 
 		
