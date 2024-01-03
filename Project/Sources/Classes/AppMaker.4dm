@@ -367,75 +367,94 @@ Function notarizelib4D() : Boolean
 	
 	var $success : Boolean
 	var $dmg; $zip : 4D:C1709.File
-	var $root; $lib; $target : 4D:C1709.Folder
+	var $lib; $root; $target : 4D:C1709.Folder
 	var $ditto : cs:C1710.ditto
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
-	If (This:C1470.build.lib4d.exists)
+	If (Not:C34(This:C1470.build.lib4d.exists))
 		
-		$target:=This:C1470.target
-		$root:=$target.parent.parent
-		
-		This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
-		
-		// Archive the library in a DMG
-		$dmg:=$root.file($target.name+".dmg")
-		$hdutil:=cs:C1710.hdutil.new($dmg)
-		
-		If ($hdutil.create(This:C1470.build.lib4d))
-			
-			// Send the dmg for notarization
-			$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
-			
-			If ($notarytool.submit())
-				
-				If ($notarytool.staple($hdutil.target))
-					
-					// Mount the virtual disk
-					If ($hdutil.attach())
-						
-						// Get the stapled lib
-						$lib:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
-						
-						// Replace the original into the component
-						$lib.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
-						
-						// Create an archive to preserve the stapple ticket
-						$zip:=$root.file($target.name+".4dbase.zip")
-						$zip.delete()
-						
-						$ditto:=cs:C1710.ditto.new($target; $zip; {keepParent: False:C215})
-						
-						If ($ditto.archive())
-							
-							$success:=True:C214
-							
-							// Delete dmg file
-							$dmg.delete()
-							
-						Else 
-							
-							This:C1470._error($ditto.lastError)
-							
-						End if 
-						
-						Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history.join("\n"))
-						
-						// Unmount the virtual disk
-						$hdutil.detach()
-						
-					End if 
-				End if 
-			End if 
-			
-			Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history.join("\n"))
-			
-		End if 
-		
-		Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history.join("\n"))
+		return 
 		
 	End if 
+	
+	$target:=This:C1470.target
+	$root:=$target.parent.parent
+	
+	This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
+	
+	// Archive the library in a DMG
+	$dmg:=$root.file($target.name+".dmg")
+	$hdutil:=cs:C1710.hdutil.new($dmg)
+	
+	If (Not:C34($hdutil.create(This:C1470.build.lib4d)))
+		
+		This:C1470._error($hdutil.lastError)
+		Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history)
+		
+		return 
+		
+	End if 
+	
+	// Send the dmg for notarization
+	$notarytool:=cs:C1710.notarytool.new($hdutil.target; This:C1470.credentials.keychainProfile)
+	
+	If (Not:C34($notarytool.submit()))
+		
+		This:C1470._error($notarytool.lastError)
+		Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history)
+		
+		return 
+		
+	End if 
+	
+	// Staple
+	If (Not:C34($notarytool.staple($hdutil.target)))
+		
+		This:C1470._error($notarytool.lastError)
+		Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history)
+		
+		return 
+		
+	End if 
+	
+	// Mount the virtual disk
+	If (Not:C34($hdutil.attach()))
+		
+		This:C1470._error($hdutil.lastError)
+		Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history)
+		
+		return 
+		
+	End if 
+	
+	// Get the stapled lib
+	$lib:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
+	
+	// Replace the original into the component
+	$lib.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
+	
+	// Create an archive to preserve the stapple ticket
+	$zip:=$root.file($target.name+".4dbase.zip")
+	$zip.delete()
+	$ditto:=cs:C1710.ditto.new($target; $zip; {keepParent: False:C215})
+	
+	$success:=$ditto.archive()
+	
+	If ($success)
+		
+		// Delete dmg file
+		$dmg.delete()
+		
+	Else 
+		
+		This:C1470._error($ditto.lastError)
+		Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history)
+		
+	End if 
+	
+	// Unmount the virtual disk
+	$hdutil.detach()
 	
 	return $success
 	
@@ -518,7 +537,6 @@ Function notarize() : Boolean
 				This:C1470._error($notarytool.lastError)
 				
 			End if 
-			
 		End if 
 		
 	Else 
@@ -528,9 +546,9 @@ Function notarize() : Boolean
 	End if 
 	
 	// Keep a log of all operations
-	Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history.join("\n"))
-	Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history.join("\n"))
+	Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history)
+	Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history)
+	Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history)
 	
 	return $success
 	

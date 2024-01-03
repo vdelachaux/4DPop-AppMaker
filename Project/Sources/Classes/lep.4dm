@@ -4,7 +4,7 @@ Class constructor
 	Super:C1705()
 	
 	This:C1470.home:=Folder:C1567(Split string:C1554(Folder:C1567(fk desktop folder:K87:19).path; "/").resize(3).join("/"))
-	This:C1470.history:=New collection:C1472
+	This:C1470._history:=[]
 	
 	This:C1470.reset()
 	
@@ -337,7 +337,7 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 		
 	End if 
 	
-	This:C1470.history.push($history)
+	This:C1470._history.push($history)
 	
 	If (This:C1470.success)
 		
@@ -999,3 +999,8 @@ Function _log()
 	End if 
 	
 	LOG EVENT:C667(Into 4D debug message:K38:5; $log.join(" "); Error message:K38:3)
+	
+	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function get history() : Text
+	
+	return This:C1470._history.join("\n")
