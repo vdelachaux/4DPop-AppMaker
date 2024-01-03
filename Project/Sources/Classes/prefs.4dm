@@ -1,3 +1,6 @@
+property file : 4D:C1709.File
+property content; rootElement : Text
+
 Class constructor($file : 4D:C1709.File; $rootElement : Text)
 	
 	var $content; $root : Text
@@ -14,6 +17,8 @@ Class constructor($file : 4D:C1709.File; $rootElement : Text)
 		$root:=DOM Create XML Ref:C861(This:C1470.rootElement)
 		DOM EXPORT TO VAR:C863($root; $content)
 		DOM CLOSE XML:C722($root)
+		
+		This:C1470.file.setText($content)
 		
 	End if 
 	
@@ -32,7 +37,6 @@ Function load() : Object
 	$xml.close()
 	
 	return $o
-	
 	
 	// === === === === === === === === === === === === === === === === === === ===
 Function save()
