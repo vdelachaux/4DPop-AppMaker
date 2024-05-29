@@ -384,7 +384,8 @@ Function notarizelib4D() : Boolean
 	This:C1470._callBarber("🍏 Notarization process"; Barber shop:K42:35)
 	
 	// Archive the library in a DMG
-	$dmg:=$root.file($target.name+".dmg")
+/*$dmg:=$root.file($target.name+".dmg")*/
+	$dmg:=$root.file(Replace string:C233($target.name; " "; "-")+".dmg")
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
 	If (Not:C34($hdutil.create(This:C1470.build.lib4d)))
@@ -435,7 +436,8 @@ Function notarizelib4D() : Boolean
 	$lib.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
 	
 	// Create an archive to preserve the stapple ticket
-	$zip:=$root.file($target.name+".4dbase.zip")
+/*$zip:=$root.file($target.name+".4dbase.zip")*/
+	$zip:=$root.file(Replace string:C233($target.name; " "; "-")+".zip")
 	$zip.delete()
 	$ditto:=cs:C1710.ditto.new($target; $zip; {keepParent: False:C215})
 	
@@ -444,7 +446,7 @@ Function notarizelib4D() : Boolean
 	If ($success)
 		
 		// Delete dmg file
-		$dmg.delete()
+		//$dmg.delete()
 		
 	Else 
 		
@@ -472,7 +474,7 @@ Function notarize() : Boolean
 	$root:=This:C1470.target.parent.parent
 	
 	// Create a dmg
-	$dmg:=$root.file(This:C1470.target.name+".dmg")
+	$dmg:=$root.file(Replace string:C233(This:C1470.target.name; " "; "-")+".dmg")
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
 	If ($hdutil.create(This:C1470.target))
@@ -499,7 +501,8 @@ Function notarize() : Boolean
 						$stapled.copyTo($dmg.parent.folder("Components"); fk overwrite:K87:5)
 						
 						// Create an archive to preserve the stapple ticket
-						$zip:=$root.file(This:C1470.target.name+".4dbase.zip")
+/*$zip:=$root.file(This.target.name+".4dbase.zip")*/
+						$zip:=$root.file(Replace string:C233(This:C1470.target.name; " "; "-")+".zip")
 						$zip.delete()
 						
 						$ditto:=cs:C1710.ditto.new($stapled; $zip; {keepParent: False:C215})
