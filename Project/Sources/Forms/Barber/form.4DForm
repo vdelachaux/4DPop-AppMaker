@@ -10,7 +10,6 @@
 	"markerFooter": 120,
 	"events": [
 		"onLoad",
-		"onCloseBox",
 		"onTimer"
 	],
 	"method": "method.4dm",
@@ -99,6 +98,19 @@
 					"fontFamily": "Lucida Grande",
 					"fontSize": 13,
 					"visibility": "hidden"
+				},
+				"Button": {
+					"type": "button",
+					"text": "Button",
+					"top": 0,
+					"left": 0,
+					"width": 400,
+					"height": 120,
+					"events": [
+						"onClick"
+					],
+					"display": false,
+					"method": "ObjectMethods/Button.4dm"
 				}
 			}
 		}
@@ -107,7 +119,7 @@
 		"version": "1",
 		"kind": "form"
 	},
-	"geometryStamp": 16,
+	"geometryStamp": 22,
 	"editor": {
 		"activeView": "View 1",
 		"defaultView": "View 1",

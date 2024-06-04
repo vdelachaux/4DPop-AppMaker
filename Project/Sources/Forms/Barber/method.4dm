@@ -56,18 +56,13 @@ Case of
 		End use 
 		
 		//______________________________________________________
-	: (Form event code:C388=On Close Box:K2:21)
-		
-		If (Macintosh option down:C545 | Windows Alt down:C563)  // Force close
-			
-			SET TIMER:C645(0)
-			CANCEL:C270
-			
-		Else 
-			
-			REJECT:C38
-			
-		End if 
+		//: (Form event code=On Close Box)
+		//If (Macintosh option down | Windows Alt down)  // Force close
+		//SET TIMER(0)
+		//CANCEL
+		//Else 
+		//REJECT
+		//End if 
 		
 		//______________________________________________________
 End case 
