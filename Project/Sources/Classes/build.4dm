@@ -45,7 +45,6 @@ Class constructor($settings)  //; $credentials : Object)
 	//FIXME: Usefull ?
 	//This.credentials:=$credentials
 	
-	This:C1470.lib4d:=Null:C1517  //File("⛔️")
 	This:C1470.buildStatus:=Null:C1517
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 

@@ -280,11 +280,14 @@ Common options:
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 Function _target() : Boolean
 	
-	This:C1470.success:=(This:C1470.target#Null:C1517) && This:C1470.target.exists
+	This:C1470.success:=(This:C1470.target#Null:C1517)\
+		 && (This:C1470.target.exists#Null:C1517)\
+		 && (This:C1470.target.path#Null:C1517)\
+		 && (Bool:C1537(This:C1470.target.exists))
 	
 	If (Not:C34(This:C1470.success))
 		
-		This:C1470._pushError("Invalid target "+(This:C1470.target ? "" : This:C1470.target.path))
+		This:C1470._pushError("Invalid target "+(This:C1470.target ? "" : String:C10(This:C1470.target.path)))
 		
 	End if 
 	
