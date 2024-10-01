@@ -10,7 +10,6 @@ Class constructor($target : 4D:C1709.File; $keychainProfile : Text)
 	This:C1470.version:=This:C1470.getVersion()
 	This:C1470.available:=This:C1470.success
 	
-	This:C1470.keychainProfile:=Null:C1517
 	This:C1470.target:=Null:C1517
 	
 	If (This:C1470.available)

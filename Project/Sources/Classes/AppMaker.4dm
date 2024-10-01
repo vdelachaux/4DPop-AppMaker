@@ -116,7 +116,7 @@ Function run($withUI : Boolean) : Boolean
 	// Mark:Compilation & generation
 	If ($success)
 		
-		This:C1470._callBarber("⚙️ "+Get localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
+		This:C1470._callBarber("⚙️ "+Localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
 		var $project : 4D:C1709.File
 		$project:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
@@ -196,7 +196,7 @@ Function run($withUI : Boolean) : Boolean
 			
 		End if 
 		
-		This:C1470._callBarber("⚙️ "+Get localized string:C991("preparationOfCopy"); Progress bar:K42:34)
+		This:C1470._callBarber("⚙️ "+Localized string:C991("preparationOfCopy"); Progress bar:K42:34)
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
@@ -213,7 +213,7 @@ Function run($withUI : Boolean) : Boolean
 			
 		End if 
 		
-		This:C1470._callBarber("🚧 "+Get localized string:C991("preparingForRemoval"); Progress bar:K42:34)
+		This:C1470._callBarber("🚧 "+Localized string:C991("preparingForRemoval"); Progress bar:K42:34)
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
@@ -372,7 +372,8 @@ Function notarizelib4D() : Boolean
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
 	
-	If (Not:C34(This:C1470.build.lib4d.exists))
+	If (This:C1470.build.lib4d=Null:C1517)\
+		 || (Not:C34(This:C1470.build.lib4d.exists))
 		
 		return 
 		
@@ -605,7 +606,7 @@ Function deleteMacContent($target : 4D:C1709.Folder) : Boolean
 	Repeat 
 		
 		This:C1470._wait()
-		This:C1470._callBarber("🧽 "+Get localized string:C991("deleteMacOsSpecificFiles"); Barber shop:K42:35)
+		This:C1470._callBarber("🧽 "+Localized string:C991("deleteMacOsSpecificFiles"); Barber shop:K42:35)
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
@@ -623,7 +624,7 @@ Function incrementBundleVersion() : Boolean
 	
 	var $template : Text
 	
-	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparation"); Barber shop:K42:35)
+	This:C1470._callBarber("🚧 "+Localized string:C991("Preparation"); Barber shop:K42:35)
 	
 	This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
 	This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
@@ -652,7 +653,7 @@ Function executeMethod($method : Text) : Boolean
 	
 	var $success : Boolean
 	
-	This:C1470._callBarber("🛠 "+Replace string:C233(Get localized string:C991("executionOfMethod"); "{methodName}"; $method); Barber shop:K42:35)
+	This:C1470._callBarber("🛠 "+Replace string:C233(Localized string:C991("executionOfMethod"); "{methodName}"; $method); Barber shop:K42:35)
 	
 	DELAY PROCESS:C323(Current process:C322; 50)
 	
@@ -664,7 +665,7 @@ Function executeMethod($method : Text) : Boolean
 		
 	Else 
 		
-		This:C1470._error("❌ "+Replace string:C233(Get localized string:C991("methodFailed"); "{methodName}"; $method))
+		This:C1470._error("❌ "+Replace string:C233(Localized string:C991("methodFailed"); "{methodName}"; $method))
 		return 
 		
 	End if 
@@ -674,7 +675,7 @@ Function updateInfoPlist($infos : Object) : Boolean
 	
 	var $template : Text
 	
-	This:C1470._callBarber("🚧 "+Get localized string:C991("Preparations")+"…")
+	This:C1470._callBarber("🚧 "+Localized string:C991("Preparations")+"…")
 	
 	If (Not:C34(This:C1470.database.plistFile.exists))
 		
@@ -718,7 +719,7 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 		
 		Use (Storage:C1525.progress)
 			
-			Storage:C1525.progress.title:=Get localized string:C991("remove")+$item
+			Storage:C1525.progress.title:=Localized string:C991("remove")+$item
 			
 		End use 
 		
@@ -773,7 +774,7 @@ Function copy($target : 4D:C1709.Folder; $items : Collection)
 		
 		Use (Storage:C1525.progress)
 			
-			Storage:C1525.progress.title:=Get localized string:C991("copy")+$item
+			Storage:C1525.progress.title:=Localized string:C991("copy")+$item
 			
 		End use 
 		

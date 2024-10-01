@@ -45,9 +45,8 @@ Class constructor($settings)  //; $credentials : Object)
 	//FIXME: Usefull ?
 	//This.credentials:=$credentials
 	
-	This:C1470.lib4d:=File:C1566("⛔️")
+	This:C1470.lib4d:=Null:C1517  //File("⛔️")
 	This:C1470.buildStatus:=Null:C1517
-	//This.requestUID:=Null
 	
 	// <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> <==> 
 Function get destinationFolder() : 4D:C1709.Folder

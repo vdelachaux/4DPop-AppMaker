@@ -237,7 +237,7 @@ Common options:
 			
 			If (This:C1470.success)
 				
-				This:C1470.disk:=Folder:C1567(Substring:C12(This:C1470.outputStream; $pos+1; $len))
+				This:C1470.disk:=Folder:C1567(Substring:C12(This:C1470.outputStream; $pos; $len))
 				This:C1470.success:=This:C1470.disk.exists
 				
 			Else 
