@@ -1,6 +1,6 @@
 property settings : Object
 property buildStatus : Collection
-property buildAppSettingsFile; lib4d : 4D:C1709.File
+property buildAppSettingsFile; lib4d; lastBuildLog : 4D:C1709.File
 property buildTarget : 4D:C1709.Folder
 
 Class extends lep
@@ -9,9 +9,6 @@ Class extends lep
 Class constructor($settings)  //; $credentials : Object)
 	
 	Super:C1705()
-	
-	var $o : Object
-	var $file : 4D:C1709.File
 	
 	// Project
 	
@@ -68,15 +65,15 @@ Function get destinationFolder() : 4D:C1709.Folder
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
-Function run() : Boolean
-	
-	var $code; $desc; $message; $root; $target; $type : Text
-	var $i : Integer
-	var $o : Object
-	var $file : 4D:C1709.File
-	var $folder : 4D:C1709.Folder
+Function run($noProgress : Boolean) : Boolean
 	
 	If (This:C1470.success)
+		
+		If ($noProgress)
+			
+			MESSAGES OFF:C175
+			
+		End if 
 		
 		If (This:C1470.buildAppSettingsFile#Null:C1517)\
 			 && (This:C1470.buildAppSettingsFile.exists)
@@ -91,13 +88,19 @@ Function run() : Boolean
 		
 		This:C1470.success:=Bool:C1537(OK)
 		
+		If ($noProgress)
+			
+			MESSAGES ON:C181
+			
+		End if 
+		
 		This:C1470.lastBuildLog:=File:C1566(Build application log file:K5:46; *)
 		
 		If (This:C1470.success)
 			
 			This:C1470.buildStatus:=New collection:C1472
 			
-			$root:=DOM Parse XML source:C719(This:C1470.lastBuildLog.platformPath)
+			var $root:=DOM Parse XML source:C719(This:C1470.lastBuildLog.platformPath)
 			
 			If (Bool:C1537(OK))
 				
@@ -106,8 +109,10 @@ Function run() : Boolean
 				
 				If (Bool:C1537(OK))
 					
+					var $i : Integer
 					For ($i; 1; Size of array:C274($nodes); 1)
 						
+						var $code; $desc; $message; $target; $type : Text
 						DOM GET XML ELEMENT VALUE:C731(DOM Find XML element:C864($nodes{$i}; "MessageType"); $type)
 						DOM GET XML ELEMENT VALUE:C731(DOM Find XML element:C864($nodes{$i}; "Target"); $target)
 						DOM GET XML ELEMENT VALUE:C731(DOM Find XML element:C864($nodes{$i}; "CodeDesc"); $desc)
@@ -134,11 +139,11 @@ Function run() : Boolean
 			
 			If (This:C1470.success)
 				
-				$o:=This:C1470.buildStatus.query("message = :1"; "Start copying files : @").pop()
+				var $o : Object:=This:C1470.buildStatus.query("message = :1"; "Start copying files : @").pop()
 				
 				If ($o#Null:C1517)
 					
-					$folder:=File:C1566(Replace string:C233($o.message; "Start copying files : "; ""); fk platform path:K87:2).parent
+					var $folder : 4D:C1709.Folder:=File:C1566(Replace string:C233($o.message; "Start copying files : "; ""); fk platform path:K87:2).parent
 					
 					If ($folder.exists)
 						
@@ -156,7 +161,7 @@ Function run() : Boolean
 					
 				End if 
 				
-				$file:=This:C1470.buildTarget.file("Libraries/lib4d-arm64.dylib")
+				var $file : 4D:C1709.File:=This:C1470.buildTarget.file("Libraries/lib4d-arm64.dylib")
 				
 				If ($file.exists)
 					
@@ -752,9 +757,7 @@ Function _getSettings($settingsFile : 4D:C1709.File)->$settings : Object
 	//=== === === === === === === === === === === === === === === === === === === === === === ===
 Function _defaultBuildSettings() : Object
 	
-	var $o : Object
-	
-	$o:=New object:C1471(\
+	var $o:=New object:C1471(\
 		"BuildApplicationName"; Null:C1517; \
 		"BuildWinDestFolder"; Null:C1517; \
 		"BuildMacDestFolder"; Null:C1517; \

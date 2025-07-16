@@ -83,6 +83,15 @@ Function get errors() : Collection
 	
 	return This:C1470._.errors
 	
+	// ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==> ==>
+Function set errors($errors : Collection)
+	
+	Use (This:C1470._)
+		
+		This:C1470._.errors:=$errors.copy(ck shared:K85:29; This:C1470._)
+		
+	End use 
+	
 	// <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <==
 Function get uid() : Text
 	
@@ -99,29 +108,6 @@ Function get matrix() : Boolean  // Return True if it's the fisrt inastance of t
 	return This:C1470.__LockerID=Null:C1517
 	
 	// Mark:-
-	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function Singletonize($instance : Object)  // Make the class a singleton
-	
-	// Get the class of the object passed in parameter
-	This:C1470.__CLASS__:=OB Class:C1730($instance)
-	
-	If (This:C1470.__CLASS__.instance=Null:C1517)
-		
-		// Create the instance
-		Use (This:C1470.__CLASS__)
-			
-			// As shareable
-			This:C1470.__CLASS__.instance:=OB Copy:C1225($instance; ck shared:K85:29; This:C1470.__CLASS__)
-			
-			// Save the new function…
-			This:C1470.__CLASS__._new:=This:C1470.new
-			
-			// And replace it
-			This:C1470.__CLASS__.new:=Formula:C1597(This:C1470.instance)
-			
-		End use 
-	End if 
-	
 	// === === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function Obfuscate($key : Text; $value)
 	
@@ -230,7 +216,7 @@ Function _pushError($message : Text)
 	
 	var $current; $o : Object
 	var $c : Collection
-	$c:=Get call chain:C1662
+	$c:=Call chain:C1662
 	
 	For each ($o; $c)
 		

@@ -1,17 +1,14 @@
 //%attributes = {"invisible":true}
 #DECLARE($run : Boolean)
 
-var $AppMaker : cs:C1710.AppMaker
-var $database : cs:C1710.database
-
 If ($run)
 	
-	$database:=cs:C1710.database.new()
+	var $database:=cs:C1710.database.new()
 	
 	// Allow assertions for the matrix database & me ;-)
 	SET ASSERT ENABLED:C1131($database.isMatrix | $database.isDebug; *)
 	
-	$AppMaker:=cs:C1710.AppMaker.new()
+	var $AppMaker:=cs:C1710.AppMaker.new()
 	$AppMaker.run()
 	
 Else 

@@ -1,27 +1,48 @@
-//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+property home:=Folder:C1567(fk home folder:K87:24)
+property _history:=[]
+property errors:=[]
+property success:=True:C214
+property lastError:=""
+property outputType : Integer
+property resultInErrorStream:=False:C215
+property charSet:="UTF-8"
+
+property environmentVariables:={\
+_4D_OPTION_CURRENT_DIRECTORY: ""; \
+_4D_OPTION_HIDE_CONSOLE: "true"; \
+_4D_OPTION_BLOCKING_EXTERNAL_PROCESS: "true"\
+}
+
+property command; inputStream; outputStream; errorStream
+property pid; startTime : Integer
+
+property debug:=Not:C34(Is compiled mode:C492)
+
 Class constructor
 	
 	Super:C1705()
 	
-	This:C1470.home:=Folder:C1567(Split string:C1554(Folder:C1567(fk desktop folder:K87:19).path; "/").resize(3).join("/"))
-	This:C1470._history:=[]
-	
 	This:C1470.reset()
 	
-	//MARK:- 📌 COMPUTED ATTRIBUTES
-	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+	//MARK:-
+	// <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <==
 	// The time spend in millisecondes since the last countTimeInit() call
-Function get timeSpent()->$duration : Integer
+Function get timeSpent() : Integer
 	
-	$duration:=Milliseconds:C459-This:C1470.startTime
+	return Milliseconds:C459-This:C1470.startTime
 	
-	//MARK:- 📌 FUNCTIONS
+	// <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <== <==
+Function get history() : Text
+	
+	return This:C1470._history.join("\n")
+	
+	//MARK:-
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Restores the initial values of the class
-Function reset()->$this : cs:C1710.lep
+Function reset() : cs:C1710.lep
 	
 	This:C1470.success:=True:C214
-	This:C1470.errors:=New collection:C1472
+	This:C1470.errors:=[]
 	This:C1470.lastError:=""
 	This:C1470.command:=Null:C1517
 	This:C1470.inputStream:=Null:C1517
@@ -30,7 +51,6 @@ Function reset()->$this : cs:C1710.lep
 	This:C1470.pid:=0
 	
 	This:C1470.resultInErrorStream:=False:C215  // Allows, if True, to reroutes stderr message to stdout
-	This:C1470.debug:=Not:C34(Is compiled mode:C492)
 	
 	This:C1470.setCharSet()
 	This:C1470.setOutputType()
@@ -38,7 +58,7 @@ Function reset()->$this : cs:C1710.lep
 	
 	This:C1470.countTimeInit()
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Initialization of the counting of the time spent
@@ -48,7 +68,7 @@ Function countTimeInit()
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Pause current process if the condition is true, in any case returns the time spent. 
-Function delay($condition : Boolean; $delay : Integer)->$duration : Integer
+Function delay($condition : Boolean; $delay : Integer) : Integer
 	
 	If ($condition)
 		
@@ -57,13 +77,13 @@ Function delay($condition : Boolean; $delay : Integer)->$duration : Integer
 		
 	End if 
 	
-	$duration:=This:C1470.timeSpent
+	return This:C1470.timeSpent
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function setCharSet($charset : Text)->$this : cs:C1710.lep
+Function setCharSet($charset : Text) : cs:C1710.lep
 	
-	This:C1470.charSet:=$charset="" ? "UTF-8" : $charset
-	$this:=This:C1470
+	This:C1470.charSet:=$charset || "UTF-8"
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 Function setOutputType($outputType : Integer) : cs:C1710.lep
@@ -72,10 +92,7 @@ Function setOutputType($outputType : Integer) : cs:C1710.lep
 	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function setEnvironnementVariable($variables; $value : Text)->$this : cs:C1710.lep
-	
-	var $v : Variant
-	var $o : Object
+Function setEnvironnementVariable($variables; $value : Text) : cs:C1710.lep
 	
 	This:C1470.success:=True:C214
 	
@@ -116,6 +133,7 @@ Function setEnvironnementVariable($variables; $value : Text)->$this : cs:C1710.l
 			//______________________________________________________
 		: (Value type:C1509($variables)=Is object:K8:27)
 			
+			var $o : Object
 			For each ($o; OB Entries:C1720($variables))
 				
 				If ($o.key#Null:C1517)
@@ -132,6 +150,7 @@ Function setEnvironnementVariable($variables; $value : Text)->$this : cs:C1710.l
 			//______________________________________________________
 		: (Value type:C1509($variables)=Is collection:K8:32)
 			
+			var $v : Variant
 			For each ($v; $variables)
 				
 				If (Value type:C1509($v)=Is object:K8:27)
@@ -163,32 +182,30 @@ Function setEnvironnementVariable($variables; $value : Text)->$this : cs:C1710.l
 			//______________________________________________________
 	End case 
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Execute the external process in asynchronous mode then restore the default synchronous mode
-Function launchAsync($command; $arguments : Variant)->$this : cs:C1710.lep
+Function launchAsync($command; $arguments : Variant) : cs:C1710.lep
 	
 	This:C1470.asynchronous()
 	
 	If (Count parameters:C259>=2)
 		
-		$this:=This:C1470.launch($command; $arguments)
+		This:C1470.launch($command; $arguments)
 		
 	Else 
 		
-		$this:=This:C1470.launch($command)
+		This:C1470.launch($command)
 		
 	End if 
 	
 	This:C1470.synchronous()
 	
-	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
+	return This:C1470
 	
-	var $inputStream; $outputStream : Blob
-	var $errorStream; $t : Text
-	var $len; $pid; $pos : Integer
+	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
+Function launch($command; $arguments : Variant) : cs:C1710.lep
 	
 	This:C1470.outputStream:=Null:C1517
 	This:C1470.errorStream:=""
@@ -243,11 +260,15 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 		End case 
 	End if 
 	
+	var $t : Text
 	For each ($t; This:C1470.environmentVariables)
 		
 		SET ENVIRONMENT VARIABLE:C812($t; String:C10(This:C1470.environmentVariables[$t]))
 		
 	End for each 
+	
+	var $inputStream; $outputStream : Blob
+	var $errorStream : Text
 	
 	Case of 
 			
@@ -283,8 +304,8 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 			//……………………………………………………………………
 	End case 
 	
-	var $history : Text
-	$history:="% "+$command+"\n"
+	var $history:="% "+$command+"\n"
+	var $pid : Integer
 	
 	LAUNCH EXTERNAL PROCESS:C811(This:C1470.command; $inputStream; $outputStream; $errorStream; $pid)
 	
@@ -410,62 +431,61 @@ Function launch($command; $arguments : Variant)->$this : cs:C1710.lep
 		
 	End if 
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Execute the external process in synchronous mode
 	// ⚠️ Must be call before .launch()
-Function synchronous($mode : Boolean)->$this : cs:C1710.lep
+Function synchronous($mode : Boolean) : cs:C1710.lep
 	
 	This:C1470.setEnvironnementVariable("asynchronous"; (Count parameters:C259>=1) ? ($mode ? "true" : "false") : "true")
-	$this:=This:C1470
+	
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Execute the external process in asynchronous mode
 	// ⚠️ Must be call before .launch()
-Function asynchronous($mode : Boolean)->$this : cs:C1710.lep
+Function asynchronous($mode : Boolean) : cs:C1710.lep
 	
 	This:C1470.setEnvironnementVariable("asynchronous"; (Count parameters:C259>=1) ? ($mode ? "false" : "true") : "false")
-	$this:=This:C1470
+	
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function setDirectory($folder : 4D:C1709.Folder)->$this : cs:C1710.lep
+Function setDirectory($folder : 4D:C1709.Folder) : cs:C1710.lep
 	
 	This:C1470.environmentVariables["_4D_OPTION_CURRENT_DIRECTORY"]:=Count parameters:C259>=1 ? $folder.platformPath : ""
 	This:C1470.success:=True:C214
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function showConsole()->$this : cs:C1710.lep
+Function showConsole() : cs:C1710.lep
 	
 	This:C1470.environmentVariables["_4D_OPTION_HIDE_CONSOLE"]:="false"
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function hideConsole()->$this : cs:C1710.lep
+Function hideConsole() : cs:C1710.lep
 	
 	This:C1470.environmentVariables["_4D_OPTION_HIDE_CONSOLE"]:="true"
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Returns an object containing all the environment variables
-Function getEnvironnementVariables()->$variables : Object
-	
-	var $c : Collection
-	var $t : Text
+Function getEnvironnementVariables() : Object
 	
 	This:C1470.launch(Choose:C955(Is macOS:C1572; "/usr/bin/env"; "set"))
 	
 	If (This:C1470.success)
 		
-		$variables:=New object:C1471
+		var $variables:={}
 		
 		For each ($t; Split string:C1554(This:C1470.outputStream; "\n"; sk ignore empty strings:K86:1))
 			
-			$c:=Split string:C1554($t; "=")
+			var $c:=Split string:C1554($t; "=")
 			
 			If ($c.length=2)
 				
@@ -475,6 +495,7 @@ Function getEnvironnementVariables()->$variables : Object
 		End for each 
 		
 		// Add the currents variables
+		var $t : Text
 		For each ($t; This:C1470.environmentVariables)
 			
 			If ($variables[$t]=Null:C1517)
@@ -483,35 +504,27 @@ Function getEnvironnementVariables()->$variables : Object
 				
 			End if 
 		End for each 
+		
+		return $variables
+		
 	End if 
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Returns the content of an environment variable from its name
-Function getEnvironnementVariable($name : Text; $nonDiacritic : Boolean)->$value : Text
-	
-	var $o : Object
-	var $t : Text
-	var $isDiacritic : Boolean
+Function getEnvironnementVariable($name : Text; $diacritic : Boolean) : Text
 	
 	This:C1470.success:=Count parameters:C259>=1
 	
 	If (This:C1470.success)
 		
-		$isDiacritic:=True:C214
+		var $o : Object
+		var $t : Text:=This:C1470._shortcut($name)
 		
-		If (Count parameters:C259>=2)
-			
-			$isDiacritic:=$nonDiacritic
-			
-		End if 
-		
-		$t:=This:C1470._shortcut($name)
-		
-		If ($isDiacritic)
+		If (Count parameters:C259>=2 ? $diacritic : True:C214)
 			
 			If (This:C1470.environmentVariables[$t]#Null:C1517)
 				
-				$value:=This:C1470.environmentVariables[$t]
+				return This:C1470.environmentVariables[$t]
 				
 			Else 
 				
@@ -520,7 +533,7 @@ Function getEnvironnementVariable($name : Text; $nonDiacritic : Boolean)->$value
 				
 				If (This:C1470.success)
 					
-					$value:=$o[$name]
+					return $o[$name]
 					
 				Else 
 					
@@ -531,19 +544,11 @@ Function getEnvironnementVariable($name : Text; $nonDiacritic : Boolean)->$value
 			
 		Else 
 			
-			$o:=OB Entries:C1720(This:C1470.environmentVariables).query("key = :1"; $t).pop()
+			$o:=OB Entries:C1720(This:C1470.environmentVariables).query("key = :1"; $t).pop()\
+				 || OB Entries:C1720(This:C1470.getEnvironnementVariables()).query("key = :1"; $t).pop()
 			
-			If ($o=Null:C1517)
-				
-				$o:=OB Entries:C1720(This:C1470.getEnvironnementVariables()).query("key = :1"; $t).pop()
-				
-			End if 
+			return $o#Null:C1517 ? $o.value : ""
 			
-			If ($o#Null:C1517)
-				
-				$value:=$o.value
-				
-			End if 
 		End if 
 		
 	Else 
@@ -584,24 +589,12 @@ Function quoted($string : Text) : Text
 	// -  0 if the version and the reference are equal
 	// -  1 if the version is higher than the reference
 	// - -1 if the version is lower than the reference
-Function versionCompare($current : Text; $reference : Text; $separator : Text)->$result : Integer
+Function versionCompare($current : Text; $reference : Text; $separator : Text) : Integer
 	
-	var $sep : Text
-	var $i : Integer
-	var $c1; $c2 : Collection
+	$separator:=$separator || "."  // Dot is default separator
 	
-	ASSERT:C1129(Count parameters:C259>=2)
-	
-	$sep:="."  // Default separator
-	
-	If (Count parameters:C259>=3)
-		
-		$sep:=$separator
-		
-	End if 
-	
-	$c1:=Split string:C1554($current; $sep)
-	$c2:=Split string:C1554($reference; $sep)
+	var $c1:=Split string:C1554($current; $separator)
+	var $c2:=Split string:C1554($reference; $separator)
 	
 	Case of 
 			
@@ -618,6 +611,7 @@ Function versionCompare($current : Text; $reference : Text; $separator : Text)->
 			//______________________________________________________
 	End case 
 	
+	var $i : Integer
 	For ($i; 0; $c2.length-1; 1)
 		
 		Case of 
@@ -625,19 +619,12 @@ Function versionCompare($current : Text; $reference : Text; $separator : Text)->
 				//______________________________________________________
 			: (Num:C11($c1[$i])>Num:C11($c2[$i]))
 				
-				$result:=1
-				$i:=MAXLONG:K35:2-1  // Break
+				return 1
 				
 				//______________________________________________________
 			: (Num:C11($c1[$i])<Num:C11($c2[$i]))
 				
-				$result:=-1
-				$i:=MAXLONG:K35:2-1  // Break
-				
-				//______________________________________________________
-			Else 
-				
-				// Go on
+				return -1
 				
 				//______________________________________________________
 		End case 
@@ -645,7 +632,7 @@ Function versionCompare($current : Text; $reference : Text; $separator : Text)->
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Set write accesses to a file or a directory with all its subfolders and files
-Function makeWritable($cible : 4D:C1709.Document)->$this : cs:C1710.lep
+Function makeWritable($cible : 4D:C1709.Document) : cs:C1710.lep
 	
 	If (Bool:C1537($cible.exists))
 		
@@ -730,7 +717,7 @@ ATTRIB [+R | -R] [+A | -A ] [+S | -S] [+H | -H] [+I | -I]
 		
 	End if 
 	
-	$this:=This:C1470
+	return This:C1470
 	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	//Set write accesses to a directory with all its sub-folders and files
@@ -766,99 +753,46 @@ Function unlockDirectory($folder : 4D:C1709.Folder) : cs:C1710.lep
 	
 	return This:C1470
 	
-	//MARK:- 📌 PRIVATES
-	
+	//MARK:-
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
 	// Remove unnecessary carriage returns and line breaks from the error/output stream
-Function _cleanupStream($textToCleanUp : Text)->$cleaned : Text
+Function _cleanupStream($textToCleanUp : Text) : Text
 	
-	var $stop : Boolean
-	
-	$cleaned:=$textToCleanUp
-	
-	If (Length:C16($cleaned)>0)
+	If (Length:C16($textToCleanUp)=0)
 		
-		$cleaned:=Replace string:C233($cleaned; "\r\n"; "\n")
+		return 
 		
-		// Remove the 1st line feeds, if any
-		Repeat 
-			
-			If (Length:C16($cleaned)>0)
-				
-				If ($cleaned[[1]]="\n")
-					
-					$cleaned:=Substring:C12($cleaned; 2)
-					
-				Else 
-					
-					$stop:=True:C214
-					
-				End if 
-				
-			Else 
-				
-				$stop:=True:C214
-				
-			End if 
-			
-		Until ($stop)
-		
-		If (Length:C16($cleaned)>0)
-			
-			// Remove the last line feed, if any
-			$stop:=False:C215
-			
-			Repeat 
-				
-				If (Length:C16($cleaned)>0)
-					
-					If ($cleaned[[Length:C16($cleaned)]]="\n")
-						
-						$cleaned:=Substring:C12($cleaned; 1; Length:C16($cleaned)-1)
-						
-					Else 
-						
-						$stop:=True:C214
-						
-					End if 
-					
-				Else 
-					
-					$stop:=True:C214
-					
-				End if 
-				
-			Until ($stop)
-		End if 
 	End if 
 	
+	return Split string:C1554(Replace string:C233($textToCleanUp; "\r\n"; "\n"); "\\n"; sk ignore empty strings:K86:1).join("\\n")
+	
 	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function _shortcut($string : Text)->$variable : Text
+Function _shortcut($string : Text) : Text
 	
 	Case of   // Shortcuts
 			
 			//…………………………………………………………………………………………
 		: ($string="directory")\
-			 | ($string="currentDirectory")
+			 || ($string="currentDirectory")
 			
-			$variable:="_4D_OPTION_CURRENT_DIRECTORY"
+			return "_4D_OPTION_CURRENT_DIRECTORY"
 			
 			//…………………………………………………………………………………………
 		: ($string="asynchronous")\
-			 | ($string="non-blocking")
+			 || ($string="non-blocking")
 			
-			$variable:="_4D_OPTION_BLOCKING_EXTERNAL_PROCESS"
+			return "_4D_OPTION_BLOCKING_EXTERNAL_PROCESS"
 			
 			//…………………………………………………………………………………………
 		: ($string="console")\
-			 | ($string="hideConsole")
+			 || ($string="hideConsole")
 			
-			$variable:="_4D_OPTION_HIDE_CONSOLE"
+			return "_4D_OPTION_HIDE_CONSOLE"
 			
 			//…………………………………………………………………………………………
 		Else 
 			
-			$variable:=$string
+			return $string
 			
 			//…………………………………………………………………………………………
 	End case 
@@ -868,16 +802,15 @@ Function _pushError($message : Text)
 	
 	This:C1470.success:=False:C215
 	
-	var $c : Collection
-	$c:=Get call chain:C1662
-	
+	var $c:=Call chain:C1662
 	var $current; $o : Object
 	
-	For each ($o; $c) While ($current=Null:C1517)
+	For each ($o; $c)
 		
 		If (Position:C15("lep."; $o.name)#1)
 			
 			$current:=$o
+			break
 			
 		End if 
 	End for each 
@@ -923,13 +856,11 @@ Function _pushError($message : Text)
 Function _log()
 	
 	var $current; $o : Object
-	var $c; $log : Collection
 	
-	$log:=New collection:C1472
+	var $log:=[]
+	var $c:=Call chain:C1662
 	
-	$c:=Get call chain:C1662
-	
-	For each ($o; $c) While ($current=Null:C1517)
+	For each ($o; $c)
 		
 		If (Position:C15("lep."; $o.name)#1)
 			
@@ -999,8 +930,3 @@ Function _log()
 	End if 
 	
 	LOG EVENT:C667(Into 4D debug message:K38:5; $log.join(" "); Error message:K38:3)
-	
-	//=== === === === === === === === === === === === === === === === === === === === === === === === === ===
-Function get history() : Text
-	
-	return This:C1470._history.join("\n")

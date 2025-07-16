@@ -1,20 +1,18 @@
-property env : cs:C1710.env
-property database : cs:C1710.database
-property motor : cs:C1710.motor
+property env:=cs:C1710.env.new()
+property database:=cs:C1710.database.new()
+property motor:=cs:C1710.motor.new()
+
 property prefs : cs:C1710.prefs
 property build : cs:C1710.build
 property preferencesFile; buildAppFile; entitlementsFile : 4D:C1709.File
 property target : 4D:C1709.Folder
-property credentials : Object
+property credentials; plist : Object
 property errors; warnings : Collection
 
+property applicationName : Text
+property withUI : Boolean
+
 Class constructor()
-	
-	var $file : 4D:C1709.File
-	
-	This:C1470.env:=cs:C1710.env.new()
-	This:C1470.database:=cs:C1710.database.new()
-	This:C1470.motor:=cs:C1710.motor.new()
 	
 	// Ensure the preferences folder exists
 	This:C1470.database.preferencesFolder.create()
@@ -22,7 +20,7 @@ Class constructor()
 	If (Is macOS:C1572)
 		
 		// Get credentials
-		$file:=This:C1470.database.preferencesFolder.file("notarise.json")  // Project embedded credentials
+		var $file : 4D:C1709.File:=This:C1470.database.preferencesFolder.file("notarise.json")  // Project embedded credentials
 		
 		If (Not:C34($file.exists))
 			
@@ -83,21 +81,19 @@ Function get target() : 4D:C1709.Folder
 	// === === === === === === === === === === === === === === === === === === === === === === === ===
 Function run($withUI : Boolean) : Boolean
 	
-	This:C1470.withUI:=Count parameters:C259=0 ? Not:C34(This:C1470.motor.headless) : $withUI
+	This:C1470.withUI:=Count parameters:C259=0 ? Not:C34(This:C1470.motor.isHeadless) : $withUI
 	
 	This:C1470._initBarber()._openBarber("Starting…")
 	
 	FLUSH CACHE:C297
 	
-	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile)  //; This.credentials)
+	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile)
 	This:C1470.applicationName:=This:C1470.build.settings.BuildApplicationName
 	
-	// Load preferences
-	var $prefs : Object
-	$prefs:=This:C1470.prefs.load()
+	var $success:=True:C214
 	
-	var $success : Boolean
-	$success:=True:C214
+	// Load preferences
+	var $prefs:=This:C1470.prefs.load()
 	
 	// Mark:Execute before build method
 	If ($prefs.methods.before#Null:C1517)
@@ -118,11 +114,8 @@ Function run($withUI : Boolean) : Boolean
 		
 		This:C1470._callBarber("⚙️ "+Localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
-		var $project : 4D:C1709.File
-		$project:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
-		
-		var $o : Object
-		$o:=JSON Parse:C1218($project.getText())
+		var $project : 4D:C1709.File:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
+		var $o : Object:=JSON Parse:C1218($project.getText())
 		
 		If ($o.$4DPopAppMakerToolVersion#This:C1470.motor.branch)
 			
@@ -144,7 +137,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($success)
 			
-			$success:=This:C1470.build.run()
+			$success:=This:C1470.build.run(/*HIDE PROGRESS*/True:C214)
 			
 			If (Not:C34($success))
 				
@@ -229,29 +222,44 @@ Function run($withUI : Boolean) : Boolean
 	End if 
 	
 	// Mark:Sign & notarize
-	If ($success && Is macOS:C1572 && Bool:C1537($prefs.options.notarize) && (This:C1470.build.lib4d#Null:C1517))
+	If ($success && Is macOS:C1572\
+		 && Bool:C1537($prefs.options.notarize) && (This:C1470.build.lib4d#Null:C1517))
 		
 		// Sign the component
 		$success:=This:C1470.sign()
 		
 		If ($success)
 			
-			Case of 
-					
-					//______________________________________________________
-					
-				: (This:C1470.target.parent.name="Components")
-					
-					$success:=This:C1470.notarizelib4D()
-					
-					//______________________________________________________
-				Else 
-					
-					// Notarize & staple
-					$success:=This:C1470.notarize()
-					
-					//______________________________________________________
-			End case 
+			// Create zip archive for dependencies manager
+			var $src:=This:C1470.target.parent
+			var $root:=$src.parent.parent
+			
+			var $zip:=$root.file(Replace string:C233($src.name; " "; "-")+".zip")
+			$zip.delete()
+			
+			If ($src.folder("Contents").exists)
+				
+				$src:=$src.folder("Contents")
+				
+			End if 
+			
+			var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214})
+			
+			$success:=$ditto.archive()
+			
+			// Notarize & staple
+			//$success:=This.notarize()
+			//Case of 
+			////______________________________________________________
+			//: (This.target.parent.name="Components")
+			//$success:=This.notarizelib4D()
+			////______________________________________________________
+			//Else 
+			//// Notarize & staple
+			//$success:=This.notarize()
+			////______________________________________________________
+			//End case 
+			
 		End if 
 	End if 
 	
@@ -367,7 +375,7 @@ Function notarizelib4D() : Boolean
 	
 	var $success : Boolean
 	var $dmg; $zip : 4D:C1709.File
-	var $lib; $root; $target : 4D:C1709.Folder
+	var $root; $target : 4D:C1709.Folder
 	var $ditto : cs:C1710.ditto
 	var $hdutil : cs:C1710.hdutil
 	var $notarytool : cs:C1710.notarytool
@@ -430,7 +438,7 @@ Function notarizelib4D() : Boolean
 	End if 
 	
 	// Get the stapled lib
-	$lib:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
+	var $lib:=$hdutil.disk.file(This:C1470.build.lib4d.fullName)
 	
 	// Replace the original into the component
 	$lib.copyTo($target.folder("Libraries"); fk overwrite:K87:5)
@@ -473,10 +481,10 @@ Function notarize() : Boolean
 	$root:=This:C1470.target.parent.parent
 	
 	// Create a dmg
-	$dmg:=$root.file(Replace string:C233(This:C1470.target.name; " "; "-")+".dmg")
+	$dmg:=$root.file(Replace string:C233(This:C1470.target.parent.name; " "; "-")+".dmg")
 	$hdutil:=cs:C1710.hdutil.new($dmg)
 	
-	If ($hdutil.create(This:C1470.target))
+	If ($hdutil.create(This:C1470.target.parent))
 		
 		// Sign the dmg (not mandatory, but preferable)
 		If (This:C1470.sign($dmg))
@@ -547,9 +555,13 @@ Function notarize() : Boolean
 	End if 
 	
 	// Keep a log of all operations
-	Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history)
-	Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history)
-	Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history)
+	Try
+		
+		Folder:C1567(fk logs folder:K87:17; *).file("hdutil.log").setText($hdutil.history)
+		Folder:C1567(fk logs folder:K87:17; *).file("notarytool.log").setText($notarytool.history)
+		Folder:C1567(fk logs folder:K87:17; *).file("ditto.log").setText($ditto.history)
+		
+	End try
 	
 	return $success
 	
@@ -673,14 +685,12 @@ Function executeMethod($method : Text) : Boolean
 	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function updateInfoPlist($infos : Object) : Boolean
 	
-	var $template : Text
-	
 	This:C1470._callBarber("🚧 "+Localized string:C991("Preparations")+"…")
 	
 	If (Not:C34(This:C1470.database.plistFile.exists))
 		
 		// Create a default from template
-		$template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
+		var $template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
 		$template:=Replace string:C233($template; "{name}"; This:C1470.applicationName)
 		$template:=Replace string:C233($template; "{version}"; This:C1470.motor.branch)
 		$template:=Replace string:C233($template; "{build}"; "1")
