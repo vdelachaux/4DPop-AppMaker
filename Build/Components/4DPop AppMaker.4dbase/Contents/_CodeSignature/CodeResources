@@ -162,7 +162,7 @@
 		</data>
 		<key>Resources/InfoPlist.strings</key>
 		<data>
-		IY73tzu18I2N/sI6nJu8o5Zlwfo=
+		1J6CaIRGBkwwJQwJmAxuxmtgK3k=
 		</data>
 		<key>Resources/InfoPlist.template</key>
 		<data>
@@ -469,28 +469,20 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			zudDnLreF5kj9YP1KTaQfcw7aDo=
+			moeNcEqscz1zShx6U9R5BmFqaHU=
 			</data>
 			<key>requirement</key>
 			<string>identifier "4DPop AppMaker.4DZ" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = DYRKW64QA9</string>
 		</dict>
 		<key>Libraries/lib4d-arm64.dylib</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			4oqAJBSTcso8VwR651OC6Ujkk+c=
-			</data>
 			<key>hash2</key>
 			<data>
-			PdZC3Kjj26jaE36faPKXQijLHm1zyDijAIn2/cAsa8Q=
+			maLvkl6I/Wr54NBvnSjTOwfH2FQpJG+nKCAbiUHWobE=
 			</data>
 		</dict>
 		<key>Resources/4DPop constants.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			s7RhHftp9LuoIXNMTxLFms8Jn5E=
-			</data>
 			<key>hash2</key>
 			<data>
 			uUt1n9haQtb4s8tAcry2TPT824WAzpYiLzU/qnUNONw=
@@ -498,10 +490,6 @@
 		</dict>
 		<key>Resources/4DPop.json</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			dChzrjqAjpPcYTaYiT5x9EJIQUg=
-			</data>
 			<key>hash2</key>
 			<data>
 			7iTvECZMViBzVgTiqQnbWGxOVV1lUtyMAduB5I7+pes=
@@ -509,10 +497,6 @@
 		</dict>
 		<key>Resources/4DPop.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Nv/Y5QXcjeKEkehecojY9NNaWXY=
-			</data>
 			<key>hash2</key>
 			<data>
 			NNzOXQnm6PnSXC7NSGzJjdMizF3ZEDSiDyBUjR3XUIc=
@@ -520,10 +504,6 @@
 		</dict>
 		<key>Resources/AppMaker delete.xml</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			skDElWN7gb3iv6qyp8UxdG3bLlU=
-			</data>
 			<key>hash2</key>
 			<data>
 			ak5hkDEliycZwTfpITrp6v9LJQ28d9xvtdUlPFvEwvc=
@@ -531,10 +511,6 @@
 		</dict>
 		<key>Resources/BuildApp.4DSettings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			05C1Jnr6hX7nsNWIyPoJ+JxX+mw=
-			</data>
 			<key>hash2</key>
 			<data>
 			riY2maP72gjfrfeQT+mj1HmjvwIohwqt30FT0q8WJ5E=
@@ -542,10 +518,6 @@
 		</dict>
 		<key>Resources/BuildApp.template</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			SbIbps2LWmc1dStVwuDaFBA0km4=
-			</data>
 			<key>hash2</key>
 			<data>
 			eWdIspO/d49XE3+TkBL0xWhCm0AF1oWRDKrs9GY3E24=
@@ -553,10 +525,6 @@
 		</dict>
 		<key>Resources/BuildApp.xml</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			px/jgN5IV2rcwetObvi1EJy6gbc=
-			</data>
 			<key>hash2</key>
 			<data>
 			FIFKq7C2yzD89+mLFsuAfqLJ+0Vw78jdpQVK9Sr0mPA=
@@ -564,10 +532,6 @@
 		</dict>
 		<key>Resources/BuildAppKey.xml</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			RX4dP3iv/eP2/sciymKxnmP+NM4=
-			</data>
 			<key>hash2</key>
 			<data>
 			eua34MRzl+5pfvTBZTJ3+UJN++JWYXtJXZdBbL+lnoY=
@@ -575,10 +539,6 @@
 		</dict>
 		<key>Resources/Common/4d.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hZjxJH26JwMpntKPURx3rBIjRd4=
-			</data>
 			<key>hash2</key>
 			<data>
 			V+UBQy3O/S90VrWU3PdFRv+OzYmghFeuPtT7bQLTEN8=
@@ -586,10 +546,6 @@
 		</dict>
 		<key>Resources/Common/Index.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			itN5RlNLILRJ/d/g6qI3MocSSGI=
-			</data>
 			<key>hash2</key>
 			<data>
 			l7UEIR9LUDvBpinwsC0eOPo8DYaBqQ9MhHdBwYS36+s=
@@ -597,10 +553,6 @@
 		</dict>
 		<key>Resources/Common/Localisation.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			I//v5Uy75lVnnBHOvgkhvUBRSt0=
-			</data>
 			<key>hash2</key>
 			<data>
 			la7RYGTvKiVQXIjr2wmQr3A8fXll3xKr6PQpTLJRdfM=
@@ -608,10 +560,6 @@
 		</dict>
 		<key>Resources/Common/de.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			9FyV5BPY20E8wgorhczCGbkWZlY=
-			</data>
 			<key>hash2</key>
 			<data>
 			npURSDaP6yDKu/pB/scyKmdD97dImgv0/y1F0fvsfKA=
@@ -619,10 +567,6 @@
 		</dict>
 		<key>Resources/Common/fr.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			qVT7fwVtQw2NYdBLRAs4QEUuMOg=
-			</data>
 			<key>hash2</key>
 			<data>
 			tO6kVmvYsQZSKLnHFqRZ2O7RQL5OzXFfDjTcnvt7gr0=
@@ -630,10 +574,6 @@
 		</dict>
 		<key>Resources/Common/ja.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			csAf8niDf94PbPIEj6ZaB/eL3Js=
-			</data>
 			<key>hash2</key>
 			<data>
 			sWNuE2SIcYNeTnTcE8tUOOw/rpVJIgB5AzI+AMoacEU=
@@ -641,10 +581,6 @@
 		</dict>
 		<key>Resources/Common/lang.js</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			je0h6mg2JNH8LzSeAeo+RTbUX+g=
-			</data>
 			<key>hash2</key>
 			<data>
 			wL7/hcSfe2n2IaP8i+wtoKPFZ49A+ilE+f0qzRn4+vE=
@@ -652,10 +588,6 @@
 		</dict>
 		<key>Resources/Common/movie.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			TDliIwyw42+nOQtb1Nwba/wF4cU=
-			</data>
 			<key>hash2</key>
 			<data>
 			MBecWmA+9lrEG09ic49XsiQWaYxw5JUp9ImB9FHvVZ0=
@@ -663,10 +595,6 @@
 		</dict>
 		<key>Resources/Common/sp.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			dOqWBNmKKuD99L+KiFSbrpbhryc=
-			</data>
 			<key>hash2</key>
 			<data>
 			9fSFW/GX9MLrCLEExC4lLvioarJ2val7SVaavqPjq04=
@@ -674,10 +602,6 @@
 		</dict>
 		<key>Resources/Common/style.css</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			mW1avF9c2NWQsGlgLrSMGKAk/KM=
-			</data>
 			<key>hash2</key>
 			<data>
 			ZzfYDh2N8FXHxzqN3ygTdAEbln6MYuSwPZwUhbp1Bn0=
@@ -685,10 +609,6 @@
 		</dict>
 		<key>Resources/Common/us.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			c8enhndjEzFSgtDKSweBLHAvpvE=
-			</data>
 			<key>hash2</key>
 			<data>
 			Q0ZTA1KjhGpnDzS0DRLzKZghRm/eq8kBO6iYxq1p5lM=
@@ -696,10 +616,6 @@
 		</dict>
 		<key>Resources/Images/Apple.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Xmh0OYm2H0WEeozXs4rf7o7/YEc=
-			</data>
 			<key>hash2</key>
 			<data>
 			IjKbwsgLB3QxhVToPvjtViF+cN8EpeAHCmgJ5FqIL6k=
@@ -707,10 +623,6 @@
 		</dict>
 		<key>Resources/Images/Go.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			JUjGvTrbQ7+56CEp0BUyDVw1Vjg=
-			</data>
 			<key>hash2</key>
 			<data>
 			1yHFMCzep8hyOCc9OHskUb4Io641rbjhNWleF0CMMkU=
@@ -718,10 +630,6 @@
 		</dict>
 		<key>Resources/Images/Linux.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			TTpdDQZxkR0CngqvIYfmpSfMCGk=
-			</data>
 			<key>hash2</key>
 			<data>
 			osjzUl62tCL90k4WLnXn4dYR4rtbvdhX7djSwMqo1/o=
@@ -729,10 +637,6 @@
 		</dict>
 		<key>Resources/Images/MAC/genericFile.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			MAwKqfIYHoF29YW85YMT4tsjx9k=
-			</data>
 			<key>hash2</key>
 			<data>
 			Yi+ze5HqWDtbiQlvkqubjQ7iOLITnWspRKHSRH7Db3U=
@@ -740,10 +644,6 @@
 		</dict>
 		<key>Resources/Images/MAC/genericFolder.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			LIQNVN1UeZBk7IUvUm6mRFt4vcc=
-			</data>
 			<key>hash2</key>
 			<data>
 			q6tkLkgTTdIQtEQIRfOczg88vQI5oxlFhz+HTHjfeHE=
@@ -751,10 +651,6 @@
 		</dict>
 		<key>Resources/Images/MAC/genericHardDrive.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			JIxfLSahPWAnXC23luxj73rg128=
-			</data>
 			<key>hash2</key>
 			<data>
 			lO6t/T06mMhIe6kqsQfZ3j5elFeUIm57ftTH/wvB/7Q=
@@ -762,10 +658,6 @@
 		</dict>
 		<key>Resources/Images/Options.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			w9AKZaK8QKgMWelqvXAlPzM/j0I=
-			</data>
 			<key>hash2</key>
 			<data>
 			InfYJKVA5X0XKMsbuffvjl2Sp5Tqz94iLWGF3UVW0Lw=
@@ -773,10 +665,6 @@
 		</dict>
 		<key>Resources/Images/Play.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			ba9Ie4V9xLPqRDCHnI/YsJxgyTI=
-			</data>
 			<key>hash2</key>
 			<data>
 			kGAxCPB4FDecavm6sJ2r6ouugWCoUHF+sLoxPChojAs=
@@ -784,10 +672,6 @@
 		</dict>
 		<key>Resources/Images/Preparation.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			C00VhTTvMmtTI+y8Q4LggM6BA+Y=
-			</data>
 			<key>hash2</key>
 			<data>
 			pjPAmvg1tAZcJdzpG1ZaGNscNufRjohgU3JigOytFug=
@@ -795,10 +679,6 @@
 		</dict>
 		<key>Resources/Images/WIN/genericFile.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			snogA/3ltnaWBsXyEBT4CYDMarg=
-			</data>
 			<key>hash2</key>
 			<data>
 			AXt5rnScfGP5p8qoaHSZmknmkqgMJgIAgIAc55+O5XA=
@@ -806,10 +686,6 @@
 		</dict>
 		<key>Resources/Images/WIN/genericFolder.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			62OSrLIL12BhhLUhkCVhVvzrEqY=
-			</data>
 			<key>hash2</key>
 			<data>
 			Q8SHpf9Ub/JwJMIh9XsD4+vrpWn5CQNowoAMtuMcjxI=
@@ -817,10 +693,6 @@
 		</dict>
 		<key>Resources/Images/WIN/genericHardDrive.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			sYVy08+996y+jSE6vLU8SI2pmSs=
-			</data>
 			<key>hash2</key>
 			<data>
 			ZXuCpGUnBNKJNfPEkGOp/vjxMcurMXf1+rUx/RIviOU=
@@ -828,10 +700,6 @@
 		</dict>
 		<key>Resources/Images/Warning.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			jTjLLhVGDIVTKkmgPFDDbx3sQ2M=
-			</data>
 			<key>hash2</key>
 			<data>
 			gLnRgwlcR9aPJlcEWhPjwpTnBU82OVcEwPSGiTathKY=
@@ -839,10 +707,6 @@
 		</dict>
 		<key>Resources/Images/Windows.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			zb/KFe4rH4dGyTCREHqOfOZiuWY=
-			</data>
 			<key>hash2</key>
 			<data>
 			tbEUfOG+5X13jJYvuZThhXzqfGgFWkq4rzPoIL040r0=
@@ -850,10 +714,6 @@
 		</dict>
 		<key>Resources/Images/XML.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			P6k+HJ4nznBInh5oEaYV5SZXUak=
-			</data>
 			<key>hash2</key>
 			<data>
 			vbnbK8Zk8OJYyL8BYuRDRsGevd4tzTpATPphUfeOzJg=
@@ -861,10 +721,6 @@
 		</dict>
 		<key>Resources/Images/build.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Nv/Y5QXcjeKEkehecojY9NNaWXY=
-			</data>
 			<key>hash2</key>
 			<data>
 			NNzOXQnm6PnSXC7NSGzJjdMizF3ZEDSiDyBUjR3XUIc=
@@ -872,10 +728,6 @@
 		</dict>
 		<key>Resources/Images/finish.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			meT1f5+yLoW9+JPwbijIVOohjow=
-			</data>
 			<key>hash2</key>
 			<data>
 			6f3V88nKohz6erxEpAdVp/c4wYegOpKN8Xqkf1M8TQY=
@@ -883,10 +735,6 @@
 		</dict>
 		<key>Resources/Images/minus.tif</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			UMivsxP83YINyDswheXCeQhrD1w=
-			</data>
 			<key>hash2</key>
 			<data>
 			lY+G4vHyMaHNvt4ZA0GPVZRiSqHchNY2Qoy4gNzM+CQ=
@@ -894,10 +742,6 @@
 		</dict>
 		<key>Resources/Images/plus.tif</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			MheowQGYObTjillYVYT2sOTBeY0=
-			</data>
 			<key>hash2</key>
 			<data>
 			glduQK7pb8594U2QpPv3FW1EhMbTwb9OS12cjoGfczA=
@@ -905,10 +749,6 @@
 		</dict>
 		<key>Resources/Images/xml_mark.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			M7/VqfALiuKZRh7s5PSB4MtoC1Y=
-			</data>
 			<key>hash2</key>
 			<data>
 			SYKiJzVspS8bUUmmZr/W/XUJpeyoJFnzW/CpLVXsykA=
@@ -916,21 +756,13 @@
 		</dict>
 		<key>Resources/InfoPlist.strings</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			IY73tzu18I2N/sI6nJu8o5Zlwfo=
-			</data>
 			<key>hash2</key>
 			<data>
-			PcfYaGzKbtIEY3ynlgT4qZWJwcEXaJk7TnhxF30Grd4=
+			acXfkVMMbaZY7RMzd5fuf0GELA5PXmLSksyl1R+8FUo=
 			</data>
 		</dict>
 		<key>Resources/InfoPlist.template</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			LC4j+sflequY8itjqAud9Y1iqzE=
-			</data>
 			<key>hash2</key>
 			<data>
 			RQC9AgqRJycdzEfafWIxO4L9l3uHjMFzKqnq4jX7+H4=
@@ -938,10 +770,6 @@
 		</dict>
 		<key>Resources/PHP/zip_archive_to.php</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			FueJFPsuJ6TPdyUpHQNIMKnL6jk=
-			</data>
 			<key>hash2</key>
 			<data>
 			OSCHz47IkmbirqMRlK7oMxGTruIqY6EMM+Es2KSq/IQ=
@@ -949,10 +777,6 @@
 		</dict>
 		<key>Resources/_deletionTest.xml</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			px/jgN5IV2rcwetObvi1EJy6gbc=
-			</data>
 			<key>hash2</key>
 			<data>
 			FIFKq7C2yzD89+mLFsuAfqLJ+0Vw78jdpQVK9Sr0mPA=
@@ -960,10 +784,6 @@
 		</dict>
 		<key>Resources/_deletionTest/4DPop constants.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			s7RhHftp9LuoIXNMTxLFms8Jn5E=
-			</data>
 			<key>hash2</key>
 			<data>
 			uUt1n9haQtb4s8tAcry2TPT824WAzpYiLzU/qnUNONw=
@@ -971,10 +791,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/4d.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			hZjxJH26JwMpntKPURx3rBIjRd4=
-			</data>
 			<key>hash2</key>
 			<data>
 			V+UBQy3O/S90VrWU3PdFRv+OzYmghFeuPtT7bQLTEN8=
@@ -982,10 +798,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/Index.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			itN5RlNLILRJ/d/g6qI3MocSSGI=
-			</data>
 			<key>hash2</key>
 			<data>
 			l7UEIR9LUDvBpinwsC0eOPo8DYaBqQ9MhHdBwYS36+s=
@@ -993,10 +805,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/Localisation.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			I//v5Uy75lVnnBHOvgkhvUBRSt0=
-			</data>
 			<key>hash2</key>
 			<data>
 			la7RYGTvKiVQXIjr2wmQr3A8fXll3xKr6PQpTLJRdfM=
@@ -1004,10 +812,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/de.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			9FyV5BPY20E8wgorhczCGbkWZlY=
-			</data>
 			<key>hash2</key>
 			<data>
 			npURSDaP6yDKu/pB/scyKmdD97dImgv0/y1F0fvsfKA=
@@ -1015,10 +819,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/fr.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			qVT7fwVtQw2NYdBLRAs4QEUuMOg=
-			</data>
 			<key>hash2</key>
 			<data>
 			tO6kVmvYsQZSKLnHFqRZ2O7RQL5OzXFfDjTcnvt7gr0=
@@ -1026,10 +826,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/ja.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			csAf8niDf94PbPIEj6ZaB/eL3Js=
-			</data>
 			<key>hash2</key>
 			<data>
 			sWNuE2SIcYNeTnTcE8tUOOw/rpVJIgB5AzI+AMoacEU=
@@ -1037,10 +833,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/lang.js</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			je0h6mg2JNH8LzSeAeo+RTbUX+g=
-			</data>
 			<key>hash2</key>
 			<data>
 			wL7/hcSfe2n2IaP8i+wtoKPFZ49A+ilE+f0qzRn4+vE=
@@ -1048,10 +840,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/movie.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			TDliIwyw42+nOQtb1Nwba/wF4cU=
-			</data>
 			<key>hash2</key>
 			<data>
 			MBecWmA+9lrEG09ic49XsiQWaYxw5JUp9ImB9FHvVZ0=
@@ -1059,10 +847,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/sp.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			dOqWBNmKKuD99L+KiFSbrpbhryc=
-			</data>
 			<key>hash2</key>
 			<data>
 			9fSFW/GX9MLrCLEExC4lLvioarJ2val7SVaavqPjq04=
@@ -1070,10 +854,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/style.css</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			mW1avF9c2NWQsGlgLrSMGKAk/KM=
-			</data>
 			<key>hash2</key>
 			<data>
 			ZzfYDh2N8FXHxzqN3ygTdAEbln6MYuSwPZwUhbp1Bn0=
@@ -1081,10 +861,6 @@
 		</dict>
 		<key>Resources/_deletionTest/Common/us.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			c8enhndjEzFSgtDKSweBLHAvpvE=
-			</data>
 			<key>hash2</key>
 			<data>
 			Q0ZTA1KjhGpnDzS0DRLzKZghRm/eq8kBO6iYxq1p5lM=
@@ -1092,10 +868,6 @@
 		</dict>
 		<key>Resources/en.lproj/AppMaker.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Ao+1J7NH5rcGDoPDvuWNdXN5Gsc=
-			</data>
 			<key>hash2</key>
 			<data>
 			LHpXCR5e8GuSCKfyhZ6Hf+lu42ORMTCDl1fdkluTh7g=
@@ -1105,10 +877,6 @@
 		</dict>
 		<key>Resources/en.lproj/BuildAppKey.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			NVIp1NQfSiwit6h68sp+1gE0eyA=
-			</data>
 			<key>hash2</key>
 			<data>
 			1JG4q2aMrqfH02dg+DPgPFqcuxy74f4WSa3Eh3JO61k=
@@ -1118,10 +886,6 @@
 		</dict>
 		<key>Resources/en.lproj/CommonEN.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			jqD0qQN1/bPf7SGZq8CPM/a2c/8=
-			</data>
 			<key>hash2</key>
 			<data>
 			pjw8jBcMwB547Za9aX7nuOQBHQx7t2EWEjSJVSSBIrE=
@@ -1131,10 +895,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Help.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			wu0L7NkQdkwGvMy6ReQyvQh66ZI=
-			</data>
 			<key>hash2</key>
 			<data>
 			rp+J2OKrx09WbpKqr8wB/eGEsmRivwzMv/uuhfq9QIs=
@@ -1144,10 +904,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/4DPopPalette.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			M0vWtfLPRkLu8EfD6cWsvRxkkPc=
-			</data>
 			<key>hash2</key>
 			<data>
 			pR+gTXHeZSQFsrQvbfPwbrOAvRY6Tip8VDasdpe7Ets=
@@ -1157,10 +913,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/infos.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			qXb4KDvEbLb84We7+VSI7J97jUI=
-			</data>
 			<key>hash2</key>
 			<data>
 			Gx4FRIHaLqg3rb5l7gHRUufp9yvMIdUgmuUQ7PJX9lU=
@@ -1170,10 +922,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/liste.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Bw6F0jjAHOf5wBgZwqWDYQmA4zE=
-			</data>
 			<key>hash2</key>
 			<data>
 			JOw6TPbbZgZBh79ee8B6Z/xdWHsfvddGCBQLzSoHEKo=
@@ -1183,10 +931,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/page1.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			r2UNhnuA4kPoG/Um6CeY6D4keu0=
-			</data>
 			<key>hash2</key>
 			<data>
 			d1VxqlLTLG9rxTRY0Mwp+PbF7Q1Z3PmmwVd7J+HaS7M=
@@ -1196,10 +940,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/page2.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			r87JTkePVgjE3ASlJVk867fph8I=
-			</data>
 			<key>hash2</key>
 			<data>
 			lNVn06nsiwAR2qhQcamyIyDenJ0w2yMOWM593Yf9884=
@@ -1209,10 +949,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/page3.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			RyWfqfsVKfiPrbYB0caO9p8z024=
-			</data>
 			<key>hash2</key>
 			<data>
 			VhqcohD9FgjComKBtAimCLjjCYjSuvclCKPI/IYEEXQ=
@@ -1222,10 +958,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/page4.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			pNIi3DDNdDuJo3wr1tuGP+C0Zdc=
-			</data>
 			<key>hash2</key>
 			<data>
 			aZ2a0ARwlwBY9zoP8YxD5+/+As7lDIpnliwWBLt3270=
@@ -1235,10 +967,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/page5.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			woF0PRoidYoC7LGmk8OvK2qDQKo=
-			</data>
 			<key>hash2</key>
 			<data>
 			NDc+rLJCrWyf8qIg4fLN0FUxq/fZR7h0ez2HeXwWSyc=
@@ -1248,10 +976,6 @@
 		</dict>
 		<key>Resources/en.lproj/Help/Images/run.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			QLSwfY7dee63+vXqqPlAIyE2dEA=
-			</data>
 			<key>hash2</key>
 			<data>
 			8TnSLw1CbmQZExacvHpHLSVBu6Va81vuS9AyLQthcLU=
@@ -1261,10 +985,6 @@
 		</dict>
 		<key>Resources/fr.lproj/AppMaker.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			gwutSOwePbFXbHUJ9bTbjqmtRts=
-			</data>
 			<key>hash2</key>
 			<data>
 			6bEMd61nlq8aRHQ/57yZTlpw5zdl+vqV8ZiltVf9WVs=
@@ -1274,10 +994,6 @@
 		</dict>
 		<key>Resources/fr.lproj/BuildAppKey.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			+rT58J7AbK9SXyyRdRWjC9EavrA=
-			</data>
 			<key>hash2</key>
 			<data>
 			vCIbPYNdr5f0Er8a4xZVpUhVPS9vijGW9oKY+yRjHHk=
@@ -1287,10 +1003,6 @@
 		</dict>
 		<key>Resources/fr.lproj/CommonFR.xlf</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			cN4eBufW88b52yEYkqo3sL9dWW8=
-			</data>
 			<key>hash2</key>
 			<data>
 			PAF3vWcyANW605c1XyBrdZ2RbYAdMqG/+rnAGIUw1Ro=
@@ -1300,10 +1012,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Help.html</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			St0jcvQmFuYk7fd908wjSIO51qs=
-			</data>
 			<key>hash2</key>
 			<data>
 			vfk3LbV57ehwoc9kCXKajwUJuO7OyPaR1XXgMr7zPVY=
@@ -1313,10 +1021,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/4DPopPalette.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			M0vWtfLPRkLu8EfD6cWsvRxkkPc=
-			</data>
 			<key>hash2</key>
 			<data>
 			pR+gTXHeZSQFsrQvbfPwbrOAvRY6Tip8VDasdpe7Ets=
@@ -1326,10 +1030,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/infos.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			qXb4KDvEbLb84We7+VSI7J97jUI=
-			</data>
 			<key>hash2</key>
 			<data>
 			Gx4FRIHaLqg3rb5l7gHRUufp9yvMIdUgmuUQ7PJX9lU=
@@ -1339,10 +1039,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/liste.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Bw6F0jjAHOf5wBgZwqWDYQmA4zE=
-			</data>
 			<key>hash2</key>
 			<data>
 			JOw6TPbbZgZBh79ee8B6Z/xdWHsfvddGCBQLzSoHEKo=
@@ -1352,10 +1048,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/page1.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			J1xpyNNkv18M0noq4dZJSzD1vjs=
-			</data>
 			<key>hash2</key>
 			<data>
 			5R4rYFgJ0seExHwyijfaCCEze1wTDIBKzBXQwHRm5XE=
@@ -1365,10 +1057,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/page2.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			r87JTkePVgjE3ASlJVk867fph8I=
-			</data>
 			<key>hash2</key>
 			<data>
 			lNVn06nsiwAR2qhQcamyIyDenJ0w2yMOWM593Yf9884=
@@ -1378,10 +1066,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/page3.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			39wPvC+KA7tTmlhQoZmudITjTxA=
-			</data>
 			<key>hash2</key>
 			<data>
 			qQ0Ri6u3Nnc+pHm8jdOwi6Uu9IB8BFckFBdJx3W2PPw=
@@ -1391,10 +1075,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/page4.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			rbANd9RdnDpG+zfSiItODjp/CP4=
-			</data>
 			<key>hash2</key>
 			<data>
 			9OWkC9DI2C4og2maj9hGgHghBtEQ6g5FbRTSqD5kf4Q=
@@ -1404,10 +1084,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/page5.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			N2sQJCBtntWqlSEssOwHyyFmGpc=
-			</data>
 			<key>hash2</key>
 			<data>
 			iVZnZEPnVnBJDIFLSIarRl1K0rVqyayrjEvP1Ja+0VE=
@@ -1417,10 +1093,6 @@
 		</dict>
 		<key>Resources/fr.lproj/Help/Images/run.png</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			QLSwfY7dee63+vXqqPlAIyE2dEA=
-			</data>
 			<key>hash2</key>
 			<data>
 			8TnSLw1CbmQZExacvHpHLSVBu6Va81vuS9AyLQthcLU=
@@ -1430,10 +1102,6 @@
 		</dict>
 		<key>Resources/php.ini</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			UM3PG3YK9H/ysDaBTfFIhlH3DK8=
-			</data>
 			<key>hash2</key>
 			<data>
 			d1pHbOGGZb/FGL3qC3oEz4TYCOcQnvI2LKRvwHKpMGw=

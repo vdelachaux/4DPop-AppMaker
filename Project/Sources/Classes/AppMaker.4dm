@@ -237,11 +237,9 @@ Function run($withUI : Boolean) : Boolean
 			var $zip:=$root.file(Replace string:C233($src.name; " "; "-")+".zip")
 			$zip.delete()
 			
-			If ($src.folder("Contents").exists)
-				
-				$src:=$src.folder("Contents")
-				
-			End if 
+			//If ($src.folder("Contents").exists)
+			//$src:=$src.folder("Contents")
+			//End if 
 			
 			var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214})
 			

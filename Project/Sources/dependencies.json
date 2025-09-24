@@ -1,4 +1,5 @@
 {
+	"version": 2100,
 	"dependencies": {
 		"4DPop": {
 			"github": "vdelachaux/4DPop",
