@@ -43,7 +43,7 @@ Function save()
 	
 	var $content : Text
 	
-	If (This:C1470.load())
+	If (This:C1470.load()#Null:C1517)
 		
 		DOM EXPORT TO VAR:C863(This:C1470.reference; $content)
 		This:C1470.success:=Bool:C1537(OK)
@@ -69,7 +69,7 @@ Function close()
 	// === === === === === === === === === === === === === === === === === === ===
 Function get($xpath : Text)
 	
-	If (This:C1470.load())
+	If (This:C1470.load()#Null:C1517)
 		
 		
 		

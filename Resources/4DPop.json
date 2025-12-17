@@ -1,6 +1,5 @@
 {
   "name": "AppMaker",
-  "media": "4DPop.png",
   "handler": "_4DPopAppMaker",
   "default": "run",
   "tools": [

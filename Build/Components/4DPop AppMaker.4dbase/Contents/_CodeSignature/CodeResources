@@ -10,11 +10,7 @@
 		</data>
 		<key>Resources/4DPop.json</key>
 		<data>
-		dChzrjqAjpPcYTaYiT5x9EJIQUg=
-		</data>
-		<key>Resources/4DPop.png</key>
-		<data>
-		Nv/Y5QXcjeKEkehecojY9NNaWXY=
+		v+G5NqTxkEVlX9NaN2SdZqcb1lc=
 		</data>
 		<key>Resources/AppMaker delete.xml</key>
 		<data>
@@ -162,7 +158,7 @@
 		</data>
 		<key>Resources/InfoPlist.strings</key>
 		<data>
-		1J6CaIRGBkwwJQwJmAxuxmtgK3k=
+		kEUHgPrclEQmVleg/TrK9snp5ew=
 		</data>
 		<key>Resources/InfoPlist.template</key>
 		<data>
@@ -458,6 +454,10 @@
 			<key>optional</key>
 			<true/>
 		</dict>
+		<key>Resources/logo.svg</key>
+		<data>
+		Vx1EtRHMLRVbZsLq8mxCrBFZHXk=
+		</data>
 		<key>Resources/php.ini</key>
 		<data>
 		UM3PG3YK9H/ysDaBTfFIhlH3DK8=
@@ -469,7 +469,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			moeNcEqscz1zShx6U9R5BmFqaHU=
+			0xVh5xyFf5iQxZdeH7xOKjye8sE=
 			</data>
 			<key>requirement</key>
 			<string>identifier "4DPop AppMaker.4DZ" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = DYRKW64QA9</string>
@@ -478,7 +478,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			maLvkl6I/Wr54NBvnSjTOwfH2FQpJG+nKCAbiUHWobE=
+			5vwDh50iN9NVnotG9nyqDx29KiPYQHlBtkUboxhJsfE=
 			</data>
 		</dict>
 		<key>Resources/4DPop constants.xlf</key>
@@ -492,14 +492,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			7iTvECZMViBzVgTiqQnbWGxOVV1lUtyMAduB5I7+pes=
-			</data>
-		</dict>
-		<key>Resources/4DPop.png</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			NNzOXQnm6PnSXC7NSGzJjdMizF3ZEDSiDyBUjR3XUIc=
+			3IOkDWKhU865G+7odeNlMzwznw930/ucxKcjsjjEVA4=
 			</data>
 		</dict>
 		<key>Resources/AppMaker delete.xml</key>
@@ -758,7 +751,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			acXfkVMMbaZY7RMzd5fuf0GELA5PXmLSksyl1R+8FUo=
+			Gwo4XwKXmoia+mKg6ltKK1EhGDdcqPzRHFF/vfy+3Q8=
 			</data>
 		</dict>
 		<key>Resources/InfoPlist.template</key>
@@ -1099,6 +1092,13 @@
 			</data>
 			<key>optional</key>
 			<true/>
+		</dict>
+		<key>Resources/logo.svg</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			/qt+p5Vizc0fCyiUhzeEzkH90cHBJUdIgc50NfEQtkw=
+			</data>
 		</dict>
 		<key>Resources/php.ini</key>
 		<dict>
