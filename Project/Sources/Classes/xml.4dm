@@ -1608,8 +1608,30 @@ Function _elementToObject($ref : Text; $withAdresses : Boolean)->$object : Objec
 	
 	If (Match regex:C1019("[^\\s]+"; $tValue; 1))
 		
-		$object["$"]:=$tValue
-		
+		Case of   // Value types
+				
+				//______________________________________________________
+			: (Not:C34(This:C1470._convertMode))
+				
+				$object["$"]:=$tValue
+				
+				//______________________________________________________
+			: (Match regex:C1019("(?m-si)^\\d+\\.*\\d*$"; $tValue; 1))  // Numeric
+				
+				$object["$"]:=Num:C11($tValue; ".")
+				
+				//______________________________________________________
+			: (Match regex:C1019("(?mi-s)^true|false$"; $tValue; 1))  // Boolean
+				
+				$object["$"]:=($tValue="true")
+				
+				//______________________________________________________
+			Else   // Text
+				
+				$object[$key]:=$tValue
+				
+				//______________________________________________________
+		End case 
 	End if 
 	
 	// Childs

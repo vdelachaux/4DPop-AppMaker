@@ -6,7 +6,7 @@ property prefs : cs:C1710.prefs
 property build : cs:C1710.build
 property preferencesFile; buildAppFile; entitlementsFile : 4D:C1709.File
 property target : 4D:C1709.Folder
-property credentials; plist : Object
+property buildSettings; credentials; plist : Object
 property errors; warnings : Collection
 
 property applicationName : Text
@@ -57,6 +57,8 @@ Class constructor()
 			
 		End if 
 	End if 
+	
+	This:C1470.buildSettings:=cs:C1710.xml.new(This:C1470.buildAppFile).toObject().BuildApp
 	
 	This:C1470.entitlementsFile:=Folder:C1567(Folder:C1567(fk resources folder:K87:11).platformPath; fk platform path:K87:2).file("Components.entitlements")
 	
@@ -230,21 +232,6 @@ Function run($withUI : Boolean) : Boolean
 		
 		If ($success)
 			
-			// Create zip archive for dependencies manager
-			var $src:=This:C1470.target.parent
-			var $root:=$src.parent.parent
-			
-			var $zip:=$root.file(Replace string:C233($src.name; " "; "-")+".zip")
-			$zip.delete()
-			
-			//If ($src.folder("Contents").exists)
-			//$src:=$src.folder("Contents")
-			//End if 
-			
-			var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214})
-			
-			$success:=$ditto.archive()
-			
 			// Notarize & staple
 			//$success:=This.notarize()
 			//Case of 
@@ -259,6 +246,22 @@ Function run($withUI : Boolean) : Boolean
 			//End case 
 			
 		End if 
+	End if 
+	
+	// MARK: Create zip archive for dependencies manager
+	If ($success)\
+		 && (Bool:C1537(This:C1470.buildSettings.BuildComponent["$"]))
+		
+		var $src:=This:C1470.target.parent
+		var $root:=$src.parent.parent
+		
+		var $zip:=$root.file(Replace string:C233($src.name; " "; "-")+".zip")
+		$zip.delete()
+		
+		var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214})
+		
+		$success:=$ditto.archive()
+		
 	End if 
 	
 	This:C1470._closeBarber()
