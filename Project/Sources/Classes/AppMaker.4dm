@@ -212,7 +212,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470.delete(This:C1470.target; $prefs.delete.array.item.extract("$"))
+		This:C1470.delete(This:C1470.target; $prefs.delete.array.item/*.extract("$")*/)
 		
 	End if 
 	
@@ -724,9 +724,11 @@ Function updateInfoPlist($infos : Object) : Boolean
 Function delete($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
-	var $tgt : Object
+	var $o; $tgt : Object
 	
-	For each ($item; $items)
+	For each ($o; $items)
+		
+		$item:=$o[""]
 		
 		Use (Storage:C1525.progress)
 			
@@ -779,9 +781,11 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 Function copy($target : 4D:C1709.Folder; $items : Collection)
 	
 	var $item : Text
-	var $src; $tgt : Object
+	var $o; $src; $tgt : Object
 	
-	For each ($item; $items)
+	For each ($o; $items)
+		
+		$item:=$o[""]
 		
 		Use (Storage:C1525.progress)
 			
