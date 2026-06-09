@@ -6,13 +6,8 @@
 // Description
 // Tests if the path is a relative pathname.
 // ----------------------------------------------------
-C_BOOLEAN:C305($0)
-C_TEXT:C284($1)
-
-If (False:C215)
-	C_BOOLEAN:C305(_o_doc_Is_Relative_Path; $0)
-	C_TEXT:C284(_o_doc_Is_Relative_Path; $1)
-End if 
+var $0 : Boolean
+var $1 : Text
 
 If (Length:C16($1)>0)
 	

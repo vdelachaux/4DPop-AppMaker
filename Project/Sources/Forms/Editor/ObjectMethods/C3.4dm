@@ -1,4 +1,4 @@
-C_LONGINT:C283($Lon_i)
+var $Lon_i : Integer
 
 If (Macintosh option down:C545 | Windows Alt down:C563)
 	

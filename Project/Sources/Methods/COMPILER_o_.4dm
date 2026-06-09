@@ -1,5 +1,5 @@
 //%attributes = {"invisible":true}
-C_TEXT:C284(<>Txt_value)
+var <>Txt_value : Text
 
 If (False:C215)
 	
@@ -45,8 +45,8 @@ If (False:C215)
 	C_TEXT:C284(_o_preferences; $1)
 	C_OBJECT:C1216(_o_preferences; $2)
 	
-	C_OBJECT:C1216(_o_pList; $0)
-	C_TEXT:C284(_o_pList; $1)
-	C_OBJECT:C1216(_o_pList; $2)
+	//C_OBJECT(_o_pList; $0)
+	//C_TEXT(_o_pList; $1)
+	//C_OBJECT(_o_pList; $2)
 	
 End if 

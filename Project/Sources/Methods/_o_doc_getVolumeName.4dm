@@ -6,16 +6,11 @@
 // Description
 //
 // ----------------------------------------------------
-C_TEXT:C284($0)
-C_TEXT:C284($1)
+var $0 : Text
+var $1 : Text
 
-C_LONGINT:C283($Lon_x)
-C_TEXT:C284($kTxt_Separator; $Txt_Buffer; $Txt_Path; $Txt_Volume)
-
-If (False:C215)
-	C_TEXT:C284(_o_doc_getVolumeName; $0)
-	C_TEXT:C284(_o_doc_getVolumeName; $1)
-End if 
+var $Lon_x : Integer
+var $kTxt_Separator; $Txt_Buffer; $Txt_Path; $Txt_Volume : Text
 
 $kTxt_Separator:=System folder:C487[[Length:C16(System folder:C487)]]
 

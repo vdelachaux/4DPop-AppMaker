@@ -1,16 +1,16 @@
-C_TEXT:C284($Txt_type)
+var $Txt_type : Text
 
-GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp;*;"arraytype";$Txt_type)
+GET LIST ITEM PARAMETER:C985(Form:C1466.buildApp; *; "arraytype"; $Txt_type)
 
 Case of 
-		  //______________________________________________________
+		//______________________________________________________
 	: ($Txt_type="plugin.@")
-		  //______________________________________________________
+		//______________________________________________________
 	: ($Txt_type="component")
-		  //______________________________________________________
+		//______________________________________________________
 	: ($Txt_type="path.@")
 		
-		OBJECT SET VISIBLE:C603(*;"button.array.delete@";(OBJECT Get pointer:C1124(Object named:K67:5;"C1"))->>0)
+		OBJECT SET VISIBLE:C603(*; "button.array.delete@"; (OBJECT Get pointer:C1124(Object named:K67:5; "C1"))->>0)
 		
-		  //______________________________________________________
+		//______________________________________________________
 End case 

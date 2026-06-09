@@ -1,6 +1,9 @@
 property file : 4D:C1709.File
 property content; rootElement : Text
 
+property success:=True:C214
+property reference
+
 Class constructor($file : 4D:C1709.File; $rootElement : Text)
 	
 	var $content; $root : Text
@@ -23,8 +26,6 @@ Class constructor($file : 4D:C1709.File; $rootElement : Text)
 	End if 
 	
 	This:C1470.content:=$content
-	
-	This:C1470.success:=True:C214
 	
 	// === === === === === === === === === === === === === === === === === === ===
 Function load() : Object

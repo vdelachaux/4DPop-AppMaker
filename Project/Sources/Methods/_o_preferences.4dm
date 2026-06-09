@@ -1,21 +1,15 @@
 //%attributes = {"invisible":true}
-C_OBJECT:C1216($0)
-C_TEXT:C284($1)
-C_OBJECT:C1216($2)
+var $0 : Object
+var $1 : Text
+var $2 : Object
 
-C_LONGINT:C283($i; $Lon_count; $Lon_x)
-C_TEXT:C284($Dom_element; $Dom_root; $t; $Txt_attributeName; $Txt_name; $Txt_value)
-C_TEXT:C284($Txt_XPATH)
-C_OBJECT:C1216($o; $oo)
-C_COLLECTION:C1488($c)
+var $i; $Lon_count; $Lon_x : Integer
+var $Dom_element; $Dom_root; $t; $Txt_attributeName; $Txt_name; $Txt_value : Text
+var $Txt_XPATH : Text
+var $o; $oo : Object
+var $c : Collection
 
 ARRAY TEXT:C222($tDom_items; 0)
-
-If (False:C215)
-	C_OBJECT:C1216(_o_preferences; $0)
-	C_TEXT:C284(_o_preferences; $1)
-	C_OBJECT:C1216(_o_preferences; $2)
-End if 
 
 If (This:C1470=Null:C1517)
 	

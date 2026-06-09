@@ -11,24 +11,27 @@ property errors; warnings : Collection
 
 property applicationName : Text
 property withUI : Boolean
+property start : Integer
 
 Class constructor()
 	
+	var $project:=This:C1470.database
+	
 	// Ensure the preferences folder exists
-	This:C1470.database.preferencesFolder.create()
+	$project.preferencesFolder.create()
 	
 	If (Is macOS:C1572)
 		
 		// Get credentials
-		var $file : 4D:C1709.File:=This:C1470.database.preferencesFolder.file("notarise.json")  // Project embedded credentials
+		var $file : 4D:C1709.File:=$project.preferencesFolder.file("notarise.json")  // Project embedded credentials
 		
 		If (Not:C34($file.exists))
 			
-			$file:=This:C1470.database.userPreferencesFolder.file("notarise.json")  // Project credentials into the user prefernces folder
+			$file:=$project.userPreferencesFolder.file("notarise.json")  // Project credentials into the user prefernces folder
 			
 			If (Not:C34($file.exists))
 				
-				$file:=This:C1470.database.userPreferencesFolder.parent.file("notarise.json")  // Shared credentials
+				$file:=$project.userPreferencesFolder.parent.file("notarise.json")  // Shared credentials
 				
 			End if 
 		End if 
@@ -41,19 +44,19 @@ Class constructor()
 	End if 
 	
 	// Preferences
-	This:C1470.preferencesFile:=This:C1470.database.preferencesFolder.file("4DPop AppMaker.xml")
+	This:C1470.preferencesFile:=$project.preferencesFolder.file("4DPop AppMaker.xml")
 	This:C1470.prefs:=cs:C1710.prefs.new(This:C1470.preferencesFile; "appMaker")
 	
 	// BuildApp settings
-	This:C1470.buildAppFile:=This:C1470.database.settingsFolder.file("buildApp.4DSettings")
+	This:C1470.buildAppFile:=$project.settingsFolder.file("buildApp.4DSettings")
 	
 	If (Not:C34(This:C1470.buildAppFile.exists))
 		
-		$file:=This:C1470.database.preferencesFolder.file("BuildApp.xml")
+		$file:=$project.preferencesFolder.file("BuildApp.xml")
 		
 		If ($file.exists)
 			
-			This:C1470.buildAppFile:=$file.copyTo(This:C1470.database.settingsFolder; "buildApp.4DSettings")
+			This:C1470.buildAppFile:=$file.copyTo($project.settingsFolder; "buildApp.4DSettings")
 			
 		End if 
 	End if 
@@ -89,6 +92,7 @@ Function run($withUI : Boolean) : Boolean
 	
 	FLUSH CACHE:C297
 	
+	var $project:=This:C1470.database
 	This:C1470.build:=cs:C1710.build.new(This:C1470.buildAppFile)
 	This:C1470.applicationName:=This:C1470.build.settings.BuildApplicationName
 	
@@ -116,15 +120,15 @@ Function run($withUI : Boolean) : Boolean
 		
 		This:C1470._callBarber("⚙️ "+Localized string:C991("CompilationAndGeneration"); Barber shop:K42:35)
 		
-		var $project : 4D:C1709.File:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
-		var $o : Object:=JSON Parse:C1218($project.getText())
+		var $projectFile : 4D:C1709.File:=Folder:C1567("/PACKAGE/Project"; *).files().query("extension = .4DProject").first()
+		var $o : Object:=JSON Parse:C1218($projectFile.getText())
 		
 		If ($o.$4DPopAppMakerToolVersion#This:C1470.motor.branch)
 			
-			This:C1470.database.clearCompiledCode()
+			$project.clearCompiledCode()
 			
 			$o.$4DPopAppMakerToolVersion:=This:C1470.motor.branch
-			$project.setText(JSON Stringify:C1217($o; *))
+			$projectFile.setText(JSON Stringify:C1217($o; *))
 			
 		End if 
 		
@@ -135,7 +139,7 @@ Function run($withUI : Boolean) : Boolean
 			
 		End if 
 		
-		$success:=This:C1470.database.compile()
+		$success:=$project.compile()
 		
 		If ($success)
 			
@@ -149,7 +153,7 @@ Function run($withUI : Boolean) : Boolean
 			
 		Else 
 			
-			This:C1470._error("❌ "+This:C1470.database.errors.pop().message)
+			This:C1470._error("❌ "+$project.errors.pop().message)
 			
 		End if 
 	End if 
@@ -195,7 +199,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470.copy(This:C1470.target; $prefs.copy.array.item.extract("$"))
+		This:C1470.copy(This:C1470.target; $prefs.copy.array.item)
 		
 	End if 
 	
@@ -212,7 +216,7 @@ Function run($withUI : Boolean) : Boolean
 		
 		DELAY PROCESS:C323(Current process:C322; 50)
 		
-		This:C1470.delete(This:C1470.target; $prefs.delete.array.item/*.extract("$")*/)
+		This:C1470.delete(This:C1470.target; $prefs.delete.array.item)
 		
 	End if 
 	
@@ -570,13 +574,11 @@ Function notarize() : Boolean
 	// Delete help files and the non necessary resources for the final user
 Function deleteResources($target : 4D:C1709.Folder) : Boolean
 	
-	var $path : Text
-	var $file : 4D:C1709.File
-	var $xml : cs:C1710.xml
-	
 	This:C1470._callBarber("🗜 Deleting unnecessary resources"; Barber shop:K42:35)
 	
-	$file:=This:C1470.database.preferencesFolder.file("AppMaker delete.xml")
+	var $project:=This:C1470.database
+	
+	var $file : 4D:C1709.File:=$project.preferencesFolder.file("AppMaker delete.xml")
 	
 	If (Not:C34($file.exists))
 		
@@ -588,11 +590,12 @@ Function deleteResources($target : 4D:C1709.Folder) : Boolean
 	If ($file.exists)
 		
 		// Load the list of items to delete
-		$xml:=cs:C1710.xml.new($file)
+		var $xml:=cs:C1710.xml.new($file)
 		
-		For each ($path; $xml.toObject().item.extract("$"))
+		var $o : Object
+		For each ($o; $xml.toObject().item)
 			
-			$path:=This:C1470.target.path+$path
+			var $path : Text:=This:C1470.target.path+$o[""]
 			
 			If ($path="@/")
 				
@@ -639,8 +642,10 @@ Function incrementBundleVersion() : Boolean
 	
 	This:C1470._callBarber("🚧 "+Localized string:C991("Preparation"); Barber shop:K42:35)
 	
+	var $project:=This:C1470.database
+	
 	This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)+1
-	This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
+	$project.plistFile.setAppInfo(This:C1470.plist)
 	
 	// Create the 'InfoPlist.strings' file
 	$template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
@@ -649,11 +654,11 @@ Function incrementBundleVersion() : Boolean
 	$template:=Replace string:C233($template; "{build}"; String:C10(Num:C11(This:C1470.plist.CFBundleVersion)))
 	$template:=Replace string:C233($template; "{copyright}"; This:C1470.plist.NSHumanReadableCopyright)
 	
-	This:C1470.database.resourcesFolder.file("InfoPlist.strings").setText($template; "UTF-16")
+	$project.resourcesFolder.file("InfoPlist.strings").setText($template; "UTF-16")
 	
 	// Delete the (older) unused localized files, if any
 	var $folder : 4D:C1709.Folder
-	For each ($folder; This:C1470.database.resourcesFolder.folders().query("extension='.lproj'"))
+	For each ($folder; $project.resourcesFolder.folders().query("extension='.lproj'"))
 		
 		$folder.file("InfoPlist.strings").delete()
 		
@@ -688,7 +693,9 @@ Function updateInfoPlist($infos : Object) : Boolean
 	
 	This:C1470._callBarber("🚧 "+Localized string:C991("Preparations")+"…")
 	
-	If (Not:C34(This:C1470.database.plistFile.exists))
+	var $project:=This:C1470.database
+	
+	If (Not:C34($project.plistFile.exists))
 		
 		// Create a default from template
 		var $template:=File:C1566("/RESOURCES/InfoPlist.template").getText()
@@ -696,20 +703,20 @@ Function updateInfoPlist($infos : Object) : Boolean
 		$template:=Replace string:C233($template; "{version}"; This:C1470.motor.branch)
 		$template:=Replace string:C233($template; "{build}"; "1")
 		$template:=Replace string:C233($template; "{copyright}"; "©"+String:C10(Year of:C25(Current date:C33)))
-		This:C1470.database.plistFile.setText($template)
+		$project.plistFile.setText($template)
 		
 	End if 
 	
-	If (This:C1470.database.plistFile.exists)
+	If ($project.plistFile.exists)
 		
-		This:C1470.plist:=This:C1470.database.plistFile.getAppInfo()
+		This:C1470.plist:=$project.plistFile.getAppInfo()
 		This:C1470.plist.CFBundleName:=This:C1470.applicationName
 		This:C1470.plist.CFBundleVersion:=Num:C11(This:C1470.plist.CFBundleVersion)
 		This:C1470.plist.CFBundleGetInfoString:=This:C1470.motor.branch
 		This:C1470.plist.CFBundleShortVersionString:=This:C1470.motor.branch
 		This:C1470.plist.CFBundleLongVersionString:=This:C1470.plist.CFBundleShortVersionString+(This:C1470.plist.CFBundleVersion#Null:C1517 ? (" ("+String:C10(This:C1470.plist.CFBundleVersion)+")") : "")
 		This:C1470.plist.NSHumanReadableCopyright:=Length:C16(String:C10($infos.NSHumanReadableCopyright))>0 ? Replace string:C233(String:C10($infos.NSHumanReadableCopyright); "{currentYear}"; String:C10(Year of:C25(Current date:C33))) : "©"+String:C10(Year of:C25(Current date:C33))
-		This:C1470.database.plistFile.setAppInfo(This:C1470.plist)
+		$project.plistFile.setAppInfo(This:C1470.plist)
 		
 		return True:C214
 		
@@ -726,21 +733,19 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 	var $item : Text
 	var $o; $tgt : Object
 	
+	
 	For each ($o; $items)
 		
 		$item:=$o[""]
 		
-		Use (Storage:C1525.progress)
-			
-			Storage:C1525.progress.title:=Localized string:C991("remove")+$item
-			
-		End use 
+		This:C1470._callBarber(Localized string:C991("remove")+$item)
+		This:C1470._wait()
 		
 		$item:=$item="./@" ? Delete string:C232($item; 1; 2) : $item
 		
 		If ($item="@/")
 			
-			$tgt:=This:C1470.target.folder($item)
+			$tgt:=$target.folder($item)
 			
 			If ($tgt.exists)
 				
@@ -754,7 +759,7 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 			
 		Else 
 			
-			$tgt:=This:C1470.target.file($item)
+			$tgt:=$target.file($item)
 			
 			If ($tgt.exists)
 				
@@ -773,35 +778,32 @@ Function delete($target : 4D:C1709.Folder; $items : Collection)
 			
 		End use 
 		
-		DELAY PROCESS:C323(Current process:C322; 10)
+		This:C1470._wait(10)
 		
 	End for each 
 	
 	// === === === === === === === === === === === === === === === === === === === === === === === === 
 Function copy($target : 4D:C1709.Folder; $items : Collection)
 	
-	var $item : Text
-	var $o; $src; $tgt : Object
+	var $root:=This:C1470.database.databaseFolder
+	var $o : Object
 	
 	For each ($o; $items)
 		
-		$item:=$o[""]
+		var $item : Text:=$o[""]
 		
-		Use (Storage:C1525.progress)
-			
-			Storage:C1525.progress.title:=Localized string:C991("copy")+$item
-			
-		End use 
+		This:C1470._callBarber(Localized string:C991("copy")+$item)
+		This:C1470._wait()
 		
 		If ($item="@/")
 			
-			$src:=This:C1470.database.databaseFolder.folder($item)
-			$tgt:=This:C1470.target.folder($item).parent
+			var $src : Object:=$root.folder($item)
+			var $tgt : Object:=$target.folder($item).parent
 			
 		Else 
 			
-			$src:=This:C1470.database.databaseFolder.file($item)
-			$tgt:=This:C1470.target.file($item).parent
+			$src:=$root.file($item)
+			$tgt:=$target.file($item).parent
 			
 		End if 
 		
@@ -821,7 +823,7 @@ Function copy($target : 4D:C1709.Folder; $items : Collection)
 			
 		End use 
 		
-		DELAY PROCESS:C323(Current process:C322; 10)
+		This:C1470._wait(10)
 		
 	End for each 
 	

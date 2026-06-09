@@ -8,10 +8,6 @@
 // ----------------------------------------------------
 #DECLARE($array : Pointer)
 
-If (False:C215)
-	C_POINTER:C301(BuildApp_SET_ARRAY; $1)
-End if 
-
 var $node; $root; $xpath : Text
 var $count; $i : Integer
 

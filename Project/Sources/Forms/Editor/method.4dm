@@ -6,7 +6,7 @@
 //
 // ----------------------------------------------------
 // Declarations
-C_LONGINT:C283($Lon_event; $Lon_page)
+var $Lon_event; $Lon_page : Integer
 
 // ----------------------------------------------------
 // Initialisations

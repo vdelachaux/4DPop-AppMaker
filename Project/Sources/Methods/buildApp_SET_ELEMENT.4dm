@@ -8,10 +8,6 @@
 // ----------------------------------------------------
 #DECLARE($value : Text)
 
-If (False:C215)
-	C_TEXT:C284(buildApp_SET_ELEMENT; $1)
-End if 
-
 var $node; $xpath : Text
 var $mark : Picture
 

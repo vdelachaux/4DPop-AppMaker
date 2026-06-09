@@ -10,15 +10,11 @@
 // the folder /Preferences/BuildAPP/ of the host database
 // ----------------------------------------------------
 // Declarations
-C_POINTER:C301($1)
-C_LONGINT:C283($Lon_i; $Lon_parameters)
-C_POINTER:C301($Ptr_array)
-C_TEXT:C284($Dom_node; $Dom_root; $Path_root)
+var $1 : Pointer
+var $Lon_i; $Lon_parameters : Integer
+var $Ptr_array : Pointer
+var $Dom_node; $Dom_root; $Path_root : Text
 ARRAY TEXT:C222($tTxt_files; 0)
-
-If (False:C215)
-	C_POINTER:C301(_o_APP_MAKER_GET_PROJECTS; $1)
-End if 
 
 // ----------------------------------------------------
 // Initialisations

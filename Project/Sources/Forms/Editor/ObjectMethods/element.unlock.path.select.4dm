@@ -4,8 +4,8 @@
 // Created #10-7-2013 by Vincent de Lachaux
 // ----------------------------------------------------
 // Declarations
-C_LONGINT:C283($Lon_back)
-C_TEXT:C284($kTxt_back; $Txt_buffer; $Txt_commonPath; $Txt_path; $Txt_structureFolderPath; $Txt_type)
+var $Lon_back : Integer
+var $kTxt_back; $Txt_buffer; $Txt_commonPath; $Txt_path; $Txt_structureFolderPath; $Txt_type : Text
 
 // ----------------------------------------------------
 // Initialisations
@@ -35,7 +35,7 @@ Case of
 				//______________________________________________________
 			: ($Txt_type="path.folder")
 				
-				$Txt_buffer:=Select folder:C670(Get localized string:C991("selectFolder"); 1)
+				$Txt_buffer:=Select folder:C670(Localized string:C991("selectFolder"); 1)
 				
 				If (OK=1)
 					
@@ -46,7 +46,7 @@ Case of
 				//______________________________________________________
 			: ($Txt_type="path.exe")
 				
-				$Txt_buffer:=Select document:C905(1; ""; Get localized string:C991("selectExe"); Package selection:K24:9+Use sheet window:K24:11)
+				$Txt_buffer:=Select document:C905(1; ""; Localized string:C991("selectExe"); Package selection:K24:9+Use sheet window:K24:11)
 				
 				If (OK=1)
 					
@@ -58,7 +58,7 @@ Case of
 				
 			Else 
 				
-				$Txt_buffer:=Select document:C905(1; Replace string:C233($Txt_type; "path.file"; ""); Get localized string:C991("selectFile"); Package open:K24:8+Use sheet window:K24:11)
+				$Txt_buffer:=Select document:C905(1; Replace string:C233($Txt_type; "path.file"; ""); Localized string:C991("selectFile"); Package open:K24:8+Use sheet window:K24:11)
 				
 				If (OK=1)
 					

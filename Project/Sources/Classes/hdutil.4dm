@@ -1,4 +1,6 @@
 property disk : 4D:C1709.Folder
+property target
+property content
 
 Class extends lep
 
@@ -8,8 +10,6 @@ Class constructor($target : 4D:C1709.File; $content)
 	Super:C1705()
 	
 	This:C1470.target:=$target
-	This:C1470.content:=Null:C1517
-	This:C1470.disk:=Null:C1517
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===
 	/// Create a disk image image

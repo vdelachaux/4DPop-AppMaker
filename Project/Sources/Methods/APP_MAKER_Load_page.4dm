@@ -9,10 +9,6 @@
 // Declarations
 #DECLARE($page : Integer)
 
-If (False:C215)
-	C_LONGINT:C283(APP_MAKER_Load_page; $1)
-End if 
-
 var $node; $root; $t : Text
 var $notSet; $set : Picture
 var $expanded; $isOn; $loaded : Boolean

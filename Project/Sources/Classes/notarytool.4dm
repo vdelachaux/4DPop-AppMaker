@@ -1,5 +1,7 @@
 property target : 4D:C1709.File
 property keychainProfile : Text
+property available; success : Boolean
+property version; status : Text
 
 Class extends lep
 

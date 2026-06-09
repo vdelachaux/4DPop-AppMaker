@@ -1,18 +1,12 @@
 //%attributes = {"invisible":true}
 // Returns informations from the host database and useful methods
-C_OBJECT:C1216($0)
-C_TEXT:C284($1)
-C_OBJECT:C1216($2)
+var $0 : Object
+var $1 : Text
+var $2 : Object
 
-C_LONGINT:C283($l)
-C_TEXT:C284($t)
-C_OBJECT:C1216($o)
-
-If (False:C215)
-	C_OBJECT:C1216(_o_database; $0)
-	C_TEXT:C284(_o_database; $1)
-	C_OBJECT:C1216(_o_database; $2)
-End if 
+var $l : Integer
+var $t : Text
+var $o : Object
 
 If (This:C1470=Null:C1517)
 	

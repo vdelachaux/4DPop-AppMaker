@@ -6,18 +6,12 @@
 // Description
 //
 // ----------------------------------------------------
-C_TEXT:C284($0)
-C_TEXT:C284($1)
-C_TEXT:C284($2)
+var $0 : Text
+var $1 : Text
+var $2 : Text
 
-C_LONGINT:C283($Lon_end; $Lon_i; $Lon_j)
-C_TEXT:C284($Txt_commonPath; $Txt_path1; $Txt_path2)
-
-If (False:C215)
-	C_TEXT:C284(_o_doc_getCommonPath; $0)
-	C_TEXT:C284(_o_doc_getCommonPath; $1)
-	C_TEXT:C284(_o_doc_getCommonPath; $2)
-End if 
+var $Lon_end; $Lon_i; $Lon_j : Integer
+var $Txt_commonPath; $Txt_path1; $Txt_path2 : Text
 
 $Txt_path1:=$1
 $Txt_path2:=$2

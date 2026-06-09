@@ -20,6 +20,11 @@ Sign:
       codesign -h [-v] [pid ...]
 */
 
+property appleID; certificate; publicID; keychainProfile : Text
+property entitlements : 4D:C1709.File
+property identity : Object
+property success : Boolean
+
 // === === === === === === === === === === === === === === === === === === === === === === ===
 Class constructor($credentials : Object; $entitlement : 4D:C1709.File)
 	
@@ -30,9 +35,9 @@ Class constructor($credentials : Object; $entitlement : 4D:C1709.File)
 	This:C1470.publicID:=$credentials.publicID ? String:C10($credentials.publicID) : Null:C1517
 	This:C1470.keychainProfile:=$credentials.keychainProfile ? String:C10($credentials.keychainProfile) : Null:C1517
 	
-	This:C1470.entitlements:=$entitlement ? $entitlement : File:C1566("📄")
+	This:C1470.entitlements:=$entitlement ? $entitlement : Null:C1517
 	
-	This:C1470.identity:=This:C1470.findIdentities().query("name = :1"; "Developer ID Application: "+This:C1470.certificate).pop()
+	This:C1470.identity:=This:C1470.findIdentities().query("name = :1"; "Developer ID Application: "+This:C1470.certificate).first()
 	This:C1470.success:=This:C1470.identity#Null:C1517
 	
 	// === === === === === === === === === === === === === === === === === === === === === === ===

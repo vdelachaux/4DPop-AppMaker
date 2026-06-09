@@ -158,7 +158,7 @@
 		</data>
 		<key>Resources/InfoPlist.strings</key>
 		<data>
-		wDKI2ZmIp3fJ17/EdPnqzvKWfe8=
+		4SAl9n4IrVZjIt5dhYI7tesrohQ=
 		</data>
 		<key>Resources/InfoPlist.template</key>
 		<data>
@@ -469,7 +469,7 @@
 		<dict>
 			<key>cdhash</key>
 			<data>
-			GyveYK3IeA6PYcsxQRYb4Go17Ew=
+			q0IxAXJ1JuHUsO1rj3MN/3fgRq0=
 			</data>
 			<key>requirement</key>
 			<string>identifier "4DPop AppMaker.4DZ" and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = DYRKW64QA9</string>
@@ -478,7 +478,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			BL/YvT6axAPGMUAEgxo/7Nc8P7snqxF/FTgOsggqy4c=
+			Xcs0LXP7gXuHMFpV9ZcfDEmEhAY6vLQwx1h5SvgQANo=
 			</data>
 		</dict>
 		<key>Resources/4DPop constants.xlf</key>
@@ -751,7 +751,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			X0ykEsCIPYuXLgQdSDbJZmXo8y4PHkExyW0kyauDBUU=
+			R8sA8s1ER5395Gp/KhD2M+mKv22CLNXg+wvT0xAL+PQ=
 			</data>
 		</dict>
 		<key>Resources/InfoPlist.template</key>

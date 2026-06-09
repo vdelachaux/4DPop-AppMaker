@@ -1,46 +1,41 @@
 //%attributes = {"invisible":true}
-  // ----------------------------------------------------
-  // Project method : doc_File
-  // Database: 4D Mobile App
-  // ID[E4BCA07C239A4A898B5AFF446D5CCD08]
-  // Created #12-7-2018 by Vincent de Lachaux
-  // ----------------------------------------------------
-  // Description:
-  // Waiting for File command !
-  // ----------------------------------------------------
-  // Declarations
-C_OBJECT:C1216($0)
-C_TEXT:C284($1)
+// ----------------------------------------------------
+// Project method : doc_File
+// Database: 4D Mobile App
+// ID[E4BCA07C239A4A898B5AFF446D5CCD08]
+// Created #12-7-2018 by Vincent de Lachaux
+// ----------------------------------------------------
+// Description:
+// Waiting for File command !
+// ----------------------------------------------------
+// Declarations
+var $0 : Object
+var $1 : Text
 
-C_BOOLEAN:C305($Boo_invisible;$Boo_locked)
-C_DATE:C307($Dat_creation;$Dat_modified)
-C_LONGINT:C283($Lon_parameters)
-C_TIME:C306($Gmt_creation;$Gmt_modified)
-C_PICTURE:C286($Pic_icon)
-C_TEXT:C284($Txt_pathname;$Txt_property)
-C_OBJECT:C1216($Obj_file;$Obj_template)
+var $Boo_invisible; $Boo_locked : Boolean
+var $Dat_creation; $Dat_modified : Date
+var $Lon_parameters : Integer
+var $Gmt_creation; $Gmt_modified : Time
+var $Pic_icon : Picture
+var $Txt_pathname; $Txt_property : Text
+var $Obj_file; $Obj_template : Object
 
-If (False:C215)
-	C_OBJECT:C1216(_o_doc_File ;$0)
-	C_TEXT:C284(_o_doc_File ;$1)
-End if 
-
-  // ----------------------------------------------------
-  // Initialisations
+// ----------------------------------------------------
+// Initialisations
 $Lon_parameters:=Count parameters:C259
 
-If (Asserted:C1132($Lon_parameters>=1;"Missing parameter"))
+If (Asserted:C1132($Lon_parameters>=1; "Missing parameter"))
 	
-	  // Required parameters
+	// Required parameters
 	$Txt_pathname:=$1
 	
-	  // Default values
-	$Obj_template:=New object:C1471("exist";False:C215;"name";"";"extension";"";"fullName";"";"isFolder";False:C215;"isFile";False:C215;"creationDate";String:C10(!00-00-00!;ISO date GMT:K1:10;?00:00:00?);"lastModification";String:C10(!00-00-00!;ISO date GMT:K1:10;?00:00:00?);"parent";"";"parentFolder";"";"nativePath";"";"path";"";"size";0;"icon";Null:C1517)
+	// Default values
+	$Obj_template:=New object:C1471("exist"; False:C215; "name"; ""; "extension"; ""; "fullName"; ""; "isFolder"; False:C215; "isFile"; False:C215; "creationDate"; String:C10(!00-00-00!; ISO date GMT:K1:10; ?00:00:00?); "lastModification"; String:C10(!00-00-00!; ISO date GMT:K1:10; ?00:00:00?); "parent"; ""; "parentFolder"; ""; "nativePath"; ""; "path"; ""; "size"; 0; "icon"; Null:C1517)
 	
-	  // Optional parameters
+	// Optional parameters
 	If ($Lon_parameters>=2)
 		
-		  // <NONE>
+		// <NONE>
 		
 	End if 
 	
@@ -52,12 +47,12 @@ Else
 	
 End if 
 
-  // ----------------------------------------------------
+// ----------------------------------------------------
 If (Length:C16($Txt_pathname)#0)
 	
 	$Obj_file:=Path to object:C1547($Txt_pathname)
 	
-	$Obj_file.isFolder:=Bool:C1537(Position:C15($Txt_pathname[[Length:C16($Txt_pathname)]];":\\"))
+	$Obj_file.isFolder:=Bool:C1537(Position:C15($Txt_pathname[[Length:C16($Txt_pathname)]]; ":\\"))
 	$Obj_file.isFile:=Not:C34($Obj_file.isFolder)
 	$Obj_file.exist:=(Test path name:C476($Txt_pathname)=Is a document:K24:1)
 	$Obj_file.fullName:=$Obj_file.name+$Obj_file.extension
@@ -66,15 +61,15 @@ If (Length:C16($Txt_pathname)#0)
 	
 	If ($Obj_file.exist)
 		
-		GET DOCUMENT PROPERTIES:C477($Txt_pathname;$Boo_locked;$Boo_invisible;$Dat_creation;$Gmt_creation;$Dat_modified;$Gmt_modified)
-		$Obj_file.creationDate:=String:C10($Dat_creation;ISO date GMT:K1:10;$Gmt_creation)
-		$Obj_file.lastModification:=String:C10($Dat_modified;ISO date GMT:K1:10;$Gmt_modified)
+		GET DOCUMENT PROPERTIES:C477($Txt_pathname; $Boo_locked; $Boo_invisible; $Dat_creation; $Gmt_creation; $Dat_modified; $Gmt_modified)
+		$Obj_file.creationDate:=String:C10($Dat_creation; ISO date GMT:K1:10; $Gmt_creation)
+		$Obj_file.lastModification:=String:C10($Dat_modified; ISO date GMT:K1:10; $Gmt_modified)
 		$Obj_file.locked:=$Boo_locked
 		$Obj_file.invisible:=$Boo_invisible
 		
 		$Obj_file.size:=Get document size:C479($Txt_pathname)
 		
-		GET DOCUMENT ICON:C700($Txt_pathname;$Pic_icon)
+		GET DOCUMENT ICON:C700($Txt_pathname; $Pic_icon)
 		$Obj_file.icon:=$Pic_icon
 		
 	End if 
@@ -83,7 +78,7 @@ If (Length:C16($Txt_pathname)#0)
 	
 End if 
 
-For each ($Txt_property;$Obj_template)
+For each ($Txt_property; $Obj_template)
 	
 	If ($Obj_file[$Txt_property]=Null:C1517)
 		
@@ -92,9 +87,9 @@ For each ($Txt_property;$Obj_template)
 	End if 
 End for each 
 
-  // ----------------------------------------------------
-  // Return
+// ----------------------------------------------------
+// Return
 $0:=$Obj_file
 
-  // ----------------------------------------------------
-  // End  
+// ----------------------------------------------------
+// End  

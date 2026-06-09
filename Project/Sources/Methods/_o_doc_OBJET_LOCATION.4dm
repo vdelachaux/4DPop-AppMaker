@@ -6,25 +6,18 @@
 // Description
 //
 // ----------------------------------------------------
-C_TEXT:C284($1)
-C_TEXT:C284($2)
-C_LONGINT:C283($3)
-C_LONGINT:C283($4)
+var $1 : Text
+var $2 : Text
+var $3 : Integer
+var $4 : Integer
 
-C_LONGINT:C283($Lon_bottom; $Lon_dep_H; $Lon_formEvent; $Lon_Height; $Lon_i; $Lon_left)
-C_LONGINT:C283($Lon_maxWidth; $Lon_Position; $Lon_Redim_H; $Lon_right; $Lon_Size; $Lon_top)
-C_LONGINT:C283($Lon_Width; $Lon_x)
-C_TEXT:C284($Mnu_pop; $Txt_Buffer; $Txt_File; $Txt_FullPath; $Txt_object; $Txt_Path)
-C_TEXT:C284($Txt_Volume)
+var $Lon_bottom; $Lon_dep_H; $Lon_formEvent; $Lon_Height; $Lon_i; $Lon_left : Integer
+var $Lon_maxWidth; $Lon_Position; $Lon_Redim_H; $Lon_right; $Lon_Size; $Lon_top : Integer
+var $Lon_Width; $Lon_x : Integer
+var $Mnu_pop; $Txt_Buffer; $Txt_File; $Txt_FullPath; $Txt_object; $Txt_Path : Text
+var $Txt_Volume : Text
 
 ARRAY TEXT:C222($tTxt_Volumes; 0)
-
-If (False:C215)
-	C_TEXT:C284(_o_doc_OBJET_LOCATION; $1)
-	C_TEXT:C284(_o_doc_OBJET_LOCATION; $2)
-	C_LONGINT:C283(_o_doc_OBJET_LOCATION; $3)
-	C_LONGINT:C283(_o_doc_OBJET_LOCATION; $4)
-End if 
 
 $Txt_FullPath:=$1
 $Txt_object:=$2
@@ -65,7 +58,7 @@ Case of
 			
 			If ($Txt_File#$Txt_Volume)
 				
-				$Txt_Buffer:=Replace string:C233(Get localized string:C991("FileInVolume"); "{file}"; $Txt_File)
+				$Txt_Buffer:=Replace string:C233(Localized string:C991("FileInVolume"); "{file}"; $Txt_File)
 				$Txt_Buffer:=Replace string:C233($Txt_Buffer; "{volume}"; $Txt_Volume)
 				
 			Else 
@@ -251,7 +244,7 @@ Case of
 		If (Count menu items:C405($Mnu_pop)>0)
 			
 			APPEND MENU ITEM:C411($Mnu_pop; "-")
-			APPEND MENU ITEM:C411($Mnu_pop; Get localized string:C991("CopyPath"))
+			APPEND MENU ITEM:C411($Mnu_pop; Localized string:C991("CopyPath"))
 			SET MENU ITEM PARAMETER:C1004($Mnu_pop; -1; "copy")
 			$Txt_Path:=Dynamic pop up menu:C1006($Mnu_pop)
 			

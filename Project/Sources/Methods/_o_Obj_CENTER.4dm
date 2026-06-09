@@ -6,19 +6,13 @@
 // Description
 // Center position of an object relative to another
 // ----------------------------------------------------
-C_TEXT:C284($1)
-C_TEXT:C284($2)
-C_LONGINT:C283($3)
+var $1 : Text
+var $2 : Text
+var $3 : Integer
 
-C_LONGINT:C283($Lon_Bottom; $Lon_Left; $Lon_Middle; $Lon_Mode; $Lon_parameters)
-C_LONGINT:C283($Lon_refBottom; $Lon_refLeft; $Lon_refRight; $Lon_refTop; $Lon_Right)
-C_LONGINT:C283($Lon_Top)
-
-If (False:C215)
-	C_TEXT:C284(_o_Obj_CENTER; $1)
-	C_TEXT:C284(_o_Obj_CENTER; $2)
-	C_LONGINT:C283(_o_Obj_CENTER; $3)
-End if 
+var $Lon_Bottom; $Lon_Left; $Lon_Middle; $Lon_Mode; $Lon_parameters : Integer
+var $Lon_refBottom; $Lon_refLeft; $Lon_refRight; $Lon_refTop; $Lon_Right : Integer
+var $Lon_Top : Integer
 
 // ----------------------------------------------------
 $Lon_parameters:=Count parameters:C259

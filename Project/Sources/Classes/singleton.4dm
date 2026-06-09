@@ -1,3 +1,6 @@
+property class
+property new
+
 Class constructor($instance : Object)
 	
 	// Get the class of the object passed in parameter

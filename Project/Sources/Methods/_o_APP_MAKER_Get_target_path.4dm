@@ -1,14 +1,9 @@
 //%attributes = {"invisible":true}
-C_TEXT:C284($0)
-C_LONGINT:C283($1)
+var $0 : Text
+var $1 : Integer
 
-C_TEXT:C284($Dir_result; $Dir_target; $Dom_node; $Dom_root; $File_structure; $Txt_applicationName)
-C_OBJECT:C1216($Obj_structure)
-
-If (False:C215)
-	C_TEXT:C284(_o_APP_MAKER_Get_target_path; $0)
-	C_LONGINT:C283(_o_APP_MAKER_Get_target_path; $1)
-End if 
+var $Dir_result; $Dir_target; $Dom_node; $Dom_root; $File_structure; $Txt_applicationName : Text
+var $Obj_structure : Object
 
 Compiler_component
 

@@ -9,15 +9,11 @@
 //
 // ----------------------------------------------------
 // Declarations
-C_TEXT:C284($1)
+var $1 : Text
 
-C_LONGINT:C283($Lon_parameters)
-C_POINTER:C301($Ptr_nil)
-C_TEXT:C284($Txt_project)
-
-If (False:C215)
-	C_TEXT:C284(AppMaker_RunProject; $1)
-End if 
+var $Lon_parameters : Integer
+var $Ptr_nil : Pointer
+var $Txt_project : Text
 
 // ----------------------------------------------------
 // Initialisations

@@ -8,8 +8,7 @@ If ($run)
 	// Allow assertions for the matrix database & me ;-)
 	SET ASSERT ENABLED:C1131($database.isMatrix | $database.isDebug; *)
 	
-	var $AppMaker:=cs:C1710.AppMaker.new()
-	$AppMaker.run()
+	cs:C1710.AppMaker.new().run()
 	
 Else 
 	
