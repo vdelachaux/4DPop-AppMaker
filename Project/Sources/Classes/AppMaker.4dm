@@ -262,7 +262,8 @@ Function run($withUI : Boolean) : Boolean
 		var $zip:=$root.file(Replace string:C233($src.name; " "; "-")+".zip")
 		$zip.delete()
 		
-		var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214})
+		// Build a cross-platform zip for Dependencies Manager (no __MACOSX metadata folder)
+		var $ditto:=cs:C1710.ditto.new($src; $zip; {keepParent: True:C214; sequesterRsrc: False:C215; rsrc: False:C215; extattr: False:C215})
 		
 		$success:=$ditto.archive()
 		
